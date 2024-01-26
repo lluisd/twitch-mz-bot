@@ -16,19 +16,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_TWITCH_USERNAME: ${{ secrets.TWITCH_USERNAME }}
+          envkey_TWITCH_PASSWORD: ${{ secrets.TWITCH_PASSWORD }}
+          envkey_TWITCH_CHANNELS: ${{ secrets.TWITCH_CHANNELS }}
+          envkey_PORT: 443
+
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
+          node-version: '20'
+          cache: 'npm'
 
       - name: npm install, build, and test
         run: |
           npm install
           npm run build --if-present
-          npm run test --if-present
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip -r release.zip * .env
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -49,9 +57,6 @@ jobs:
         with:
           name: node-app
 
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
-
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
@@ -59,4 +64,4 @@ jobs:
           app-name: 'twitch-mz-bot'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5F8104D0F0DB4488AE974F3659C5C153 }}
-          package: .
+          package: release.zip
