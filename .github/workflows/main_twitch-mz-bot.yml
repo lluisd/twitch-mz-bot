@@ -22,6 +22,7 @@ jobs:
           envkey_TWITCH_USERNAME: ${{ secrets.TWITCH_USERNAME }}
           envkey_TWITCH_PASSWORD: ${{ secrets.TWITCH_PASSWORD }}
           envkey_TWITCH_CHANNELS: ${{ secrets.TWITCH_CHANNELS }}
+          envkey_PORT: 8081
 
       - name: Set up Node.js version
         uses: actions/setup-node@v4
