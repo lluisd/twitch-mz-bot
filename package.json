@@ -6,8 +6,11 @@
   "author": "Lluis <lluisdanes@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@twurple/auth": "^7.0.8",
+    "@twurple/auth-tmi": "^7.0.8",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
+    "mongoose": "^8.1.1",
     "tmi.js": "^1.8.5"
   },
   "scripts": {

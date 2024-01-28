@@ -1,7 +1,9 @@
 module.exports = {
+    database: process.env.MONGODB_URI,
     twitch: {
-        username: process.env.TWITCH_USERNAME,
-        password: process.env.TWITCH_PASSWORD,
-        channels: process.env.TWITCH_CHANNELS
+        channels: process.env.TWITCH_CHANNELS,
+        clientId: process.env.TWITCH_CLIENT_ID,
+        clientSecret: process.env.TWITCH_CLIENT_SECRET,
+        userId: process.env.TWITCH_USER_ID
     }
 }
