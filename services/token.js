@@ -1,7 +1,7 @@
 const dbManager = require('../helpers/dbmanager')
 
 function getToken (userId) {
-    return dbManager.getToken(parseInt(userId))
+    return dbManager.getToken(parseInt(userId)).lean()
 }
 
 function updateToken (userId, data) {
