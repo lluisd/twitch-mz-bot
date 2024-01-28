@@ -3,13 +3,11 @@ const mongoose = require('mongoose')
 const config = require('./config')
 const express = require("express")
 
-mongoose.set('debug', true)
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
     messenger.init()
         .then(() => {
             console.log('Connected')
-            const express = require('express')
 
             const app = express();
             const listener = app.listen(process.env.PORT, ()=>  {
