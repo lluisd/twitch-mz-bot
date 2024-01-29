@@ -24,6 +24,7 @@ jobs:
           envkey_TWITCH_CHANNELS: ${{ secrets.TWITCH_CHANNELS }}
           envkey_TWITCH_USER_ID: ${{ secrets.TWITCH_USER_ID }}
           envKey_MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          envKey_AEMET_API_KEY: ${{ secrets.AEMET_API_KEY }}
           envkey_PORT: 3000
 
       - name: Set up Node.js version
