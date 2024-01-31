@@ -2,13 +2,25 @@ const MunicipioService = require('../services/municipio')
 const AemetService = require('../services/aemet')
 
 class Weather {
-    async getAemet (target, text, bot) {
+    async getSunset (target, text, bot) {
         const municipio  = await MunicipioService.getMunicipioCode(text)
-
         if (municipio !== null) {
             const code = `${municipio.codigoProvincia}${municipio.codigoMunicipio}`
-            const ocaso = await AemetService.getTimePrediction(code)
-            bot.say(target, `${municipio.nombre} atardece a las ${ocaso}`);
+            const sunsetTime = await AemetService.getSunsetPrediction(code)
+            if (sunsetTime) {
+                bot.say(target, `${municipio.nombre} atardece a las ${sunsetTime}`)
+            }
+        }
+    }
+
+    async getSunrise (target, text, bot) {
+        const municipio  = await MunicipioService.getMunicipioCode(text)
+        if (municipio !== null) {
+            const code = `${municipio.codigoProvincia}${municipio.codigoMunicipio}`
+            const sunriseTime = await AemetService.getSunrisePrediction(code)
+            if (sunriseTime) {
+                bot.say(target, `${municipio.nombre} amanece a las ${sunriseTime}`)
+            }
         }
     }
 }

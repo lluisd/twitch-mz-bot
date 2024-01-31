@@ -1,9 +1,27 @@
 const config = require('../config')
 
 const endpointPrefix = 'https://opendata.aemet.es/opendata/api/'
-async function getTimePrediction(name) {
-    let result = null
 
+async function getSunsetPrediction(name) {
+    let sunsetTime = null
+    const result = await _getTimePrediction(name)
+    if (result) {
+        sunsetTime = result[0].prediccion.dia[0].ocaso
+    }
+    return sunsetTime
+}
+
+async function getSunrisePrediction(name) {
+    let sunsetTime = null
+    const result = await _getTimePrediction(name)
+    if (result) {
+        sunsetTime = result[0].prediccion.dia[0].orto
+    }
+    return sunsetTime
+}
+
+async function _getTimePrediction(name) {
+    let result = null
     const endpoint = endpointPrefix + 'prediccion/especifica/municipio/horaria/' + name
     const options = {
         headers: {
@@ -11,12 +29,9 @@ async function getTimePrediction(name) {
             'api_key': config.aemet.apiKey
         }
     }
-
     const response = await fetch(endpoint, options)
     const data = await response.json()
-    result = await getAemetData(data.datos)
-
-    return result[0].prediccion.dia[0].ocaso
+    return await getAemetData(data.datos)
 }
 async function getAemetData(url) {
     const response = await fetch(url)
@@ -24,5 +39,6 @@ async function getAemetData(url) {
 }
 
 module.exports = {
-    getTimePrediction
+    getSunsetPrediction,
+    getSunrisePrediction
 }

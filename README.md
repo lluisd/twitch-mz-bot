@@ -20,6 +20,11 @@ Information from weather comes from AEMET OpenData to get Spain weather predicti
 
 ### commands
 ```javascript
+!amanecer girona 
+//result: Girona amanece a las 08:02
+```
+
+```javascript
 !atardecer girona 
 //result: Girona atardece a las 17:59
 ```
