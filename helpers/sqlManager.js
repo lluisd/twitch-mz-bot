@@ -1,7 +1,5 @@
 const sql = require('mssql')
 const config = require('../config')
-const Token = require("../models/token");
-
 async function getCloserFutureTrain (origin, destination, type) {
     try {
         this.pool = await sql.connect(config.sql.connectionString)
@@ -40,12 +38,8 @@ where CD.date = DATEADD(hour, 1, GETDATE()) )
  AND A.departure_time > CONVERT (time,  DATEADD(hour, 1, GETDATE()))
 
 ORDER BY ABS( DATEDIFF(minute, A.departure_time, CONVERT (time,  DATEADD(hour, 1, GETDATE()))) )`)
-        //const result = await sql.query
-        console.log(result.recordset[0])
         return result.recordset[0]
-    } catch (err) {
-        console.log(err)
-    }
+    } catch (err) {}
 }
 
 module.exports = {

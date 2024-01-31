@@ -15,7 +15,6 @@ class Train {
             bot.say(target, `Próximo AVE de ${result.origin_stop} a ${result.destination_stop} sale a las ${result.time}`);
         }
     }
-
 }
 
 module.exports = Train

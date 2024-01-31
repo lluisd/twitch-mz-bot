@@ -11,8 +11,6 @@ class Weather {
             bot.say(target, `${municipio.nombre} atardece a las ${ocaso}`);
         }
     }
-
-
 }
 
 module.exports = Weather
