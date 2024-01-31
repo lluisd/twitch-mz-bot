@@ -8,5 +8,8 @@ module.exports = {
     },
     aemet: {
         apiKey: process.env.AEMET_API_KEY
+    },
+    sql : {
+        connectionString: process.env.SQL_CONNECTION
     }
 }

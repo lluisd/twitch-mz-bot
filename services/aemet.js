@@ -19,7 +19,6 @@ async function getTimePrediction(name) {
     return result[0].prediccion.dia[0].ocaso
 }
 
-
 async function getAemetData(url) {
     const response = await fetch(url)
     return await response.json()
