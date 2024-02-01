@@ -4,7 +4,7 @@ async function getCloserFutureTrain (origin, destination, type) {
     try {
         this.pool = await sql.connect(config.sql.connectionString)
         const request = this.pool.request()
-        const result = await request.query(`SELECT CONVERT(VARCHAR(8),A.departure_time, 108) time , A.stop_name origin_stop, B.stop_name destination_stop , C.start_date, C.end_date, T.service_id, R.route_id  FROM
+        const result = await request.query(`SELECT TOP 1 CONVERT(VARCHAR(8),A.departure_time, 108) time , A.stop_name origin_stop, B.stop_name destination_stop  FROM
 (SELECT ST.trip_id , S.stop_name, ST.stop_id, ST.stop_sequence, ST.departure_time
 from stop_times ST
 inner join stops S ON S.stop_id = ST.stop_id 
