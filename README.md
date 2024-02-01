@@ -30,14 +30,16 @@ Information from weather comes from AEMET OpenData to get Spain weather predicti
 ```
 
 ## Train
-Find next departure time of the train from a given origin and destination. It uses the renfe open datasets (https://data.renfe.com/)
+Find next departure time of the train from a given origin and destination. It uses the renfe GTFS dataset improved_gtfs.zip (https://gtfs.pro/en/spain/Renfe-Operadora/renfe)
 
 ### commands
 
 ```javascript
-!md girona figueres
+!md girona, sant celoni
+//result: Próximo tren MD de Girona a Sant Celoni sale a las 14:49:00
 ```
 
 ```javascript
-!ave girona sants
+!ave girona, sants
+//result: 
 ```
