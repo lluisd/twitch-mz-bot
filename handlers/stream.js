@@ -8,7 +8,7 @@ class Stream {
         const result = await TwitchService.getStream()
 
         if (result) {
-            const image = `[\u200c](${result.thumbnail_url.replace('{width}', '400').replace('{height}', '300')})`
+            const image = `[\u200c](${result.thumbnail_url.replace('-{width}x{height}', '')})`
             const link = `[${twitchUrl}${result.user_name}](${twitchUrl}${result.user_name})`
             const directo = `*¡EN DIRECTO!*`
             const text = `${image} ${directo}  ${link}`
