@@ -1,5 +1,6 @@
 const Token = require('../models/token')
 const Muncipio = require('../models/municipio')
+const Channel = require('../models/channel')
 
 function getToken (userId) {
     return Token.findOne({userId: userId})
@@ -7,6 +8,15 @@ function getToken (userId) {
 
 function updateToken (userId, update) {
     return Token.updateOne({userId: userId}, update)
+}
+
+function getChannel (name) {
+    return Channel.findOne({name: name})
+}
+
+function updateChannel (name, isLive) {
+    return Channel.updateOne({name: name}, { live: isLive })
+
 }
 
 async function getMuncipioStartsWith (name) {
@@ -31,5 +41,7 @@ module.exports = {
     getMunicipio,
     getMuncipioStartsWith,
     getMuncipioEndsWith,
-    getMuncipioContains
+    getMuncipioContains,
+    getChannel,
+    updateChannel
 }
