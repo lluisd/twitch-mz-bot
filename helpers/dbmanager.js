@@ -14,9 +14,8 @@ function getChannel (name) {
     return Channel.findOne({name: name})
 }
 
-function updateChannel (name, isLive) {
-    return Channel.updateOne({name: name}, { live: isLive })
-
+function updateChannel (name, update) {
+    return Channel.updateOne({name: name}, update)
 }
 
 async function getMuncipioStartsWith (name) {

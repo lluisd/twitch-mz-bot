@@ -4,7 +4,7 @@ const dbManager = require('../helpers/dbmanager')
 const endpointPrefix = 'https://api.twitch.tv/helix/streams'
 
 async function getStream() {
-    let result = null
+    let result = { type: 'notLive'}
 
     const token = await dbManager.getToken(parseInt(config.twitch.userId)).lean()
     const endpoint = endpointPrefix + '?user_login=' + config.twitch.channels
@@ -20,15 +20,27 @@ async function getStream() {
 
     const channel = await dbManager.getChannel(config.twitch.channels).lean()
     if (liveData && !channel.live) {
-        await dbManager.updateChannel(config.twitch.channels, true)
+        await dbManager.updateChannel(config.twitch.channels, { live: true })
         result = liveData
     } else if (!liveData && channel.live) {
-        await dbManager.updateChannel(config.twitch.channels, false)
+        await dbManager.updateChannel(config.twitch.channels, { live: false })
+        result = { type: 'finished', messageId: channel.lastMessageId}
     }
 
     return result
 }
 
+async function saveLastMessage (msg) {
+    await dbManager.updateChannel(config.twitch.channels, { lastMessageId: msg.message_id })
+}
+
+async function deleteLastMessage () {
+    await dbManager.updateChannel(config.twitch.channels, { lastMessageId: null })
+}
+
+
 module.exports = {
-    getStream
+    getStream,
+    saveLastMessage,
+    deleteLastMessage
 }
