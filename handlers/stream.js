@@ -46,7 +46,9 @@ class Stream {
         const horas = diff.hours > 0 ? `${diff.hours} horas ` : ''
         const duration = `${horas}${diff.minutes} minutos`
 
-        const image = `[\u200c](${stream.thumbnail_url.replace('-{width}x{height}', '')})`
+        const width = Math.floor(Math.random() * (1280 - 1000 + 1) + 1000)
+        const height = width / (16/9)
+        const image = `[\u200c](${stream.thumbnail_url.replace('-{width}x{height}', `-${width}x${height}`)})`
         const link = `[${twitchUrl}${stream.user_name}](${twitchUrl}${stream.user_name})`
         const title = `🔴 *¡EN DIRECTO!*`
         return `${image} ${title}  ${link} \n _${stream.title}_ (${duration})`
