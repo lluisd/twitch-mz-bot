@@ -14,6 +14,10 @@ const ChannelSchema = new Schema({
     lastMessageId: {
         type: Number,
         required: false
+    },
+    title: {
+        type: String,
+        required: false
     }
 })
 
