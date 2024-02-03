@@ -2,6 +2,7 @@ const TwitchService = require('../services/twitch')
 const config = require("../config");
 const moment = require('moment')
 require('moment-precise-range-plugin')
+var math = require('mathjs');
 
 const twitchUrl = 'https://www.twitch.tv/'
 
@@ -47,7 +48,7 @@ class Stream {
         const duration = `${horas}${diff.minutes} minutos`
 
         const width = Math.floor(Math.random() * (1280 - 1000 + 1) + 1000)
-        const height = width / (16/9)
+        const height = Math.trunc(width / (16/9))
         const image = `[\u200c](${stream.thumbnail_url.replace('-{width}x{height}', `-${width}x${height}`)})`
         const link = `[${twitchUrl}${stream.user_name}](${twitchUrl}${stream.user_name})`
         const title = `🔴 *¡EN DIRECTO!*`
