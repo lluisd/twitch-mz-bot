@@ -43,7 +43,8 @@ class Stream {
         const end = moment()
         const start = moment(stream.started_at)
         const diff = moment.preciseDiff(start, end, true)
-        const duration = `${diff.hours}:${diff.minutes}:${diff.seconds}`
+        const horas = diff.hours > 0 ? `${diff.hours} horas ` : ''
+        const duration = `${horas}${diff.minutes} minutos`
 
         const image = `[\u200c](${stream.thumbnail_url.replace('-{width}x{height}', '')})`
         const link = `[${twitchUrl}${stream.user_name}](${twitchUrl}${stream.user_name})`
