@@ -1,5 +1,7 @@
 const TwitchService = require('../services/twitch')
 const config = require("../config");
+const moment = require('moment')
+require('moment-precise-range-plugin')
 
 const twitchUrl = 'https://www.twitch.tv/'
 
@@ -22,7 +24,7 @@ class Stream {
             await bot.deleteMessage(config.telegram.chatId, result.messageId)
             await TwitchService.deleteLastMessage()
             await TwitchService.saveTitle(result.title)
-        } else if (result && result.type === 'stillLive' && result.messageId && result.lastTitle !== result.title) {
+        } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000))) {
             const options = {
                 chat_id: config.telegram.chatId,
                 message_id: result.messageId,
@@ -30,16 +32,23 @@ class Stream {
             }
             try {
                 await bot.editMessageText(this._getText(result), options)
-            } catch {}
+            } catch {
+                console.log('error')
+            }
             await TwitchService.saveTitle(result.title)
         }
     }
 
     _getText (stream) {
+        const end = moment()
+        const start = moment(stream.started_at)
+        const diff = moment.preciseDiff(start, end, true)
+        const duration = `${diff.hours}:${diff.minutes}:${diff.seconds}`
+
         const image = `[\u200c](${stream.thumbnail_url.replace('-{width}x{height}', '')})`
         const link = `[${twitchUrl}${stream.user_name}](${twitchUrl}${stream.user_name})`
         const title = `🔴 *¡EN DIRECTO!*`
-        return `${image} ${title}  ${link} \n _${stream.title}_`
+        return `${image} ${title}  ${link} \n _${stream.title}_ (${duration})`
     }
 }
 

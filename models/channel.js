@@ -18,7 +18,12 @@ const ChannelSchema = new Schema({
     title: {
         type: String,
         required: false
+    },
+    lastUpdate: {
+        type: Date,
+        required: false
     }
+
 })
 
 module.exports = mongoose.model('channel', ChannelSchema, 'channels')

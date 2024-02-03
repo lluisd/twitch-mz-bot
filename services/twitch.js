@@ -29,7 +29,7 @@ async function getStream() {
         result = { ...liveData, type: 'stillLive', messageId: channel.lastMessageId, lastTitle: channel.title}
     }
 
-    return result
+    return { ...result, lastUpdate: channel.lastUpdate}
 }
 
 async function saveLastMessage (msg) {
