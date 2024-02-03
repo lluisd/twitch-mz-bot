@@ -10,6 +10,10 @@ const ChannelSchema = new Schema({
     live: {
         type: Boolean,
         required: true
+    },
+    lastMessageId: {
+        type: Number,
+        required: false
     }
 })
 
