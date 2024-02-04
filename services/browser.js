@@ -3,7 +3,7 @@ const puppeteer = require("puppeteer");
 require('mathjs')
 
 async function getScreenshot() {
-    const browser = await puppeteer.launch({headless: true})
+    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
     const page = await browser.newPage()
     const session = await page.target().createCDPSession()
     await session.send("Page.enable")
