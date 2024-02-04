@@ -32,6 +32,10 @@ async function getStream() {
     return { ...result, lastUpdate: channel.lastUpdate}
 }
 
+async function getChannel () {
+    return dbManager.getChannel(config.twitch.channels).lean()
+}
+
 async function saveLastMessage (msg) {
     await dbManager.updateChannel(config.twitch.channels, { lastMessageId: msg.message_id })
 }
@@ -49,5 +53,6 @@ module.exports = {
     getStream,
     saveLastMessage,
     deleteLastMessage,
-    saveTitle
+    saveTitle,
+    getChannel
 }

@@ -10,14 +10,16 @@ mongoose.connect(config.database).then(() => {
         .then(() => {
             console.log('Connected')
 
-            const app = express();
+            const app = express()
+
+            app.use(express.static('public'))
+            app.use('/images', express.static('images'))
+
             const listener = app.listen(process.env.PORT, ()=>  {
                 console.log('Listening on port ', + listener.address().port)
                 app.get('/', (req, res) => res.send('Hello World!'))
             })
         })
-    const notifier = new Notifier()
-    notifier.notify()
 })
 
 
