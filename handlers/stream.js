@@ -1,12 +1,25 @@
 const TwitchService = require('../services/twitch')
-const config = require("../config");
+const BrowserService = require('../services/browser')
+const config = require("../config")
 const moment = require('moment')
 require('moment-precise-range-plugin')
-var math = require('mathjs');
+require('mathjs')
+
 
 const twitchUrl = 'https://www.twitch.tv/'
 
 class Stream {
+    async captureScreenshot(target, bot, notifierBot, user) {
+        const image = await BrowserService.getScreenshot()
+        await bot.say(target, `Captura de ${user}: ${config.externalUrl}/images/${image.fileName}`)
+        const channel = await TwitchService.getChannel()
+        await notifierBot.sendPhoto(config.telegram.chatId, image.buffer, {
+            caption: `Captura del directo _${channel.title}_ \n por *${user}*`,
+            parse_mode: 'Markdown'
+        })
+
+    }
+
     async catchStream (bot) {
         const result = await TwitchService.getStream()
 
