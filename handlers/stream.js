@@ -33,10 +33,13 @@ class Stream {
                 parse_mode: 'Markdown'
             }
 
-            await bot.sendMessage(config.telegram.chatId, text, options).then((msg) => {
-                     TwitchService.saveLastMessage(msg)
-                     TwitchService.saveTitle(result.title)
-                })
+            const msg = await bot.sendMessage(config.telegram.chatId, text, options)
+            try {
+                await bot.pinChatMessage(config.telegram.chatId, result.messageId)
+            } catch {}
+            await TwitchService.saveLastMessage(msg)
+            await TwitchService.saveTitle(result.title)
+
         } else if (result && result.type === 'finished' && result.messageId) {
             await bot.deleteMessage(config.telegram.chatId, result.messageId)
             await TwitchService.deleteLastMessage()
