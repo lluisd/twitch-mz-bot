@@ -16,5 +16,6 @@ module.exports = {
     telegram: {
         apiKey: process.env.TELEGRAM_TOKEN,
         chatId: process.env.TELEGRAM_CHAT_ID
-    }
+    },
+    browserlessUrl: process.env.BROWSERLESS_URL
 }
