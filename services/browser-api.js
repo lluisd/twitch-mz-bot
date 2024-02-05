@@ -26,6 +26,11 @@ class PuppeteerApi {
         return this.browser
     }
 
+    async forceNewPage() {
+        this.page = await this.newPage()
+        await this.handleStart()
+    }
+
     async getPage() {
         if (!this.page) {
             this.page = await this.newPage()
