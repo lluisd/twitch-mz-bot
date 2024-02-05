@@ -10,8 +10,8 @@ async function getScreenshot() {
         await page.setViewport({ width: 1920, height: 1080 })
         await page.goto("https://www.twitch.tv/" + config.twitch.channels, { waitUntil: 'networkidle0' })
 
-        await page.$eval('button[data-a-target="consent-banner-accept"]', el =>  el.click())
-        await page.$eval('button[data-a-target="content-classification-gate-overlay-start-watching-button"]', el =>  el.click())
+        await page.$eval('button[data-a-target="consent-banner-accept"]', el =>  el.click()).catch(() => {})
+        await page.$eval('button[data-a-target="content-classification-gate-overlay-start-watching-button"]', el =>  el.click()).catch(() => {})
 
         await page.waitForSelector('div.persistent-player')
         await page.$eval('.video-player__default-player', el => el.remove())
