@@ -14,12 +14,12 @@ class Stream {
         if (image) {
             const channel = await TwitchService.getChannel()
             await bot.say(target, `Captura de ${user}: ${config.externalUrl}/images/${image.fileName}`)
-            if (channel.live) {
-                await notifierBot.sendPhoto(config.telegram.chatId, image.buffer, {
-                    caption: `Captura del directo _${channel.title}_ \n por *${user}*`,
-                    parse_mode: 'Markdown'
-                })
-            }
+            // if (channel.live) {
+            //     await notifierBot.sendPhoto(config.telegram.chatId, image.buffer, {
+            //         caption: `Captura del directo _${channel.title}_ \n por *${user}*`,
+            //         parse_mode: 'Markdown'
+            //     })
+            // }
         }
     }
 
