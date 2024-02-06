@@ -5,12 +5,12 @@ const moment = require('moment')
 require('moment-precise-range-plugin')
 require('mathjs')
 
-
 const twitchUrl = 'https://www.twitch.tv/'
 
 class Stream {
+
     async captureScreenshot(target, bot, notifierBot, user) {
-        const image = await BrowserService.getScreenshot()
+        const image = await BrowserService.getScreenshot().catch(() => { console.error('getScreenshot on captureScreenshot')})
         if (image) {
             const channel = await TwitchService.getChannel()
             await bot.say(target, `Captura de ${user}: ${config.externalUrl}/images/${image.fileName}`)
@@ -34,16 +34,16 @@ class Stream {
             }
 
             const msg = await bot.sendMessage(config.telegram.chatId, text, options)
-            try {
-                await bot.pinChatMessage(config.telegram.chatId, result.messageId)
-            } catch {}
+            await bot.pinChatMessage(config.telegram.chatId, result.messageId).catch(() => {})
             await TwitchService.saveLastMessage(msg)
             await TwitchService.saveTitle(result.title)
+            await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on live')})
 
         } else if (result && result.type === 'finished' && result.messageId) {
             await bot.deleteMessage(config.telegram.chatId, result.messageId)
             await TwitchService.deleteLastMessage()
             await TwitchService.saveTitle(result.title)
+            await BrowserService.closeBrowser().catch(() => { console.error('closeBrowser on finished')})
         } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000))) {
             const options = {
                 chat_id: config.telegram.chatId,
@@ -56,6 +56,9 @@ class Stream {
                 console.log('error')
             }
             await TwitchService.saveTitle(result.title)
+            await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on stillLive')})
+        } else if (result && result.type === 'notLive') {
+            await BrowserService.closeBrowserIfNeeded().catch(() => { console.error('closeBrowserIfNeeded on notLive')})
         }
     }
 

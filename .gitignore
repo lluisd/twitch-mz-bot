@@ -5,3 +5,5 @@ node.log
 /tmp/
 .env
 .vscode/
+public/images/*
+.cache/
