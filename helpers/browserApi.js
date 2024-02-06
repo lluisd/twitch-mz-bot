@@ -2,10 +2,10 @@ const puppeteer = require('puppeteer-core')
 const config = require('../config')
 
 class PuppeteerApi {
-
     browser = null
     page = null
     svgImage = null
+
     constructor() {
     }
 
@@ -14,33 +14,33 @@ class PuppeteerApi {
     }
 
     async newBrowser() {
-        return await puppeteer.connect({ browserWSEndpoint: `wss://${config.browserlessUrl}` })
+        return await puppeteer.connect({ browserWSEndpoint: config.browserlessUrl })
+    }
+
+    async createNewBrowser() {
+        this.browser = await this.newBrowser()
     }
 
     async getBrowser() {
-
         if (!this.browser) {
-            this.browser = await this.newBrowser()
+            await this.createNewBrowser()
         }
-
         return this.browser
     }
 
-    async forceNewPage() {
-        this.page = await this.newPage()
+    async createNewPage() {
+        this.page = await this._newPage()
         await this.handleStart()
     }
 
     async getPage() {
         if (!this.page) {
-            this.page = await this.newPage()
-            await this.handleStart()
+            await this.createNewPage()
         }
         return this.page
-
     }
 
-    async newPage() {
+    async _newPage() {
         const browser = await this.getBrowser()
         return await browser.newPage()
     }
@@ -55,18 +55,26 @@ class PuppeteerApi {
 
     async handleStart() {
         await this.page.setViewport({ width: 1920, height: 1080 })
-        await this.page.goto("https://www.twitch.tv/" + config.twitch.channels, { waitUntil: 'networkidle0' })
+        await this.page.goto("https://www.twitch.tv/" + config.twitch.channels) //{ waitUntil: 'networkidle0' }
 
+        await this.page.waitForSelector('div.persistent-player')
         await this.page.$eval('button[data-a-target="consent-banner-accept"]', el =>  el.click()).catch(() => {})
         await this.page.$eval('button[data-a-target="content-classification-gate-overlay-start-watching-button"]', el =>  el.click()).catch(() => {})
-        await this.page.waitForSelector('div.persistent-player')
         await this.page.$eval('.video-player__default-player', el => el.remove())
         this.svgImage = await this.page.$('div.persistent-player')
     }
 
 
-    async shutdown() {
+    async closeBrowser() {
         await this.browser.close()
+    }
+
+    async checkIfBrowserIsOpen() {
+        return await this.browser && this.browser.isConnected()
+    }
+
+    async checkIfPageIsOpen() {
+        return await this.page && !this.page.isClosed()
     }
 
 
