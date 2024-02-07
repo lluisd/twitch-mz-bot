@@ -2,6 +2,7 @@ const browserApi = require('../helpers/browserApi.js')
 require('mathjs')
 
 async function getScreenshot() {
+    let bufferImage
     try {
         await browserApi.getPage()
     } catch (error) {
@@ -10,10 +11,15 @@ async function getScreenshot() {
         return null
     }
     const name = Math.random().toString(36).substring(2,8)
-    const bufferImage = await browserApi.getSvgImage().screenshot({
-        path: `public/images/${name}.png`,
-        omitBackground: true
-    })
+    try {
+        bufferImage = await browserApi.getSvgImage().screenshot({
+            path: `public/images/${name}.png`,
+            omitBackground: true
+        })
+    } catch (error) {
+        console.log(error)
+        return null
+    }
     return {buffer: bufferImage, fileName: `${name}.png` }
 }
 
