@@ -9,6 +9,9 @@ const twitchUrl = 'https://www.twitch.tv/'
 
 class Stream {
 
+    async refreshPage() {
+        await BrowserService.refreshPage().catch(() => { console.error('refreshPage on refreshPage')})
+    }
     async captureScreenshot(target, bot, notifierBot, user) {
         const image = await BrowserService.getScreenshot().catch(() => { console.error('getScreenshot on captureScreenshot')})
         if (image) {
@@ -71,7 +74,7 @@ class Stream {
 
         const width = Math.floor(Math.random() * (1280 - 1000 + 1) + 1000)
         const height = Math.trunc(width / (16/9))
-        const image = `[\u200c](${stream.thumbnail_url.replace('-{width}x{height}', `-${width}x${height}`)})`
+        const image = `[\u200c](${stream.thumbnail_url.replace('-{width}x{height}', `-1280x720`)}?a=${Date.now()})`
         const link = `[${twitchUrl}${stream.user_name}](${twitchUrl}${stream.user_name})`
         const title = `🔴 *¡EN DIRECTO!*`
         return `${image} ${title}  ${link} \n _${stream.title}_ (${duration})`
