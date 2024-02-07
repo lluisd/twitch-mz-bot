@@ -39,6 +39,10 @@ async function startAndWarmUpBrowserIfNeeded() {
     }
 }
 
+async function refreshPage() {
+    await browserApi.resfreshPage()
+}
+
 
 
 async function closeBrowserIfNeeded() {
@@ -52,5 +56,6 @@ module.exports = {
     getScreenshot,
     closeBrowser,
     closeBrowserIfNeeded,
-    startAndWarmUpBrowserIfNeeded
+    startAndWarmUpBrowserIfNeeded,
+    refreshPage
 }
