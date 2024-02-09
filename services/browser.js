@@ -7,7 +7,7 @@ async function getScreenshot() {
         await browserApi.getPage()
     } catch (error) {
         console.log(error)
-        await browserApi.createNewPage()
+        await this.startAndWarmUpBrowserIfNeeded()
         return null
     }
     const name = Math.random().toString(36).substring(2,8)

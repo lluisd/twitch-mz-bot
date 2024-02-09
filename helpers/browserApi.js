@@ -75,13 +75,21 @@ class PuppeteerApi {
     }
 
     async checkIfBrowserIsOpen() {
-        const isConnected = await this.browser.isConnected()
-        return this.browser && isConnected
+        let isConnected = false
+        if (this.browser) {
+            isConnected = await this.browser.isConnected()
+        }
+
+        return isConnected
     }
 
     async checkIfPageIsOpen() {
-        const isClosed = await this.page.isClosed()
-        return this.page && !isClosed
+        let isClosed = false
+        if (this.page) {
+            isClosed = await this.page.isClosed()
+        }
+
+        return !isClosed
     }
 
     async resfreshPage() {
