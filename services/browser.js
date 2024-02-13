@@ -32,11 +32,14 @@ async function startAndWarmUpBrowserIfNeeded() {
     if (!browserIsOpen) {
         console.log('Browser is not open, creating new one')
         await browserApi.createNewBrowser()
-    }
-    const pageIsOpen = await browserApi.checkIfPageIsOpen()
-    if (!pageIsOpen) {
-        console.log('Page is not open, creating new one')
+        console.log('creating new page also')
         await browserApi.createNewPage()
+    } else {
+        const pageIsOpen = await browserApi.checkIfPageIsOpen()
+        if (!pageIsOpen) {
+            console.log('Page is not open, creating new one')
+            await browserApi.createNewPage()
+        }
     }
 }
 
