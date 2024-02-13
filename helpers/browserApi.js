@@ -13,12 +13,14 @@ class PuppeteerApi {
         return this.svgImage
     }
 
-    async newBrowser() {
-        return await puppeteer.connect({ browserWSEndpoint: config.browserlessUrl })
-    }
 
     async createNewBrowser() {
-        this.browser = await this.newBrowser()
+        this.browser = await puppeteer.connect({ browserWSEndpoint: config.browserlessUrl })
+        this.browser.on('disconnected', async () => {
+            if (this.browser) await this.browser.close()
+            if (this.browser.process() != null) this.browser.process().kill('SIGINT')
+            this.browser = null
+        })
     }
 
     async getBrowser() {
