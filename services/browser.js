@@ -11,19 +11,12 @@ async function getScreenshot() {
     }
     const name = Math.random().toString(36).substring(2,8)
     try {
-        bufferImage = await browserApi.getSvgImage().screenshot({
-            path: `public/images/${name}.png`,
-            omitBackground: true
-        })
+        bufferImage = await browserApi.takeScreenshot(`public/images/${name}.png`)
     } catch (error) {
         console.log(error)
         return null
     }
     return {buffer: bufferImage, fileName: `${name}.png` }
-}
-
-async function closeBrowser() {
-    return await browserApi.closeBrowser()
 }
 
 async function startAndWarmUpBrowserIfNeeded() {
@@ -44,10 +37,12 @@ async function startAndWarmUpBrowserIfNeeded() {
 }
 
 async function refreshPage() {
-    await browserApi.resfreshPage()
+    await browserApi.refreshPage()
 }
 
-
+async function closeBrowser() {
+    return await browserApi.closeBrowser()
+}
 
 async function closeBrowserIfNeeded() {
     const isOpened = await browserApi.checkIfBrowserIsOpen()

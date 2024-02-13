@@ -6,14 +6,6 @@ class PuppeteerApi {
     page = null
     svgImage = null
 
-    constructor() {
-    }
-
-    getSvgImage() {
-        return this.svgImage
-    }
-
-
     async createNewBrowser() {
         this.browser = await puppeteer.connect({ browserWSEndpoint: config.browserlessUrl })
         this.browser.on('disconnected', async () => {
@@ -24,36 +16,9 @@ class PuppeteerApi {
         })
     }
 
-    async getBrowser() {
-        if (!this.browser) {
-            await this.createNewBrowser()
-        }
-        return this.browser
-    }
-
     async createNewPage() {
-        this.page = await this._newPage()
+        this.page = this.browser.newPage()
         await this.handleStart()
-    }
-
-    async getPage() {
-        if (!this.page) {
-            await this.createNewPage()
-        }
-        return this.page
-    }
-
-    async _newPage() {
-        const browser = await this.getBrowser()
-        return await browser.newPage()
-    }
-
-    async handBack(page) {
-        // close the page or even reuse it?.
-        await page.close()
-
-        // you could add logic for closing the whole browser instance depending what
-        // you want.
     }
 
     async handleStart() {
@@ -72,9 +37,19 @@ class PuppeteerApi {
         this.svgImage = await this.page.$('div.persistent-player')
     }
 
+    async refreshPage() {
+        await this.page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })
+        await this.removeElementsAndGetDiv()
+    }
 
-    async closeBrowser() {
-        await this.browser.close()
+    async takeScreenshot(path) {
+        if (this.svgImage) {
+            return await this.svgImage.screenshot({
+                path: path,
+                omitBackground: true
+            })
+        }
+        return null
     }
 
     async checkIfBrowserIsOpen() {
@@ -95,12 +70,9 @@ class PuppeteerApi {
         return !isClosed
     }
 
-    async resfreshPage() {
-        await this.page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })
-        await this.removeElementsAndGetDiv()
+    async closeBrowser() {
+        await this.browser.close()
     }
-
-
 }
 
 const browserApi = new PuppeteerApi()
