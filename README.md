@@ -57,3 +57,18 @@ Take a screenshot of the current stream and send it to the chat.
 !foto
 //result: https://external.url/images/cclj35.png
 ```
+
+## Birthday
+Save your own birthdate and get other users birthdays
+
+### commands
+
+```javascript
+!micumple 03-08
+//result: @myuser cumple el dia 3 de Setiembre
+```
+
+```javascript
+!cumple @otheruser
+//result: @otheruser cumple el dia 3 de Setiembre
+```
