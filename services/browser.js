@@ -4,10 +4,9 @@ require('mathjs')
 async function getScreenshot() {
     let bufferImage
     try {
-        await browserApi.getPage()
+        await this.startAndWarmUpBrowserIfNeeded()
     } catch (error) {
         console.log(error)
-        await this.startAndWarmUpBrowserIfNeeded()
         return null
     }
     const name = Math.random().toString(36).substring(2,8)
