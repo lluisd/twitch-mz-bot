@@ -86,7 +86,7 @@ class PuppeteerApi {
     }
 
     async checkIfPageIsOpen() {
-        let isClosed = false
+        let isClosed = true
         if (this.page) {
             isClosed = await this.page.isClosed()
         }
