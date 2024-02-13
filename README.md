@@ -13,6 +13,10 @@ MONGODB_URI //mongoodb uri for the access/refresh tokens.
 AEMET_API_KEY //aemet api key to get spanish weather (https://opendata.aemet.es/centrodedescargas/inicio) 
 SQL_CONNECTION //sql connection string for the train information
 PORT //port of the running app
+TELEGRAM_TOKEN //Telegram bot API token to send notifications
+TELEGRAM_CHAT_ID //Telegram chat id to send the notifications
+EXTERNAL_URL //external url of the running app to create the public image urls
+BROWSERLESS_URL //browserless websocket url to take screenshots
 ```
 
 ## Weather
@@ -41,5 +45,15 @@ Find next departure time of the train from a given origin and destination. It us
 
 ```javascript
 !ave girona, sants
-//result: 
+//result: Próximo tren AVE de Girona a Barcelona-Sants sale a las 16:30:00
+```
+
+## Photo
+Take a screenshot of the current stream and send it to the chat.
+
+### commands
+
+```javascript
+!foto
+//result: https://external.url/images/cclj35.png
 ```

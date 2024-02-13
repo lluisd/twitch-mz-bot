@@ -5,6 +5,7 @@ const endpointPrefix = 'https://api.twitch.tv/helix/streams'
 
 async function getStream() {
     let result = { type: 'notLive'}
+    let liveData = null
 
     const token = await dbManager.getToken(parseInt(config.twitch.userId)).lean()
     const endpoint = endpointPrefix + '?user_login=' + config.twitch.channels
@@ -14,9 +15,15 @@ async function getStream() {
             'Authorization': 'Bearer ' + token.accessToken
         }
     }
-    const response = await fetch(endpoint, options)
-    const data = await response.json()
-    const liveData = data?.data?.[0] ?? null
+
+    try {
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
+        liveData = data?.data?.[0] ?? null
+
+    } catch {
+        result = { type: 'error'}
+    }
 
     const channel = await dbManager.getChannel(config.twitch.channels).lean()
     if (liveData && !channel.live) {

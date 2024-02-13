@@ -8,7 +8,6 @@ require('mathjs')
 const twitchUrl = 'https://www.twitch.tv/'
 
 class Stream {
-
     async refreshPage() {
         await BrowserService.refreshPage().catch(() => { console.error('refreshPage on refreshPage')})
     }
@@ -53,11 +52,7 @@ class Stream {
                 message_id: result.messageId,
                 parse_mode: 'Markdown'
             }
-            try {
-                await bot.editMessageText(this._getText(result), options)
-            } catch {
-                console.log('error')
-            }
+            await bot.editMessageText(this._getText(result), options).catch(() => {})
             await TwitchService.saveTitle(result.title)
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on stillLive')})
         } else if (result && result.type === 'notLive') {
