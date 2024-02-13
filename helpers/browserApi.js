@@ -17,7 +17,7 @@ class PuppeteerApi {
     }
 
     async createNewPage() {
-        this.page = this.browser.newPage()
+        this.page = await this.browser.newPage()
         await this.handleStart()
     }
 
