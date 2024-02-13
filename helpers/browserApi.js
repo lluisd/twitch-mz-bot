@@ -17,8 +17,9 @@ class PuppeteerApi {
     async createNewBrowser() {
         this.browser = await puppeteer.connect({ browserWSEndpoint: config.browserlessUrl })
         this.browser.on('disconnected', async () => {
+            console.log('disconnected browser')
             if (this.browser) await this.browser.close()
-            if (this.browser.process() != null) this.browser.process().kill('SIGINT')
+            if (this.browser && this.browser.process() != null) this.browser.process().kill('SIGINT')
             this.browser = null
         })
     }
