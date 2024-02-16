@@ -36,7 +36,7 @@ class Stream {
             }
 
             const msg = await bot.sendMessage(config.telegram.chatId, text, options)
-            await bot.pinChatMessage(config.telegram.chatId, msg.messageId).catch(() => {})
+            await bot.pinChatMessage(config.telegram.chatId, msg.message_id).catch(() => {})
             await TwitchService.saveLastMessage(msg)
             await TwitchService.saveTitle(result.title)
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on live')})
