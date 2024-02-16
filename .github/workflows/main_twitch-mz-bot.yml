@@ -31,6 +31,10 @@ jobs:
           envKey_TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           envKey_EXTERNAL_URL: ${{ secrets.EXTERNAL_URL }}
           envKey_BROWSERLESS_URL: ${{ secrets.BROWSERLESS_URL }}
+          envKey_MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+          envKey_MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          envKey_MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          envKey_MYSQL_DB: ${{ secrets.MYSQL_DB }}
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:

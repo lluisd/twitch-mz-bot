@@ -17,5 +17,11 @@ module.exports = {
         apiKey: process.env.TELEGRAM_TOKEN,
         chatId: process.env.TELEGRAM_CHAT_ID
     },
-    browserlessUrl: process.env.BROWSERLESS_URL
+    browserlessUrl: process.env.BROWSERLESS_URL,
+    mariadb: {
+        host: process.env.MYSQL_HOST,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        db: process.env.MYSQL_DB
+    }
 }
