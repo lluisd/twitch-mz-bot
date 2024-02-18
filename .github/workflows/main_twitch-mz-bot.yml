@@ -25,7 +25,6 @@ jobs:
           envkey_TWITCH_USER_ID: ${{ secrets.TWITCH_USER_ID }}
           envKey_MONGODB_URI: ${{ secrets.MONGODB_URI }}
           envKey_AEMET_API_KEY: ${{ secrets.AEMET_API_KEY }}
-          envKey_SQL_CONNECTION: ${{ secrets.SQL_CONNECTION }}
           envkey_PORT: 3000
           envkey_TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           envKey_TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

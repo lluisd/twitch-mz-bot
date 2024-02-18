@@ -1,4 +1,4 @@
-const sqlManager = require('../helpers/mariadbManager')
+const sqlManager = require('../helpers/mysqlManager')
 
 async function getNextMD (origin, destination) {
     return sqlManager.getCloserFutureTrain(origin, destination, 'MD')

@@ -10,9 +10,6 @@ module.exports = {
     aemet: {
         apiKey: process.env.AEMET_API_KEY
     },
-    sql : {
-        connectionString: process.env.SQL_CONNECTION
-    },
     telegram: {
         apiKey: process.env.TELEGRAM_TOKEN,
         chatId: process.env.TELEGRAM_CHAT_ID
