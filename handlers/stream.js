@@ -34,7 +34,7 @@ class Stream {
             const text = this._getText(result)
             const options = { parse_mode: 'Markdown' }
             const msg = await telegramBot.sendMessage(config.telegram.chatId, text, options)
-            await telegramBot.pinChatMessage(config.telegram.chatId, msg.message_id).catch(() => {})
+            await telegramBot.pinChatMessage(config.telegram.chatId, msg.message_id).catch((err) => { console.error(`cannot pin chat: ${err}`)})
             await TwitchService.saveLastMessage(msg)
             await TwitchService.saveTitle(result.title)
 
