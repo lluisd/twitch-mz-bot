@@ -24,6 +24,9 @@ class PuppeteerApi {
     async handleStart() {
         await this.page.setViewport({ width: 1920, height: 1080 })
         await this.page.goto("https://www.twitch.tv/" + config.twitch.channels, { waitUntil: ['networkidle0',  'domcontentloaded'] })
+        const fullPage = await this.page.$('body')
+        const fullPageSize = await fullPage.boundingBox()
+        await this.page.setViewport({ width: 1920, height: parseInt(fullPageSize.height) })
         await this.removeElementsAndGetDiv()
     }
 
@@ -33,7 +36,6 @@ class PuppeteerApi {
         await this.page.$eval('button[data-a-target="content-classification-gate-overlay-start-watching-button"]', el =>  el.click()).catch(() => {})
         await this.page.waitForSelector('div.persistent-player')
         await this.page.$eval('.video-player__default-player', el => el.remove())
-        this.svgImage = await this.page.$('div.persistent-player')
     }
 
     async refreshPage() {
@@ -42,6 +44,7 @@ class PuppeteerApi {
     }
 
     async takeScreenshot(path) {
+        this.svgImage = await this.page.$('div.persistent-player')
         if (this.svgImage) {
             return await this.svgImage.screenshot({
                 path: path,
