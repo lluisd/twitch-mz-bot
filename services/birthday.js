@@ -1,4 +1,5 @@
 const dbManager = require('../helpers/dbmanager')
+const moment = require('moment')
 
 async function getBirthday(nick) {
     let result = null
@@ -10,8 +11,16 @@ async function addBirthday(nick, day, month) {
     return await dbManager.updateBirthday(nick, {day: day, month: month})
 }
 
+async function getTodayBirthdays() {
+    let result = null
+    const today = moment()
+    result = await dbManager.getBirthdayFromDate(today.date(), today.month() + 1)
+    return result
+}
+
 
 module.exports = {
     getBirthday,
-    addBirthday
+    addBirthday,
+    getTodayBirthdays
 }

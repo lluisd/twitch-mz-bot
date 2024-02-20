@@ -2,6 +2,8 @@ const Token = require('../models/token')
 const Muncipio = require('../models/municipio')
 const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
+const moment = require('moment')
+
 
 function getToken (userId) {
     return Token.findOne({userId: userId})
@@ -46,6 +48,10 @@ async function updateBirthday (nick, update) {
     }).lean()
 }
 
+async function getBirthdayFromDate(day, month) {
+    return Birthday.find({day: day, month: month}).lean()
+}
+
 module.exports = {
     getToken,
     updateToken,
@@ -56,5 +62,6 @@ module.exports = {
     getChannel,
     updateChannel,
     updateBirthday,
-    getBirthday
+    getBirthday,
+    getBirthdayFromDate
 }
