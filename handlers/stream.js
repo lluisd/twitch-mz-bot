@@ -1,5 +1,6 @@
 const TwitchService = require('../services/twitch')
 const BrowserService = require('../services/browser')
+const BirthdayService = require('../services/birthday')
 const config = require("../config")
 const moment = require('moment')
 require('moment-precise-range-plugin')
@@ -25,24 +26,21 @@ class Stream {
         }
     }
 
-    async catchStream (bot) {
+    async catchStream (telegramBot, twitchBot, target) {
         const result = await TwitchService.getStream()
 
         if (result && result.type === 'live' ) {
+            await this.sendTodayBirthday(twitchBot, target)
             const text = this._getText(result)
-
-            const options = {
-                parse_mode: 'Markdown'
-            }
-
-            const msg = await bot.sendMessage(config.telegram.chatId, text, options)
-            await bot.pinChatMessage(config.telegram.chatId, msg.message_id).catch(() => {})
+            const options = { parse_mode: 'Markdown' }
+            const msg = await telegramBot.sendMessage(config.telegram.chatId, text, options)
+            await telegramBot.pinChatMessage(config.telegram.chatId, msg.message_id).catch((err) => { console.error(`cannot pin chat: ${err}`)})
             await TwitchService.saveLastMessage(msg)
             await TwitchService.saveTitle(result.title)
-            await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on live')})
 
+            await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on live')})
         } else if (result && result.type === 'finished' && result.messageId) {
-            await bot.deleteMessage(config.telegram.chatId, result.messageId)
+            await telegramBot.deleteMessage(config.telegram.chatId, result.messageId)
             await TwitchService.deleteLastMessage()
             await TwitchService.saveTitle(result.title)
             await BrowserService.closeBrowser().catch(() => { console.error('closeBrowser on finished')})
@@ -52,7 +50,7 @@ class Stream {
                 message_id: result.messageId,
                 parse_mode: 'Markdown'
             }
-            await bot.editMessageText(this._getText(result), options).catch(() => {})
+            await telegramBot.editMessageText(this._getText(result), options).catch(() => {})
             await TwitchService.saveTitle(result.title)
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on stillLive')})
         } else if (result && result.type === 'notLive') {
@@ -73,6 +71,28 @@ class Stream {
         const link = `[${twitchUrl}${stream.user_name}](${twitchUrl}${stream.user_name})`
         const title = `🔴 *¡EN DIRECTO!*`
         return `${image} ${title}  ${link} \n _${stream.title}_ (${duration})`
+    }
+
+    async sendTodayBirthday(twitchBot, target) {
+        const bdays  = await BirthdayService.getTodayBirthdays()
+        if (bdays && bdays.length > 0) {
+            let text
+            if (bdays.length === 1){
+                text = this._getTodayBdayText(`${bdays[0].nick}`)
+            } else if (bdays.length > 1) {
+                const nicks = bdays.map(bday => `${bday.nick}`).join(', ').replace(/, ([^,]*)$/, ' y $1')
+                text = this._getTodayBdaysText(nicks)
+            }
+            twitchBot.say(target, text)
+        }
+    }
+
+    _getTodayBdaysText(nicks) {
+        return `¡${nicks} cumplen años hoy!`
+    }
+
+    _getTodayBdayText(nick) {
+        return `¡${nick} cumple años hoy!`
     }
 }
 

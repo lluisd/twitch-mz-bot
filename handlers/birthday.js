@@ -24,7 +24,7 @@ class Birthday {
     }
 
     _getText(model) {
-        return `@${model.nick} cumple el dia ${model.day} de ${monthTexts[model.month -1]}`
+        return `${model.nick} cumple el dia ${model.day} de ${monthTexts[model.month -1]}`
     }
 
     _getDay (text) {
