@@ -11,12 +11,12 @@ async function getScreenshot() {
     }
     const name = Math.random().toString(36).substring(2,8)
     try {
-        bufferImage = await browserApi.takeScreenshot(`public/images/${name}.png`)
+        bufferImage = await browserApi.takeScreenshot(`public/images/${name}.jpg`)
     } catch (error) {
         console.log(error)
         return null
     }
-    return {buffer: bufferImage, fileName: `${name}.png` }
+    return {buffer: bufferImage, fileName: `${name}.jpg` }
 }
 
 async function startAndWarmUpBrowserIfNeeded() {

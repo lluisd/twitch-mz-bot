@@ -24,7 +24,6 @@ class PuppeteerApi {
     async handleStart() {
         await this.page.setViewport({ width: 1920, height: 1080 })
         await this.page.goto("https://www.twitch.tv/" + config.twitch.channels, { waitUntil: ['networkidle0',  'domcontentloaded'] })
-
         await this.removeElementsAndGetDiv()
     }
 
@@ -46,7 +45,9 @@ class PuppeteerApi {
         if (this.svgImage) {
             return await this.svgImage.screenshot({
                 path: path,
-                omitBackground: true
+                type: "jpeg",
+                quality: 75,
+                captureBeyondViewport: true
             })
         }
         return null
