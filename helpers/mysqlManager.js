@@ -12,7 +12,7 @@ async function getCloserFutureTrain (origin, destination, type) {
     let conn
     try {
         conn = await this.pool.getConnection();
-        const rows = await conn.query(`SELECT  A.departure_time departure, A.stop_name origin_stop, B.stop_name destination_stop, B.arrival_time arrival FROM
+        const rows = await conn.query(`SELECT A.departure_time departure, A.stop_name origin_stop, B.stop_name destination_stop, B.arrival_time arrival FROM
 (SELECT ST.trip_id , S.stop_name, ST.stop_id, ST.stop_sequence, ST.departure_time
 from stop_times ST
 inner join stops S ON S.stop_id = ST.stop_id 
@@ -38,15 +38,14 @@ inner join routes R ON R.route_id = T.route_id
 left join calendar C ON C.service_id = T.service_id
 
 WHERE A.stop_sequence < B.stop_sequence 
-AND (C.start_date IS NULL OR C.start_date  <= DATE_ADD(CURDATE(), INTERVAL 1 HOUR ))
-and (C.end_date IS NULL OR C.end_date >= DATE_ADD(CURDATE(), INTERVAL 1 HOUR ))
+AND (C.start_date IS NULL OR C.start_date  <= CURTIME())
+and (C.end_date IS NULL OR C.end_date >= CURTIME())
 AND T.service_id NOT IN  (SELECT CD.service_id FROM calendar_dates CD
-where CD.date = DATE_ADD(CURDATE(), INTERVAL 1 HOUR ) )
+where CD.date = CURTIME() )
 AND route_short_name = '${type}'
-AND A.departure_time > TIME(DATE_ADD(CURDATE(), INTERVAL 1 HOUR ))
+AND A.departure_time > CURTIME()
 
-ORDER BY ABS( TIMEDIFF(A.departure_time, TIME(DATE_ADD(CURDATE(), INTERVAL 1 HOUR ))) )
-LIMIT 1`)
+ORDER BY ABS( TIMEDIFF(A.departure_time, CURTIME()) ) LIMIT 1`)
         if (conn) await conn.end()
         return rows[0]
 
