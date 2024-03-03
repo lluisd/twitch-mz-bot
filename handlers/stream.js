@@ -40,6 +40,7 @@ class Stream {
 
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on live')})
         } else if (result && result.type === 'finished' && result.messageId) {
+            await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: result.messageId}).catch((err) => { console.error(`cannot unpin chat: ${err}`)})
             await telegramBot.deleteMessage(config.telegram.chatId, result.messageId)
             await TwitchService.deleteLastMessage()
             await TwitchService.saveTitle(result.title)
