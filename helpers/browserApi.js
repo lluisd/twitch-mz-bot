@@ -51,7 +51,7 @@ class PuppeteerApi {
                 path: path,
                 type: "jpeg",
                 quality: 75,
-                captureBeyondViewport: true
+                captureBeyondViewport: false
             })
         }
         return null
