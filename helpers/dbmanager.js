@@ -2,6 +2,7 @@ const Token = require('../models/token')
 const Muncipio = require('../models/municipio')
 const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
+const Screenshot = require('../models/screenshot')
 const moment = require('moment')
 
 
@@ -52,6 +53,18 @@ async function getBirthdayFromDate(day, month) {
     return Birthday.find({day: day, month: month}).lean()
 }
 
+async function updateScreenshot (name, update) {
+    return Screenshot.findOneAndUpdate({name: name}, update, {
+        new: true,
+        upsert: true
+    }).lean()
+}
+
+async function getScreenshots(streamId) {
+    return Screenshot.find({streamId: streamId}).lean()
+}
+
+
 module.exports = {
     getToken,
     updateToken,
@@ -63,5 +76,7 @@ module.exports = {
     updateChannel,
     updateBirthday,
     getBirthday,
-    getBirthdayFromDate
+    getBirthdayFromDate,
+    updateScreenshot,
+    getScreenshots
 }

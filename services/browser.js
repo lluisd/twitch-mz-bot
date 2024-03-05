@@ -1,5 +1,6 @@
 const browserApi = require('../helpers/browserApi.js')
-require('mathjs')
+const { customAlphabet, urlAlphabet } = require('nanoid')
+const nanoid = customAlphabet(urlAlphabet, 5)
 
 async function getScreenshot() {
     let bufferImage
@@ -9,14 +10,14 @@ async function getScreenshot() {
         console.log(error)
         return null
     }
-    const name = Math.random().toString(36).substring(2,8)
+    const name = nanoid()
     try {
         bufferImage = await browserApi.takeScreenshot(`public/images/${name}.jpg`)
     } catch (error) {
         console.log(error)
         return null
     }
-    return {buffer: bufferImage, fileName: `${name}.jpg` }
+    return {buffer: bufferImage, fileName: name }
 }
 
 async function startAndWarmUpBrowserIfNeeded() {
@@ -37,7 +38,11 @@ async function startAndWarmUpBrowserIfNeeded() {
 }
 
 async function refreshPage() {
-    await browserApi.refreshPage()
+    const browserIsOpen = await browserApi.checkIfBrowserIsOpen()
+    const pageIsOpen = await browserApi.checkIfPageIsOpen()
+    if (browserIsOpen && pageIsOpen) {
+        await browserApi.refreshPage()
+    }
 }
 
 async function closeBrowser() {

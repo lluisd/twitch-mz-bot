@@ -27,11 +27,11 @@ async function getStream() {
 
     const channel = await dbManager.getChannel(config.twitch.channels).lean()
     if (liveData && !channel.live) {
-        await dbManager.updateChannel(config.twitch.channels, { live: true })
+        await dbManager.updateChannel(config.twitch.channels, { live: true, streamId: liveData.id })
         result = liveData
     } else if (!liveData && channel.live) {
-        await dbManager.updateChannel(config.twitch.channels, { live: false })
-        result = { type: 'finished', messageId: channel.lastMessageId}
+        await dbManager.updateChannel(config.twitch.channels, { live: false, streamId: null })
+        result = { type: 'finished', messageId: channel.lastMessageId, streamId: channel.streamId}
     } else if (liveData && channel.live) {
         result = { ...liveData, type: 'stillLive', messageId: channel.lastMessageId, lastTitle: channel.title}
     }

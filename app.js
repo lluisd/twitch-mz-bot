@@ -14,6 +14,11 @@ mongoose.connect(config.database).then(() => {
             app.use(express.static('public'))
             app.use('/images', express.static('images'))
 
+            app.get('/:id', (req, res) => {
+                res.sendFile(__dirname + `/public/images/${req.params.id}.jpg`)
+            });
+
+
             const listener = app.listen(process.env.PORT, ()=>  {
                 console.log('Listening on port ', + listener.address().port)
                 app.get('/', (req, res) => res.send('Live!'))

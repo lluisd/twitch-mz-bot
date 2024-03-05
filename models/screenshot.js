@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 /* Channel Schema */
-const ChannelSchema = new Schema({
+const ScreenshotSchema = new Schema({
     name: {
         type: String,
         required: true
@@ -11,27 +11,18 @@ const ChannelSchema = new Schema({
         type: Number,
         required: true
     },
-    live: {
-        type: Boolean,
-        required: true
-    },
     streamId: {
         type: Number,
         required: false
     },
-    lastMessageId: {
-        type: Number,
-        required: false
-    },
-    title: {
+    capturedBy: {
         type: String,
-        required: false
+        required: true
     },
-    lastUpdate: {
+    created: {
         type: Date,
         required: false
     }
-
 })
 
-module.exports = mongoose.model('channel', ChannelSchema, 'channels')
+module.exports = mongoose.model('screenshot', ScreenshotSchema, 'screenshots')
