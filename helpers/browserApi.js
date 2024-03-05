@@ -34,8 +34,8 @@ class PuppeteerApi {
         await this.page.waitForSelector('div.persistent-player')
         await this.page.$eval('button[data-a-target="consent-banner-accept"]', el =>  el.click()).catch(() => {})
         await this.page.$eval('#twilight-sticky-footer-root', el => el.remove()).catch(() => {})
-        await this.page.$eval('button[data-a-target="content-classification-gate-overlay-start-watching-button"]', el =>  el.click()).catch(() => {})
-        await this.page.$eval('button[data-a-target="right-column__toggle-collapse-btn"]', el =>  el.click()).catch(() => {})
+        await this.page.$eval('button[data-a-target="content-classification-gate-overlay-start-watching-button"]', el =>  el.click()).catch(() => { })
+        //await this.page.$eval('button[data-a-target="right-column__toggle-collapse-btn"]', el =>  el.click()).catch(() => { "toggle collapse btn"})
         await this.page.$eval('.video-player__default-player', el => el.remove())
     }
 

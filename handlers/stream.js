@@ -1,6 +1,7 @@
 const TwitchService = require('../services/twitch')
 const BrowserService = require('../services/browser')
 const BirthdayService = require('../services/birthday')
+const ScreenshotService = require('../services/screenshot')
 const config = require("../config")
 const moment = require('moment')
 require('moment-precise-range-plugin')
@@ -12,11 +13,15 @@ class Stream {
     async refreshPage() {
         await BrowserService.refreshPage().catch(() => { console.error('refreshPage on refreshPage')})
     }
-    async captureScreenshot(target, bot, notifierBot, user) {
+    async captureScreenshot(target, bot, notifierBot, displayName, roomId) {
         const image = await BrowserService.getScreenshot().catch(() => { console.error('getScreenshot on captureScreenshot')})
         if (image) {
+
+            await bot.say(target, `Captura de ${displayName}: ${config.externalUrl}/${image.fileName}`)
             const channel = await TwitchService.getChannel()
-            await bot.say(target, `Captura de ${user}: ${config.externalUrl}/images/${image.fileName}`)
+            await ScreenshotService.addScreenshot(image.fileName, channel.streamId, displayName, roomId)
+
+
             // if (channel.live) {
             //     await notifierBot.sendPhoto(config.telegram.chatId, image.buffer, {
             //         caption: `Captura del directo _${channel.title}_ \n por *${user}*`,
@@ -43,8 +48,22 @@ class Stream {
             await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: result.messageId}).catch((err) => { console.error(`cannot unpin chat: ${err}`)})
             await telegramBot.deleteMessage(config.telegram.chatId, result.messageId)
             await TwitchService.deleteLastMessage()
-            await TwitchService.saveTitle(result.title)
             await BrowserService.closeBrowser().catch(() => { console.error('closeBrowser on finished')})
+
+            const screenshots = await ScreenshotService.getScreenshots(result.streamId)
+            if (screenshots && screenshots.length > 0) {
+                const photos = screenshots.map(s =>(
+                    {
+                        type: "photo",
+                        media:  `${config.externalUrl}/images/${s.name}.jpg`,
+                        caption: `Captura de *${s.capturedBy}*`,
+                        parse_mode: 'Markdown'
+                    }))
+                await telegramBot.sendMediaGroup(config.telegram.chatId, photos, { disable_notification: true }).catch((err) => {
+                    console.log(err.code)
+                    console.log(err.response?.body)
+                })
+            }
         } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000))) {
             const options = {
                 chat_id: config.telegram.chatId,
