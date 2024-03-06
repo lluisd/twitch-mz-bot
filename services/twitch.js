@@ -27,13 +27,13 @@ async function getStream() {
 
     const channel = await dbManager.getChannel(config.twitch.channels).lean()
     if (liveData && !channel.live) {
-        await dbManager.updateChannel(config.twitch.channels, { live: true, streamId: liveData.id })
+        await dbManager.updateChannel(config.twitch.channels, { live: true, streamId: liveData.id, title: liveData.title })
         result = liveData
     } else if (!liveData && channel.live) {
-        await dbManager.updateChannel(config.twitch.channels, { live: false, streamId: null })
+        await dbManager.updateChannel(config.twitch.channels, { live: false, streamId: null, lastMessageId: null })
         result = { type: 'finished', messageId: channel.lastMessageId, streamId: channel.streamId}
     } else if (liveData && channel.live) {
-        await dbManager.updateChannel(config.twitch.channels, { streamId: liveData.id })
+        await dbManager.updateChannel(config.twitch.channels, { streamId: liveData.id, title: liveData.title })
         result = { ...liveData, type: 'stillLive', messageId: channel.lastMessageId, lastTitle: channel.title}
     }
 
@@ -48,19 +48,9 @@ async function saveLastMessage (msg) {
     await dbManager.updateChannel(config.twitch.channels, { lastMessageId: msg.message_id })
 }
 
-async function deleteLastMessage () {
-    await dbManager.updateChannel(config.twitch.channels, { lastMessageId: null })
-}
-
-async function saveTitle (title) {
-    await dbManager.updateChannel(config.twitch.channels, { title: title })
-}
-
 
 module.exports = {
     getStream,
     saveLastMessage,
-    deleteLastMessage,
-    saveTitle,
     getChannel
 }

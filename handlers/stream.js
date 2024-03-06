@@ -41,13 +41,10 @@ class Stream {
             const msg = await telegramBot.sendMessage(config.telegram.chatId, text, options)
             await telegramBot.pinChatMessage(config.telegram.chatId, msg.message_id).catch((err) => { console.error(`cannot pin chat: ${err}`)})
             await TwitchService.saveLastMessage(msg)
-            await TwitchService.saveTitle(result.title)
-
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on live')})
         } else if (result && result.type === 'finished' && result.messageId) {
             await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: result.messageId}).catch((err) => { console.error(`cannot unpin chat: ${err}`)})
             await telegramBot.deleteMessage(config.telegram.chatId, result.messageId)
-            await TwitchService.deleteLastMessage()
             await this._sendStreamScreenshots(telegramBot, result.streamId)
             await BrowserService.closeBrowser().catch(() => { console.error('closeBrowser on finished')})
         } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000))) {
@@ -57,7 +54,6 @@ class Stream {
                 parse_mode: 'Markdown'
             }
             await telegramBot.editMessageText(this._getText(result), options).catch(() => {})
-            await TwitchService.saveTitle(result.title)
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on stillLive')})
         } else if (result && result.type === 'notLive') {
             await BrowserService.closeBrowserIfNeeded().catch(() => { console.error('closeBrowserIfNeeded on notLive')})
