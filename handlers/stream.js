@@ -48,22 +48,8 @@ class Stream {
             await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: result.messageId}).catch((err) => { console.error(`cannot unpin chat: ${err}`)})
             await telegramBot.deleteMessage(config.telegram.chatId, result.messageId)
             await TwitchService.deleteLastMessage()
+            await this._sendStreamScreenshots(telegramBot, result.streamId)
             await BrowserService.closeBrowser().catch(() => { console.error('closeBrowser on finished')})
-
-            const screenshots = await ScreenshotService.getScreenshots(result.streamId)
-            if (screenshots && screenshots.length > 0) {
-                const photos = screenshots.map(s =>(
-                    {
-                        type: "photo",
-                        media:  `${config.externalUrl}/images/${s.name}.jpg`,
-                        caption: `Captura de *${s.capturedBy}*`,
-                        parse_mode: 'Markdown'
-                    }))
-                await telegramBot.sendMediaGroup(config.telegram.chatId, photos, { disable_notification: true }).catch((err) => {
-                    console.log(err.code)
-                    console.log(err.response?.body)
-                })
-            }
         } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000))) {
             const options = {
                 chat_id: config.telegram.chatId,
@@ -104,6 +90,23 @@ class Stream {
                 text = this._getTodayBdaysText(nicks)
             }
             twitchBot.say(target, text)
+        }
+    }
+
+    async _sendStreamScreenshots(telegramBot, streamId) {
+        const screenshots = await ScreenshotService.getScreenshots(streamId)
+        if (screenshots && screenshots.length > 0) {
+            const photos = screenshots.map(s =>(
+                {
+                    type: "photo",
+                    media:  `${config.externalUrl}/images/${s.name}.jpg`,
+                    caption: `Captura de *${s.capturedBy}*`,
+                    parse_mode: 'Markdown'
+                }))
+            await telegramBot.sendMediaGroup(config.telegram.chatId, photos, { disable_notification: true }).catch((err) => {
+                console.log(err.code)
+                console.log(err.response?.body)
+            })
         }
     }
 
