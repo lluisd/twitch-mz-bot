@@ -53,7 +53,7 @@ class Stream {
                 message_id: result.messageId,
                 parse_mode: 'Markdown'
             }
-            await telegramBot.editMessageText(this._getText(result), options).catch(() => {})
+            await telegramBot.editMessageText(this._getText(result), options).catch((err) => { console.error(`cannot edit message: ${err}`)})
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on stillLive')})
         } else if (result && result.type === 'notLive') {
             await BrowserService.closeBrowserIfNeeded().catch(() => { console.error('closeBrowserIfNeeded on notLive')})
