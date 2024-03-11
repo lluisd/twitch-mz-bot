@@ -33,7 +33,7 @@ class Stream {
 
     async catchStream (telegramBot, twitchBot, target) {
         const result = await TwitchService.getStream()
-        console.log('result 1min ' + result.type)
+        console.log(`result 1min type: ${result.type}, messagId: ${result.messageId}, lastTitle: ${result.lastTitle}, title: ${result.title}, last update:${result.lastUpdate}, diff: ${moment().diff(moment(result.lastUpdate))}, isdiff: ${(result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000)}` )
 
         if (result && result.type === 'live' ) {
             await this.sendTodayBirthday(twitchBot, target)
@@ -48,7 +48,7 @@ class Stream {
             await telegramBot.deleteMessage(config.telegram.chatId, result.messageId)
             await this._sendStreamScreenshots(telegramBot, result.streamId)
             await BrowserService.closeBrowser().catch(() => { console.error('closeBrowser on finished')})
-        } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 61000))) {
+        } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000))) {
             const options = {
                 chat_id: config.telegram.chatId,
                 message_id: result.messageId,
