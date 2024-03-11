@@ -33,6 +33,7 @@ class Stream {
 
     async catchStream (telegramBot, twitchBot, target) {
         const result = await TwitchService.getStream()
+        console.log('result 1min ' + result.type)
 
         if (result && result.type === 'live' ) {
             await this.sendTodayBirthday(twitchBot, target)
@@ -47,12 +48,13 @@ class Stream {
             await telegramBot.deleteMessage(config.telegram.chatId, result.messageId)
             await this._sendStreamScreenshots(telegramBot, result.streamId)
             await BrowserService.closeBrowser().catch(() => { console.error('closeBrowser on finished')})
-        } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000))) {
+        } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 61000))) {
             const options = {
                 chat_id: config.telegram.chatId,
                 message_id: result.messageId,
                 parse_mode: 'Markdown'
             }
+            console.log('still alive' + this._getText(result))
             await telegramBot.editMessageText(this._getText(result), options).catch((err) => { console.error(`cannot edit message: ${err}`)})
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on stillLive')})
         } else if (result && result.type === 'notLive') {
