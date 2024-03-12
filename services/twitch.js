@@ -27,7 +27,7 @@ async function getStream() {
 
     const channel = await dbManager.getChannel(config.twitch.channels).lean()
     if (liveData && !channel.live) {
-        await dbManager.updateChannel(config.twitch.channels, { live: true, streamId: liveData.id, title: liveData.title })
+        await dbManager.updateChannel(config.twitch.channels, { live: true, streamId: liveData.id, title: liveData.title, lastUpdate: new Date() })
         result = liveData
     } else if (!liveData && channel.live) {
         await dbManager.updateChannel(config.twitch.channels, { live: false, streamId: null, lastMessageId: null })
@@ -48,9 +48,14 @@ async function saveLastMessage (msg) {
     await dbManager.updateChannel(config.twitch.channels, { lastMessageId: msg.message_id })
 }
 
+async function saveLastUpdate () {
+    await dbManager.updateChannel(config.twitch.channels, { lastUpdate: new Date() })
+}
+
 
 module.exports = {
     getStream,
     saveLastMessage,
-    getChannel
+    getChannel,
+    saveLastUpdate
 }

@@ -55,6 +55,7 @@ class Stream {
                 parse_mode: 'Markdown'
             }
             console.log('still alive' + this._getText(result))
+            await TwitchService.saveLastUpdate()
             await telegramBot.editMessageText(this._getText(result), options).catch((err) => { console.error(`cannot edit message: ${err}`)})
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on stillLive')})
         } else if (result && result.type === 'notLive') {

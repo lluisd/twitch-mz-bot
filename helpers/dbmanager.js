@@ -19,7 +19,7 @@ function getChannel (name) {
 }
 
 function updateChannel (name, update) {
-    return Channel.updateOne({name: name}, {...update, lastUpdate: new Date() })
+    return Channel.updateOne({name: name}, {...update })
 }
 
 async function getMuncipioStartsWith (name) {
