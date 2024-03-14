@@ -92,20 +92,33 @@ class Stream {
 
     async _sendStreamScreenshots(telegramBot, streamId) {
         const screenshots = await ScreenshotService.getScreenshots(streamId)
-        if (screenshots && screenshots.length > 0) {
-            const photos = screenshots.slice(0, 19).map(s =>(
-                {
-                    type: "photo",
-                    media:  `${config.externalUrl}/images/${s.name}.jpg`,
-                    caption: `Captura de *${s.capturedBy}*`,
-                    parse_mode: 'Markdown'
-                }))
-            setTimeout(async () => {
-                await telegramBot.sendMediaGroup(config.telegram.chatId, photos, { disable_notification: true }).catch((err) => {
-                    console.log(err.code)
-                    console.log(err.response?.body)
-                })
-            }, 5000)
+        if (screenshots && screenshots.length > 2) {
+            const chunkSize = 15
+            let index = 0
+            for (let i = 0; i < screenshots.length; i += chunkSize) {
+                index++
+                const chunk = screenshots.slice(i, i + chunkSize)
+                const photos = chunk.map(s =>(
+                    {
+                        type: "photo",
+                        media:  `${config.externalUrl}/images/${s.name}.jpg`,
+                        caption: `Captura de *${s.capturedBy}*`,
+                        parse_mode: 'Markdown'
+                    }))
+                ((ind, p) => {
+                    setTimeout(async () => {
+                        await telegramBot.sendMediaGroup(config.telegram.chatId, p, { disable_notification: true }).catch((err) => {
+                            console.log(err.code)
+                            console.log(err.response?.body)
+                        })
+                    }, 65000 * ind)
+                })(index, photos)
+            }
+        } else if (screenshots && screenshots.length === 1) {
+            await telegramBot.sendPhoto(config.telegram.chatId,  `${config.externalUrl}/images/${screenshots[0].name}.jpg`, {
+                caption: `Captura de *${screenshots[0].capturedBy}*`,
+                parse_mode: 'Markdown'
+            })
         }
     }
 
