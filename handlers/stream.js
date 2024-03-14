@@ -33,8 +33,6 @@ class Stream {
 
     async catchStream (telegramBot, twitchBot, target) {
         const result = await TwitchService.getStream()
-        console.log(`result 1min type: ${result.type}, messagId: ${result.messageId}, lastTitle: ${result.lastTitle}, title: ${result.title}, last update:${result.lastUpdate}, diff: ${moment().diff(moment(result.lastUpdate))}, isdiff: ${(result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000)}` )
-
         if (result && result.type === 'live' ) {
             await this.sendTodayBirthday(twitchBot, target)
             const text = this._getText(result)
@@ -95,17 +93,19 @@ class Stream {
     async _sendStreamScreenshots(telegramBot, streamId) {
         const screenshots = await ScreenshotService.getScreenshots(streamId)
         if (screenshots && screenshots.length > 0) {
-            const photos = screenshots.map(s =>(
+            const photos = screenshots.slice(0, 19).map(s =>(
                 {
                     type: "photo",
                     media:  `${config.externalUrl}/images/${s.name}.jpg`,
                     caption: `Captura de *${s.capturedBy}*`,
                     parse_mode: 'Markdown'
                 }))
-            await telegramBot.sendMediaGroup(config.telegram.chatId, photos, { disable_notification: true }).catch((err) => {
-                console.log(err.code)
-                console.log(err.response?.body)
-            })
+            setTimeout(async () => {
+                await telegramBot.sendMediaGroup(config.telegram.chatId, photos, { disable_notification: true }).catch((err) => {
+                    console.log(err.code)
+                    console.log(err.response?.body)
+                })
+            }, 5000)
         }
     }
 
