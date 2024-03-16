@@ -104,15 +104,15 @@ class Stream {
                         media:  `${config.externalUrl}/images/${s.name}.jpg`,
                         caption: `Captura de *${s.capturedBy}*`,
                         parse_mode: 'Markdown'
-                    }))
+                    }));
                 ((ind, p) => {
                     setTimeout(async () => {
                         await telegramBot.sendMediaGroup(config.telegram.chatId, p, { disable_notification: true }).catch((err) => {
                             console.log(err.code)
                             console.log(err.response?.body)
                         })
-                    }, 65000 * ind)
-                })(index, photos)
+                    }, 65000 * ind);
+                })(index, photos);
             }
         } else if (screenshots && screenshots.length === 1) {
             await telegramBot.sendPhoto(config.telegram.chatId,  `${config.externalUrl}/images/${screenshots[0].name}.jpg`, {
