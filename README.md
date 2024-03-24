@@ -2,6 +2,8 @@
 
 A twitch chatbot to get specific information about weather predictions, train timings and other information.
 
+Status: https://uptime.311312.xyz/status/twitch 
+
 ## environment variables
 
 ```javascript
@@ -20,6 +22,7 @@ MYSQL_HOST //mysql host ip/domain
 MYSQL_USER //mysql user
 MYSQL_PASSWORD //mysql password
 MYSQL_DB //mysql database
+STATUS_URL //uptime url for /status tiwtch chat command
 ```
 
 ## Weather
