@@ -43,7 +43,7 @@ class Stream {
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on live')})
         } else if (result && result.type === 'finished' && result.messageId) {
             await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: result.messageId}).catch((err) => { console.error(`cannot unpin chat: ${err}`)})
-            await telegramBot.deleteMessage(config.telegram.chatId, result.messageId)
+            await telegramBot.deleteMessage(config.telegram.chatId, result.messageId).catch((err) => { console.error(`cannot delete message: ${err}`)})
             await this._sendStreamScreenshots(telegramBot, result.streamId)
             await BrowserService.closeBrowser().catch(() => { console.error('closeBrowser on finished')})
         } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000))) {
@@ -92,6 +92,7 @@ class Stream {
 
     async _sendStreamScreenshots(telegramBot, streamId) {
         const screenshots = await ScreenshotService.getScreenshots(streamId)
+        console.log('sending images: ' + screenshots.length)
         if (screenshots && screenshots.length > 2) {
             const chunkSize = 10
             let index = 0
