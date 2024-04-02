@@ -19,7 +19,7 @@ mongoose.connect(config.database).then(() => {
             });
 
             app.get('/:id', (req, res) => {
-                res.sendFile(__dirname + `/public/images/${req.params.id}.jpg`)
+                res.sendFile(__dirname + `/public/images/${req.params.id}.png`)
             });
 
 

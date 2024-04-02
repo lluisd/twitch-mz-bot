@@ -12,7 +12,7 @@ async function getScreenshot() {
     }
     const name = nanoid()
     try {
-        bufferImage = await browserApi.takeScreenshot(`public/images/${name}.jpg`)
+        bufferImage = await browserApi.takeScreenshot(`public/images/${name}.png`)
     } catch (error) {
         console.log(error)
         return null

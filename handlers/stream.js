@@ -102,7 +102,7 @@ class Stream {
                 const photos = chunk.map(s =>(
                     {
                         type: "photo",
-                        media:  `${config.externalUrl}/images/${s.name}.jpg`,
+                        media:  `${config.externalUrl}/images/${s.name}.png`,
                         caption: `Captura de *${s.capturedBy}*`,
                         parse_mode: 'Markdown'
                     }));
@@ -116,7 +116,7 @@ class Stream {
                 })(index, photos);
             }
         } else if (screenshots && screenshots.length === 1) {
-            await telegramBot.sendPhoto(config.telegram.chatId,  `${config.externalUrl}/images/${screenshots[0].name}.jpg`, {
+            await telegramBot.sendPhoto(config.telegram.chatId,  `${config.externalUrl}/images/${screenshots[0].name}.png`, {
                 caption: `Captura de *${screenshots[0].capturedBy}*`,
                 parse_mode: 'Markdown'
             })
