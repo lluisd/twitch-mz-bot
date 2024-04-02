@@ -49,7 +49,8 @@ class PuppeteerApi {
         if (this.svgImage) {
             return await this.svgImage.screenshot({
                 path: path,
-                type: "png",
+                type: "jpeg",
+                quality: 100,
                 captureBeyondViewport: false
             })
         }
