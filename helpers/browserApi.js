@@ -7,7 +7,7 @@ class PuppeteerApi {
     svgImage = null
 
     async createNewBrowser() {
-        this.browser = await puppeteer.connect({ browserWSEndpoint: config.browserlessUrl })
+        this.browser = await puppeteer.connect({ browserWSEndpoint: config.browserlessUrl, defaultViewport : null })
         this.browser.on('disconnected', async () => {
             console.log('disconnected browser')
             if (this.browser) await this.browser.close()
