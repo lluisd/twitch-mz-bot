@@ -61,7 +61,7 @@ Take a screenshot of the current stream and send it to the chat.
 
 ```javascript
 !foto
-//result: https://external.url/images/cclj35.png
+//result: https://external.url/i/cclj35.jpg
 ```
 
 ## Birthday

@@ -17,7 +17,7 @@ class Stream {
         const image = await BrowserService.getScreenshot().catch(() => { console.error('getScreenshot on captureScreenshot')})
         if (image) {
 
-            await bot.say(target, `Captura de ${displayName}: ${config.externalUrl}/${image.fileName}`)
+            await bot.say(target, `Captura de ${displayName}: ${config.externalUrl}/i/${image.fileName}`)
             const channel = await TwitchService.getChannel()
             await ScreenshotService.addScreenshot(image.fileName, channel.streamId, displayName, roomId)
 
