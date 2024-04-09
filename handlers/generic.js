@@ -12,7 +12,7 @@ class Generic {
     }
 
     status (target, bot) {
-        bot.say(target, `${config.externalUrl}/status`)
+        bot.say(target, `${config.statusUrl}`)
     }
 }
 
