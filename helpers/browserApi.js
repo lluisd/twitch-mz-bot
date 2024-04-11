@@ -12,7 +12,7 @@ class PuppeteerApi {
             args: ["--no-sandbox", "--window-size=1920,1080", "--disable-infobars", "--disable-setuid-sandbox", "--start-maximized", "--use-gl=angle", "--use-angle=gl"],
           });
 
-        const url = `${config.browserlessUrl}?token=8R1X54R235511&launch=${btoa(launchArgs)}&blockAds=true`
+        const url = `${config.browserlessUrl}/chrome?token=8R1X54R235511&launch=${btoa(launchArgs)}&blockAds=true`
         console.log(url);
         this.browser = await puppeteer.connect({ browserWSEndpoint: config.browserlessUrl, defaultViewport : null })
         this.browser.on('disconnected', async () => {
