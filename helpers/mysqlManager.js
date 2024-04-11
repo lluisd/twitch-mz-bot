@@ -1,17 +1,18 @@
 const mariadb = require('mariadb')
 const config = require('../config')
-async function getCloserFutureTrain (origin, destination, type) {
-    this.pool = mariadb.createPool({
-        host: config.mariadb.host,
-        user: config.mariadb.user,
-        password: config.mariadb.password,
-        connectionLimit: 5,
-        database: config.mariadb.db,
-    })
 
+const pool = mariadb.createPool({
+    host: config.mariadb.host,
+    user: config.mariadb.user,
+    password: config.mariadb.password,
+    connectionLimit: 5,
+    database: config.mariadb.db,
+})
+
+async function getCloserFutureTrain (origin, destination, type) {
     let conn
     try {
-        conn = await this.pool.getConnection();
+        conn = await pool.getConnection();
         const rows = await conn.query(`SELECT A.departure_time departure, A.stop_name origin_stop, B.stop_name destination_stop, B.arrival_time arrival FROM
 (SELECT ST.trip_id , S.stop_name, ST.stop_id, ST.stop_sequence, ST.departure_time
 from stop_times ST
@@ -46,12 +47,12 @@ AND route_short_name = '${type}'
 AND A.departure_time > CURTIME()
 
 ORDER BY ABS( TIMEDIFF(A.departure_time, CURTIME()) ) LIMIT 1`)
-        if (conn) await conn.end()
         return rows[0]
-
     } catch (err) {
         console.log(err)
-    }
+    } finally {
+        if (conn) await conn.end();
+     }
 }
 
 module.exports = {
