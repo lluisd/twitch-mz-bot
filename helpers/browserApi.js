@@ -7,6 +7,12 @@ class PuppeteerApi {
     svgImage = null
 
     async createNewBrowser() {
+        const launchArgs = JSON.stringify({
+            headless: false,
+            args: ["--no-sandbox", "--window-size=1920,1080", "--disable-infobars", "--disable-setuid-sandbox", "--start-maximized", "--use-gl=angle", "--use-angle=gl"],
+          });
+
+        const url = `${config.browserlessUrl}?token=8R1X54R235511&launch=${launchArgs}&blockAds=true`
         this.browser = await puppeteer.connect({ browserWSEndpoint: config.browserlessUrl, defaultViewport : null })
         this.browser.on('disconnected', async () => {
             console.log('disconnected browser')
