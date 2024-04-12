@@ -16,7 +16,8 @@ module.exports = {
     },
     browserless: {
         url: process.env.BROWSERLESS_URL,
-        token: process.env.BROWSERLESS_TOKEN
+        token: process.env.BROWSERLESS_TOKEN,
+        version: process.env.BROWSERLESS_VERISON
     },
     mariadb: {
         host: process.env.MYSQL_HOST,
