@@ -8,7 +8,6 @@ class PuppeteerApi {
 
     async createNewBrowser() {
         const launchArgs = JSON.stringify({
-            headless: true,
             args: ["--no-sandbox", "--window-size=1920,1080", "--disable-infobars", "--disable-setuid-sandbox", "--start-maximized", "--use-gl=angle", "--use-angle=gl"],
           });
         const url = `${config.browserless.url}/chrome?token=${config.browserless.token}&launch=${btoa(launchArgs)}&blockAds=true`
