@@ -31,6 +31,7 @@ jobs:
           envKey_EXTERNAL_URL: ${{ secrets.EXTERNAL_URL }}
           envKey_BROWSERLESS_URL: ${{ secrets.BROWSERLESS_URL }}
           envKey_BROWSERLESS_TOKEN: ${{ secrets.BROWSERLESS_TOKEN }}
+          envKey_BROWSERLESS_VERSION: v1
           envKey_MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
           envKey_MYSQL_USER: ${{ secrets.MYSQL_USER }}
           envKey_MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
