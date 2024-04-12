@@ -8,13 +8,11 @@ class PuppeteerApi {
 
     async createNewBrowser() {
         const launchArgs = JSON.stringify({
-            headless: false,
+            headless: true,
             args: ["--no-sandbox", "--window-size=1920,1080", "--disable-infobars", "--disable-setuid-sandbox", "--start-maximized", "--use-gl=angle", "--use-angle=gl"],
           });
-
-        const url = `${config.browserlessUrl}/chrome?token=8R1X54R235511&launch=${btoa(launchArgs)}&blockAds=true`
-        console.log(url);
-        this.browser = await puppeteer.connect({ browserWSEndpoint: config.browserlessUrl, defaultViewport : null })
+        const url = `${config.browserless.url}/chrome?token=${config.browserless.token}&launch=${btoa(launchArgs)}&blockAds=true`
+        this.browser = await puppeteer.connect({ browserWSEndpoint: url, defaultViewport : null })
         this.browser.on('disconnected', async () => {
             console.log('disconnected browser')
             if (this.browser) await this.browser.close()
