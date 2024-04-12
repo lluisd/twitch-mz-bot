@@ -18,6 +18,7 @@ TELEGRAM_TOKEN //Telegram bot API token to send notifications
 TELEGRAM_CHAT_ID //Telegram chat id to send the notifications
 EXTERNAL_URL //external url of the running app to create the public image urls
 BROWSERLESS_URL //browserless websocket url to take screenshots
+BROWSERLESS_TOKEN //browserless token
 MYSQL_HOST //mysql host ip/domain
 MYSQL_USER //mysql user
 MYSQL_PASSWORD //mysql password
