@@ -33,7 +33,7 @@ jobs:
           envKey_MYSQL_USER: ${{ secrets.MYSQL_USER }}
           envKey_MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           envKey_MYSQL_DB: ${{ secrets.MYSQL_DB }}
-          envKey_STATUS_URL: ${{ secrets.STATUS_URL }}
+          envKey_STATUS_URL: ${{ secrets.BN_STATUS_URL }}
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
