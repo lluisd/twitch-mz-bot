@@ -1,4 +1,5 @@
 const config = require("../config")
+const randomLinks = require("../config/randomLinks.json");
 
 class Generic {
     rollDice (target, bot) {
@@ -14,6 +15,12 @@ class Generic {
     status (target, bot) {
         bot.say(target, `${config.statusUrl}`)
     }
+
+    randomYoutubeLink (target, bot) {
+        const position = Math.floor(Math.random() * randomLinks.links.length)
+        bot.say(target, `Mi OF ${config.externalUrl}/OF/${config.twitch.channels}${position}`)
+    }
 }
+
 
 module.exports = Generic
