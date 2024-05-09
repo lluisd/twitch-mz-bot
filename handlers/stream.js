@@ -27,7 +27,7 @@ class Stream {
         if (unbanRequests.length === 1){
             text = this._maskUserName(unbanRequests[0].user_name)
         } else if (unbanRequests.length > 1) {
-            text = unbanRequests.map(ur => this._maskUserName(ur[0].user_name)).join(', ').replace(/, ([^,]*)$/, ' y $1')
+            text = unbanRequests.map(ur => this._maskUserName(ur.user_name)).join(', ').replace(/, ([^,]*)$/, ' y $1')
         }
         return text
     }
