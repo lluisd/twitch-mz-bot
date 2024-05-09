@@ -13,6 +13,36 @@ class Stream {
     async refreshPage() {
         await BrowserService.refreshPage().catch(() => { console.error('refreshPage on refreshPage')})
     }
+
+    async getUnbanRequests(target, bot) {
+        const result = await TwitchService.getUnbanRequests()
+        if (result !== null) {
+            const text = result.length > 0 ? `Hay ${result.length} solicitudes de desbaneo pendientes de revisar (${this._getUserNames(result)})` : 'No hay solicitudes de desbaneo pendientes de revisar.'
+            await bot.say(target, text)
+        }
+    }
+
+    _getUserNames (unbanRequests) {
+        let text
+        if (unbanRequests.length === 1){
+            text = this._maskUserName(unbanRequests[0].user_name)
+        } else if (unbanRequests.length > 1) {
+            text = unbanRequests.map(ur => this._maskUserName(ur[0].user_name)).join(', ').replace(/, ([^,]*)$/, ' y $1')
+        }
+        return text
+    }
+
+    _maskUserName (userName) {
+        const unmaskedLength = 3
+        let maskedUserName = userName.substring(0,unmaskedLength)
+
+        if (userName.length > unmaskedLength) {
+            maskedUserName =  maskedUserName + '*'.repeat(userName.length - unmaskedLength)
+        }
+
+        return maskedUserName
+    }
+
     async captureScreenshot(target, bot, notifierBot, displayName, roomId) {
         const image = await BrowserService.getScreenshot().catch(() => { console.error('getScreenshot on captureScreenshot')})
         if (image) {
