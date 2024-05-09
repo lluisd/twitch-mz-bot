@@ -1,20 +1,14 @@
 const config = require('../config')
 const dbManager = require('../helpers/dbmanager')
 
-const endpointPrefix = 'https://api.twitch.tv/helix/streams'
+const endpointPrefix = 'https://api.twitch.tv/helix'
 
 async function getStream() {
     let result = { type: 'notLive'}
     let liveData = null
 
-    const token = await dbManager.getToken(parseInt(config.twitch.userId)).lean()
-    const endpoint = endpointPrefix + '?user_login=' + config.twitch.channels
-    const options = {
-        headers: {
-            'Client-Id': config.twitch.clientId,
-            'Authorization': 'Bearer ' + token.accessToken
-        }
-    }
+    const options = await _getHeaders()
+    const endpoint = endpointPrefix + '/streams?user_login=' + config.twitch.channels
 
     try {
         const response = await fetch(endpoint, options)
@@ -40,6 +34,24 @@ async function getStream() {
     return { ...result, lastUpdate: channel.lastUpdate}
 }
 
+async function getUnbanRequests () {
+    let result
+    const options = await _getHeaders()
+    const channel = await dbManager.getChannel(config.twitch.channels).lean()
+    const endpoint = `${endpointPrefix}/moderation/unban_requests?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}&status=pending`
+
+    try {
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
+        result = data?.data ?? null
+
+    } catch {
+        result = null
+    }
+
+    return result
+}
+
 async function getChannel () {
     return dbManager.getChannel(config.twitch.channels).lean()
 }
@@ -52,10 +64,22 @@ async function saveLastUpdate () {
     await dbManager.updateChannel(config.twitch.channels, { lastUpdate: new Date() })
 }
 
+async function _getHeaders () {
+    const token = await dbManager.getToken(parseInt(config.twitch.userId)).lean()
+    return {
+        headers: {
+            'Client-Id': config.twitch.clientId,
+            'Authorization': 'Bearer ' + token.accessToken
+        }
+    }
+}
 
 module.exports = {
     getStream,
     saveLastMessage,
     getChannel,
-    saveLastUpdate
+    saveLastUpdate,
+    getUnbanRequests
 }
+
+
