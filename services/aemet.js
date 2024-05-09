@@ -29,13 +29,30 @@ async function _getTimePrediction(name) {
             'api_key': config.aemet.apiKey
         }
     }
-    const response = await fetch(endpoint, options)
-    const data = await response.json()
-    return await getAemetData(data.datos)
+
+    try {
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
+        if (data?.datos) {
+            result = await getAemetData(data.datos)
+        }
+    } catch {
+        result = null
+    }
+
+    return result
 }
 async function getAemetData(url) {
-    const response = await fetch(url)
-    return await response.json()
+    let result = null
+    try {
+        const response = await fetch(url)
+        result = await response.json()
+
+    } catch {
+        result = null
+    }
+
+    return result
 }
 
 module.exports = {
