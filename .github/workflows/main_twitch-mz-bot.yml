@@ -23,6 +23,7 @@ jobs:
           envKey_TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
           envkey_TWITCH_CHANNELS: ${{ secrets.TWITCH_CHANNELS }}
           envkey_TWITCH_USER_ID: ${{ secrets.TWITCH_USER_ID }}
+          envkey_TWITCH_ROOM_ID: ${{ secrets.TWITCH_ROOM_ID }}
           envKey_MONGODB_URI: ${{ secrets.MONGODB_URI }}
           envKey_AEMET_API_KEY: ${{ secrets.AEMET_API_KEY }}
           envkey_PORT: 3000

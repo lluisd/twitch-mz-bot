@@ -3,8 +3,8 @@ const Muncipio = require('../models/municipio')
 const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
 const Screenshot = require('../models/screenshot')
+const tempsDeFlors = require('../models/tempsDeFlors')
 const moment = require('moment')
-
 
 function getToken (userId) {
     return Token.findOne({userId: userId})
@@ -64,6 +64,19 @@ async function getScreenshots(streamId) {
     return Screenshot.find({streamId: streamId}).lean()
 }
 
+async function getTFSpot(roomId, number){
+    return tempsDeFlors.findOne({number: number, roomId: Number(roomId)}).lean()
+}
+
+async function setTFSpot(roomId, number, update, returnOldDoc){
+    const options = !returnOldDoc ? {returnNewDocument: true, returnDocument: 'after'} : {}
+    return tempsDeFlors.findOneAndUpdate({roomId: Number(roomId), number: number}, {...update }, options).lean()
+}
+
+
+async function getTFSpots(roomId){
+    return tempsDeFlors.find({roomId: Number(roomId)}).sort('number').lean()
+}
 
 module.exports = {
     getToken,
@@ -78,5 +91,8 @@ module.exports = {
     getBirthday,
     getBirthdayFromDate,
     updateScreenshot,
-    getScreenshots
+    getScreenshots,
+    getTFSpot,
+    getTFSpots,
+    setTFSpot
 }

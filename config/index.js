@@ -5,7 +5,8 @@ module.exports = {
         channels: process.env.TWITCH_CHANNELS,
         clientId: process.env.TWITCH_CLIENT_ID,
         clientSecret: process.env.TWITCH_CLIENT_SECRET,
-        userId: process.env.TWITCH_USER_ID
+        userId: process.env.TWITCH_USER_ID,
+        roomId: process.env.TWITCH_ROOM_ID
     },
     aemet: {
         apiKey: process.env.AEMET_API_KEY
