@@ -33,14 +33,22 @@ class Stream {
     }
 
     _maskUserName (userName) {
-        const unmaskedLength = 3
-        let maskedUserName = userName.substring(0,unmaskedLength)
+        const unmaskedStartLength = 3
+        const unmaskedEndLength = 1
 
+        let unmaskedStart = userName.substring(0, unmaskedStartLength)
+        let masked = ''
+        let unmaskedEnd = ''
+
+        const unmaskedLength = unmaskedStartLength + unmaskedEndLength
         if (userName.length > unmaskedLength) {
-            maskedUserName =  maskedUserName + '*'.repeat(userName.length - unmaskedLength)
+            masked = '*'.repeat(userName.length - unmaskedLength)
+            unmaskedEnd = userName.substring(userName.length - unmaskedEndLength)
+        } else if (userName.length > unmaskedStartLength) {
+            masked = '*'.repeat(userName.length - unmaskedStartLength)
         }
 
-        return maskedUserName
+        return unmaskedStart + masked + unmaskedEnd
     }
 
     async captureScreenshot(target, bot, notifierBot, displayName, roomId) {
