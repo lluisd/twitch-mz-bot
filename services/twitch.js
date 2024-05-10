@@ -64,6 +64,10 @@ async function saveLastUpdate () {
     await dbManager.updateChannel(config.twitch.channels, { lastUpdate: new Date() })
 }
 
+async function setActiveSpot (activeSpot) {
+    await dbManager.updateChannel(config.twitch.channels, { activeSpot: activeSpot })
+}
+
 async function _getHeaders () {
     const token = await dbManager.getToken(parseInt(config.twitch.userId)).lean()
     return {
@@ -79,7 +83,8 @@ module.exports = {
     saveLastMessage,
     getChannel,
     saveLastUpdate,
-    getUnbanRequests
+    getUnbanRequests,
+    setActiveSpot
 }
 
 
