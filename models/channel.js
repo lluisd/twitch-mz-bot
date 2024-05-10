@@ -30,6 +30,10 @@ const ChannelSchema = new Schema({
     lastUpdate: {
         type: Date,
         required: false
+    },
+    activeSpot: {
+        type: Number,
+        required: false
     }
 
 })
