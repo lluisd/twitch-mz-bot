@@ -23,7 +23,13 @@ class TempsDeFlors {
     async getTotalSpot (target, bot, roomId) {
         const spots = await TempsDeFlorsService.getTFSpots(roomId)
         const count = spots.filter((s) => s.visited).length
-        bot.say(target, `${count}/${spots.length} puntos visitados.`)
+        bot.say(target, `${config.externalUrl}/listado (Vistos ${count}/${spots.length} puntos)`)
+    }
+
+    async getTotalSpot (target, bot, roomId) {
+        const spots = await TempsDeFlorsService.getTFSpots(roomId)
+        const count = spots.filter((s) => s.visited).length
+        bot.say(target, `${config.externalUrl}/listado (Vistos ${count}/${spots.length} puntos)`)
     }
 
     async setVisited (target, text, bot, roomId, isVisited) {
