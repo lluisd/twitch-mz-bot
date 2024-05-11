@@ -65,17 +65,17 @@ async function getScreenshots(streamId) {
 }
 
 async function getTFSpot(roomId, number){
-    return tempsDeFlors.findOne({number: number, roomId: Number(roomId)}).lean()
+    return tempsDeFlors.findOne({number: number, roomId: parseInt(roomId)}).lean()
 }
 
 async function setTFSpot(roomId, number, update, returnOldDoc){
     const options = !returnOldDoc ? {returnNewDocument: true, returnDocument: 'after'} : {}
-    return tempsDeFlors.findOneAndUpdate({roomId: Number(roomId), number: number}, {...update }, options).lean()
+    return tempsDeFlors.findOneAndUpdate({roomId: parseInt(roomId), number: number}, {...update }, options).lean()
 }
 
 
 async function getTFSpots(roomId){
-    return tempsDeFlors.find({roomId: Number(roomId)}).sort('number').lean()
+    return tempsDeFlors.find({roomId: parseInt(roomId)}).sort('number').lean()
 }
 
 module.exports = {
