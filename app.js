@@ -68,7 +68,7 @@ mongoose.connect(config.database).then(() => {
 
             const listener = app.listen(process.env.PORT, ()=>  {
                 console.log('Listening on port ', + listener.address().port)
-                app.get('/', (req, res) => res.send('Live!'))
+                app.get('/', (req, res) => res.redirect('/listado'))
             })
         })
 })
