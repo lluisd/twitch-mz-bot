@@ -6,7 +6,7 @@ const ScreenshotService = require("../services/screenshot");
 
 class TempsDeFlors {
     async getSpot (target, text, bot, roomId) {
-        const spotNumber = Number(text)
+        const spotNumber = parseInt(text)
         if (typeof spotNumber === 'number') {
             const spot = await TempsDeFlorsService.getTFSpot(roomId, spotNumber)
             this._printSpot(spot, target, bot)
@@ -27,7 +27,7 @@ class TempsDeFlors {
     }
 
     async setVisited (target, text, bot, roomId, isVisited) {
-        const spotNumber = Number(text)
+        const spotNumber = parseInt(text)
         if (typeof spotNumber === 'number') {
             const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber, isVisited)
             this._printSpot(spot, target, bot)
@@ -35,7 +35,7 @@ class TempsDeFlors {
     }
 
     async setActive (target, text, bot, roomId) {
-        const spotNumber = Number(text)
+        const spotNumber = parseInt(text)
         if (typeof spotNumber === 'number') {
             const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber, true, true)
             if (spot){
