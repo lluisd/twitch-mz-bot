@@ -37,7 +37,7 @@
     <% spots.forEach(function(spot) { %>
         <tr class="<%= spot.visited ? 'table-success': '' %>">
             <th scope="row"><%= spot.number %></th>
-            <td><%= spot.description %></td>
+            <td><%= spot.description %> <%- spot.timetable ? '🌚' : '' %></td>
             <td><%= spot.route %></td>
             <td ><%- spot.visited ? '<span class="badge rounded-pill text-bg-success">✔️</span>' : '❌' %></td>
             <td><%- spot.screenshot ? '<a href="' + url + '/i/' + spot.screenshot + '" target="_blank">Foto</a>' : '' %></td>
@@ -46,7 +46,7 @@
     <% }); %>
     </tbody>
 </table>
-
+<h5>🌚 -> Interior Abierto Miércoles 15 y Sábados 11 y 18, de 9.30-24 h</h5>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

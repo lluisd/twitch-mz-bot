@@ -87,7 +87,7 @@ class TempsDeFlors {
     }
 
     _getText(spot) {
-        const timetable = spot.timetable ? '*Interior Abierto sólo Miércoles 15 y Sábados 11 y 18, de 9.30 a 24 h' : ''
+        const timetable = spot.timetable ? '*Interior Abierto Miércoles 15 y Sábados 11 y 18, de 9.30-24 h' : ''
         let text = `${spot.number} - ${spot.description}`
         if (spot.visited) {
             text = `${text} (✔️${this._getScreenshotText(spot)})`
