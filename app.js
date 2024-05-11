@@ -38,6 +38,17 @@ mongoose.connect(config.database).then(() => {
                 })
             });
 
+            app.get('/comandos', function(req, res) {
+                res.render('pages/comandos',{
+                    channel: config.twitch.channels
+                });
+            });
+
+            app.get('/rutas', function(req, res) {
+                res.render('pages/rutas',{
+                    channel: config.twitch.channels
+                });
+            });
 
             app.use('/images', express.static('images'));
 
