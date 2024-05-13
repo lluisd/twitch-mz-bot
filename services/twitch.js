@@ -65,7 +65,7 @@ async function saveLastUpdate () {
 }
 
 async function setActiveSpot (activeSpot) {
-    await dbManager.updateChannel(config.twitch.channels, { activeSpot: activeSpot })
+    return dbManager.updateChannel(config.twitch.channels, { activeSpot: activeSpot })
 }
 
 async function _getHeaders () {

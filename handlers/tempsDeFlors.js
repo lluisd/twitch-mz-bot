@@ -9,7 +9,9 @@ class TempsDeFlors {
         const spotNumber = parseInt(text)
         if (typeof spotNumber === 'number') {
             const spot = await TempsDeFlorsService.getTFSpot(roomId, spotNumber)
-            this._printSpot(spot, target, bot)
+            if (spot) {
+                this._printSpot(spot, target, bot)
+            }
         }
     }
 
@@ -30,7 +32,9 @@ class TempsDeFlors {
         const spotNumber = parseInt(text)
         if (typeof spotNumber === 'number') {
             const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber, isVisited)
-            this._printSpot(spot, target, bot)
+            if (spot) {
+                this._printSpot(spot, target, bot)
+            }
         }
     }
 
@@ -38,10 +42,17 @@ class TempsDeFlors {
         const spotNumber = parseInt(text)
         if (typeof spotNumber === 'number') {
             const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber, true, true)
-            if (spot){
+            if (spot) {
                 await TwitchService.setActiveSpot(spotNumber)
+                bot.say(target, `Punto: ${this._getText(spot)} activo para !foto`)
             }
-            bot.say(target, `Punto: ${this._getText(spot)} activo para !foto`)
+        }
+    }
+
+    async setDeactivate (target, bot) {
+        const oldActiveSpot = await TwitchService.setActiveSpot(0)
+        if (oldActiveSpot !== 0) {
+            bot.say(target, `Punto ${oldActiveSpot} desactivado.`)
         }
     }
 
@@ -97,7 +108,7 @@ class TempsDeFlors {
         return text
     }
 
-    _getScreenshotText(spot ){
+    _getScreenshotText(spot){
         let text = ''
         if (spot.screenshot) {
             text = ` ${config.externalUrl}/i/${spot.screenshot}`
