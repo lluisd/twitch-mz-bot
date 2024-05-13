@@ -18,6 +18,15 @@ mongoose.connect(config.database).then(() => {
 
             app.use(express.static('public'))
 
+            app.get('/p/:id', (req, res) => {
+                const spotNumber = parseInt(req.params.id)
+                if (typeof spotNumber === 'number') {
+                    TempsDeFlorsService.getTFSpot(config.twitch.roomId, spotNumber).then((spot) => {
+                        res.redirect(`https://www.google.com/maps?q=${spot.coordinates}`)
+                    })
+                }
+            });
+
             app.get('/listado', function(req, res) {
                 TempsDeFlorsService.getTFSpots(config.twitch.roomId).then((spots) => {
                     res.render('pages/index',{
