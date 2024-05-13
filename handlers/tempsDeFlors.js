@@ -92,7 +92,7 @@ class TempsDeFlors {
         if (spot.visited) {
             text = `${text} (✔️${this._getScreenshotText(spot)})`
         } else {
-            text = `${text} (❌${this._getScreenshotText(spot)}) ${timetable}`
+            text = `${text} (❌${this._getScreenshotText(spot)}) (maps ${config.externalUrl}/p/${spot.number}) ${timetable}`
         }
         return text
     }
