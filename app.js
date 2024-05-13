@@ -71,9 +71,6 @@ mongoose.connect(config.database).then(() => {
                 res.redirect(link.link);
             })
 
-            app.get('/TdF', (req, res) => {
-                res.redirect("https://telegra.ph/Comandos-Temps-de-Flors---manzanBot-05-10");
-            })
 
             const listener = app.listen(process.env.PORT, ()=>  {
                 console.log('Listening on port ', + listener.address().port)

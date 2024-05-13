@@ -23,7 +23,7 @@ class TempsDeFlors {
     async getTotalSpot (target, bot, roomId) {
         const spots = await TempsDeFlorsService.getTFSpots(roomId)
         const count = spots.filter((s) => s.visited).length
-        bot.say(target, `Progreso: ${config.externalUrl} (Vistos ${count}/${spots.length} puntos)`)
+        bot.say(target, `Puntos: ${config.externalUrl} (${count}/${spots.length} vistos)`)
     }
 
     async setVisited (target, text, bot, roomId, isVisited) {
