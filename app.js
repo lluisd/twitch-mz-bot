@@ -29,10 +29,13 @@ mongoose.connect(config.database).then(() => {
 
             app.get('/listado', function(req, res) {
                 TempsDeFlorsService.getTFSpots(config.twitch.roomId).then((spots) => {
+                    const percentage = parseFloat((spots.filter((s) => s.visited).length / spots.length * 100).toFixed(2))
                     res.render('pages/index',{
                         spots: spots,
                         url: config.externalUrl,
-                        channel: config.twitch.channels
+                        channel: config.twitch.channels,
+                        percentage: percentage,
+                        bgClass: percentage > 50 ? 'bg-success' : (percentage > 25 ? 'bg-warning' : 'bg-danger')
                     });
                 })
             });
