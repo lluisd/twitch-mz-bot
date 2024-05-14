@@ -51,7 +51,7 @@ class TempsDeFlors {
 
     async setDeactivate (target, bot) {
         const channelBeforeUpdate = await TwitchService.setActiveSpot(0)
-        if (channelBeforeUpdate && channelBeforeUpdate.activeSpot !== 0) {
+        if (channelBeforeUpdate?.activeSpot && channelBeforeUpdate.activeSpot !== 0) {
             bot.say(target, `Punto ${channelBeforeUpdate.activeSpot} desactivado.`)
         }
     }
