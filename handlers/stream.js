@@ -146,6 +146,7 @@ class Stream {
                     }));
                 ((ind, p) => {
                     setTimeout(async () => {
+                        console.log('sending chunk: ' + ind + 'with photos' + p.map(photo => photo.media).join(', '))
                         await telegramBot.sendMediaGroup(config.telegram.chatId, p, { disable_notification: true }).catch((err) => {
                             console.log(err.code)
                             console.log(err.response?.body)
