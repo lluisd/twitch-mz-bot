@@ -1,6 +1,7 @@
 const browserApi = require('../helpers/browserApi.js')
 const { customAlphabet, urlAlphabet } = require('nanoid')
 const nanoid = customAlphabet(urlAlphabet, 5)
+const sharp = require('sharp')
 
 async function getScreenshot() {
     let bufferImage
@@ -13,6 +14,9 @@ async function getScreenshot() {
     const name = nanoid()
     try {
         bufferImage = await browserApi.takeScreenshot(`public/images/${name}.jpg`)
+        await sharp(bufferImage)
+            .resize({ width: 200 })
+            .toFile(`public/images/t_${name}.jpg`)
     } catch (error) {
         console.log(error)
         return null

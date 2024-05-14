@@ -31,7 +31,7 @@
     <div id="lightgallery">
         <% spots.forEach(function(spot) { %>
                 <a href="<%= url + '/i/' + spot.screenshot %>" data-sub-html="<%= spot.number + ' - ' + spot.description %>" data-lg-size="1340-754">
-                    <img src="<%= url + '/i/' + spot.screenshot %>"  alt="<%=  spot.description %>>"  width="300" >
+                    <img src="<%= url + '/i/t_' + spot.screenshot %>"  alt="<%=  spot.description %>>"  width="200" >
                 </a>
         <% }); %>
     </div>
