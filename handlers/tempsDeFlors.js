@@ -77,14 +77,14 @@ class TempsDeFlors {
         const channel = await TwitchService.getChannel()
         const spot = await TempsDeFlorsService.getTFSpot(roomId, channel.activeSpot)
         if (spot){
+            await TwitchService.setActiveSpot(0)
             await this._getScreenshot(target, bot, displayName, roomId, spot, channel)
         }
     }
 
-    async _getScreenshot(target, bot, displayName, roomId, spot, channel) {
+    async   _getScreenshot(target, bot, displayName, roomId, spot, channel) {
         const image = await BrowserService.getScreenshot().catch(() => { console.error('getScreenshot on captureScreenshot')})
         if (image) {
-            await TwitchService.setActiveSpot(0)
             spot = await TempsDeFlorsService.setTFScreenshot(roomId, spot.number, image.fileName)
             await bot.say(target, `Captura de punto ${this._getText(spot)}, punto desactivado.`)
             await ScreenshotService.addScreenshot(image.fileName, channel.streamId, displayName, roomId)
