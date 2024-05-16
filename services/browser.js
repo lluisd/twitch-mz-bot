@@ -14,9 +14,10 @@ async function getScreenshot() {
     const name = nanoid()
     try {
         bufferImage = await browserApi.takeScreenshot(`public/images/${name}.jpg`)
-        await sharp(bufferImage)
+        sharp(bufferImage)
             .resize({ width: 200 })
-            .toFile(`public/images/t_${name}.jpg`)
+            .toFile(`public/images/t_${name}.jpg`).catch(() => { console.error('rsize image for thumbnail')})
+        browserApi.refreshPage().catch(() => { console.error('refreshPage on refreshPage')})
     } catch (error) {
         console.log(error)
         return null
