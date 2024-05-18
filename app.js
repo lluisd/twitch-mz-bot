@@ -79,19 +79,26 @@ mongoose.connect(config.database).then(() => {
 
             app.use('/images', express.static('images'));
 
-            app.get('/i/:id', (req, res) => {
-                TwitchService.getChannel().then(async (channel) => {
+            app.get('/i/:id',  async(req, res) => {
+                const { id } = req.params;
+                TwitchService.getChannel().then((channel) => {
                     if (channel) {
-                        const screenshots = await ScreenshotService.getScreenshots(channel.streamId)
-                        if (screenshots.length > 0) {
-                            const image = screenshots.find((s) => s.name === req.params.id)
-                            if (image) {
-                                res.redirect(__dirname + `/stream/#lg=1&slide=${req.params.id}`);
+                        ScreenshotService.getScreenshots(channel.streamId).then ((screenshots) => {
+                            if (screenshots.length > 0) {
+                                const image = screenshots.find((s) => s.name === id)
+                                if (image) {
+                                    res.redirect(config.externalUrl + `/stream/#lg=1&slide=${id}`);
+                                } else {
+                                    res.sendFile(__dirname + `/public/images/${id}.jpg`)
+                                }
+                            } else {
+                                res.sendFile(__dirname + `/public/images/${id}.jpg`)
                             }
-                        }
+                        });
+                    } else {
+                        res.sendFile(__dirname + `/public/images/${id}.jpg`)
                     }
                 });
-                res.sendFile(__dirname + `/public/images/${req.params.id}.jpg`)
             });
 
             app.get('/img/:id', (req, res) => {
@@ -111,6 +118,7 @@ mongoose.connect(config.database).then(() => {
             })
         })
 })
+
 
 
 
