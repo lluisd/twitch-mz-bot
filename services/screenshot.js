@@ -9,7 +9,7 @@ async function getScreenshots(streamId) {
     if (streamId) {
         return await dbManager.getScreenshots(streamId)
     } else {
-        return null
+        return []
     }
 
 }
