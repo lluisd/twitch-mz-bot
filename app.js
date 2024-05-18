@@ -54,7 +54,7 @@ mongoose.connect(config.database).then(() => {
 
             app.get('/stream', function(req, res) {
                 TwitchService.getChannel().then(async (channel) => {
-                    if (channel && channel.streamId) {
+                    if (channel) {
                         const screenshots = await ScreenshotService.getScreenshots(channel.streamId)
                         res.render('pages/stream',{
                             screenshots: screenshots,
@@ -81,7 +81,7 @@ mongoose.connect(config.database).then(() => {
 
             app.get('/i/:id', (req, res) => {
                 TwitchService.getChannel().then(async (channel) => {
-                    if (channel && channel.streamId) {
+                    if (channel) {
                         const screenshots = await ScreenshotService.getScreenshots(channel.streamId)
                         if (screenshots.length > 0) {
                             const image = screenshots.find((s) => s.name === req.params.id)
