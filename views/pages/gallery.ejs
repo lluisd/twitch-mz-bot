@@ -11,9 +11,9 @@
 </head>
 <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/plugins/hash/lg-hash.min.js" integrity="sha512-7c9ZgozFwxmWalyapzhmzAChRvi0p7vhxWdrE3OjvFHnxuw6h6DBSOvtO1XytEj8MQI2Jp0Tm2BJwLUU7zAMvA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/lightgallery.min.js" integrity="sha512-jEJ0OA9fwz5wUn6rVfGhAXiiCSGrjYCwtQRUwI/wRGEuWRZxrnxoeDoNc+Pnhx8qwKVHs2BRQrVR9RE6T4UHBg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/plugins/thumbnail/lg-thumbnail.min.js" integrity="sha512-VBbe8aA3uiK90EUKJnZ4iEs0lKXRhzaAXL8CIHWYReUwULzxkOSxlNixn41OLdX0R1KNP23/s76YPyeRhE6P+Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/plugins/hash/lg-hash.min.js" integrity="sha512-7c9ZgozFwxmWalyapzhmzAChRvi0p7vhxWdrE3OjvFHnxuw6h6DBSOvtO1XytEj8MQI2Jp0Tm2BJwLUU7zAMvA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <h3>Temps de Flors '24 - <a href="https://twitch.tv/<%= channel %>" target="_blank"><%= channel %></a></h3>
     <ul class="nav">
         <li class="nav-item">
@@ -31,7 +31,7 @@
     </ul>
     <div id="lightgallery">
         <% spots.forEach(function(spot) { %>
-                <a href="<%= url + '/i/' + spot.screenshot %>" data-sub-html="<%= spot.number + ' - ' + spot.description %>" data-lg-size="1340-754">
+                <a href="<%= url + '/i/' + spot.screenshot %>" data-sub-html="<%= spot.number + ' - ' + spot.description %>" data-lg-size="1340-754" data-slide-name="<%=spot.screenshot %>">
                     <img src="<%= url + '/i/t_' + spot.screenshot %>"  alt="<%=  spot.description %>>"  width="200" >
                 </a>
         <% }); %>
@@ -41,7 +41,9 @@
             plugins: [lgThumbnail],
             animateThumb: false,
             zoomFromOrigin: false,
-            thumbnail: true
+            thumbnail: true,
+            customSlideName: true,
+            galleryId: 1
         });
     </script>
 </body>
