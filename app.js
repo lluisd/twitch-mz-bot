@@ -4,6 +4,8 @@ const config = require('./config')
 const express = require("express")
 const randomLinks = require("./config/randomLinks.json");
 const TempsDeFlorsService = require('./services/tempsDeFlors')
+const TwitchService = require("./services/twitch");
+const ScreenshotService = require("./services/screenshot");
 
 
 mongoose.connect(config.database).then(() => {
@@ -50,6 +52,19 @@ mongoose.connect(config.database).then(() => {
                 })
             });
 
+            app.get('/stream', function(req, res) {
+                TwitchService.getChannel().then(async (channel) => {
+                    if (channel && channel.streamId) {
+                        const screenshots = await ScreenshotService.getScreenshots(channel.streamId)
+                        res.render('pages/stream',{
+                            screenshots: screenshots,
+                            url: config.externalUrl,
+                            channel: config.twitch.channels
+                        });
+                    }
+                });
+            });
+
             app.get('/comandos', function(req, res) {
                 res.render('pages/comandos',{
                     channel: config.twitch.channels
@@ -65,6 +80,15 @@ mongoose.connect(config.database).then(() => {
             app.use('/images', express.static('images'));
 
             app.get('/i/:id', (req, res) => {
+                // TwitchService.getChannel().then(async (channel) => {
+                //     if (channel && channel.streamId) {
+                //         const screenshots = await ScreenshotService.getScreenshots(channel.streamId)
+                //         const image = screenshots.find((s) => s.name === req.params.id)
+                //         if (image) {
+                //             res.redirect(__dirname + `/stream/#lg=1&slide=${req.params.id}`);
+                //         }
+                //     }
+                // });
                 res.sendFile(__dirname + `/public/images/${req.params.id}.jpg`)
             });
 
