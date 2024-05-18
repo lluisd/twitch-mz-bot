@@ -6,6 +6,7 @@ const config = require("../config")
 const moment = require('moment')
 require('moment-precise-range-plugin')
 require('mathjs')
+const randomLinks = require("../config/randomLinks.json");
 
 const twitchUrl = 'https://www.twitch.tv/'
 
@@ -49,6 +50,10 @@ class Stream {
         }
 
         return unmaskedStart + masked + unmaskedEnd
+    }
+
+    async getScreenshots(target, bot) {
+        bot.say(target, `Fotos del stream ${config.externalUrl}/stream`)
     }
 
     async captureScreenshot(target, bot, notifierBot, displayName, roomId) {
