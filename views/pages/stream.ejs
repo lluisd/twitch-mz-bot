@@ -17,8 +17,8 @@
 <h3>Stream actual - <a href="https://twitch.tv/<%= channel %>" target="_blank"><%= channel %></a></h3>
 <div id="lightgallery">
     <% screenshots.forEach(function(screenshot) { %>
-        <a href="<%= url + '/i/' + screenshot.name %>" data-sub-html="Captura de <%= screenshot.capturedBy %>" data-lg-size="1340-754" data-slide-name="<%= screenshot.name %>">
-            <img src="<%= url + '/i/t_' + screenshot.name %>"  alt="<%= screenshot.name %>" width="200" >
+        <a href="<%= url + '/img/' + screenshot.name %>" data-sub-html="Captura de <%= screenshot.capturedBy %>" data-lg-size="1340-754" data-slide-name="<%= screenshot.name %>">
+            <img src="<%= url + '/img/t_' + screenshot.name %>"  alt="<%= screenshot.name %>" width="200" >
         </a>
     <% }); %>
 </div>

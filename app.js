@@ -94,6 +94,10 @@ mongoose.connect(config.database).then(() => {
                 res.sendFile(__dirname + `/public/images/${req.params.id}.jpg`)
             });
 
+            app.get('/img/:id', (req, res) => {
+                res.sendFile(__dirname + `/public/images/${req.params.id}.jpg`)
+            });
+
             app.get('/OF/:id', (req, res) => {
                 const position = parseInt(req.params.id.replace(config.twitch.channels, ''))
                 const link = randomLinks.links[position]
