@@ -136,7 +136,7 @@ class Stream {
     async _sendStreamScreenshots(telegramBot, streamId) {
         const screenshots = await ScreenshotService.getScreenshots(streamId)
         console.log('sending images: ' + screenshots.length)
-        if (screenshots && screenshots.length > 2) {
+        if (screenshots && screenshots.length > 1) {
             const chunkSize = 10
             let index = 0
             for (let i = 0; i < screenshots.length; i += chunkSize) {
