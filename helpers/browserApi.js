@@ -76,6 +76,8 @@ class PuppeteerApi {
         if (inputs && inputs.length > 1 && !inputs[1].checked) {
             const inputId = inputs[1].id
             await this.page.click('#' + inputId).catch(() => {})
+        } else {
+            await this.page.$eval('button[data-a-target="player-settings-button"]', el =>  el.click()).catch(() => {})
         }
 
         await this.page.$eval('.video-player__default-player', el => el.style.display = "none")
