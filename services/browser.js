@@ -17,7 +17,6 @@ async function getScreenshot() {
         sharp(bufferImage)
             .resize({ width: 200 })
             .toFile(`public/images/t_${name}.jpg`).catch(() => { console.error('rsize image for thumbnail')})
-        browserApi.refreshPage().catch(() => { console.error('refreshPage on refreshPage')})
     } catch (error) {
         console.log(error)
         return null
