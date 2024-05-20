@@ -69,10 +69,12 @@ class PuppeteerApi {
         await this.page.$eval('button[data-a-target="player-settings-button"]', el =>  el.click()).catch(() => {})
         await this.page.$eval('button[data-a-target="player-settings-menu-item-quality"]', el =>  el.click()).catch(() => {})
         const inputs = await this.page.$$eval('input[name="player-settings-submenu-quality-option"]', elements => {
-            return elements.map(e => e.id);
+            return elements.map(e => {
+                return { id: e.id, checked: e.checked }}
+            );
         }).catch(() => {})
-        if (inputs && inputs.length > 1) {
-            const inputId = inputs[1]
+        if (inputs && inputs.length > 1 && !inputs[1].checked) {
+            const inputId = inputs[1].id
             await this.page.click('#' + inputId).catch(() => {})
         }
 
