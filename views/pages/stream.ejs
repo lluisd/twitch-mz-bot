@@ -22,7 +22,7 @@
 <h5><p><em><%= title %></em></p></h5>
 <div id="lightgallery">
     <% screenshots.forEach(function(screenshot) { %>
-        <a href="<%= url + '/img/' + screenshot.name %>" data-sub-html="<h4>Captura de - <%= screenshot.capturedBy %></h4> <p class='capitalize' > Fecha -  <%= moment(screenshot.created).locale('es').format('LLLL') %></p>" data-lg-size="1340-754" data-slide-name="<%= screenshot.name %>">
+        <a href="<%= url + '/img/' + screenshot.name %>" data-sub-html="<h4>Captura de - <%= screenshot.capturedBy %></h4> <p class='capitalize' > Fecha -  <%= moment(screenshot.created).tz('Europe/Madrid').locale('es').format('LLLL') %></p>" data-lg-size="1340-754" data-slide-name="<%= screenshot.name %>">
             <img src="<%= url + '/img/t_' + screenshot.name %>"  alt="<%= screenshot.name %>" width="200" >
         </a>
     <% }); %>
