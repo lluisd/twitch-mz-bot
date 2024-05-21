@@ -6,7 +6,7 @@ const randomLinks = require("./config/randomLinks.json");
 const TempsDeFlorsService = require('./services/tempsDeFlors')
 const TwitchService = require("./services/twitch");
 const ScreenshotService = require("./services/screenshot");
-
+const moment = require('moment')
 
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
@@ -59,7 +59,9 @@ mongoose.connect(config.database).then(() => {
                         res.render('pages/stream',{
                             screenshots: screenshots,
                             url: config.externalUrl,
-                            channel: config.twitch.channels
+                            channel: config.twitch.channels,
+                            moment: moment,
+                            title: channel.title
                         });
                     }
                 });
@@ -114,7 +116,7 @@ mongoose.connect(config.database).then(() => {
 
             const listener = app.listen(process.env.PORT, ()=>  {
                 console.log('Listening on port ', + listener.address().port)
-                app.get('/', (req, res) => res.redirect('/listado'))
+                app.get('/', (req, res) => res.redirect('/stream'))
             })
         })
 })
