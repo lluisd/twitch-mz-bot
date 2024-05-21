@@ -6,7 +6,7 @@ const randomLinks = require("./config/randomLinks.json");
 const TempsDeFlorsService = require('./services/tempsDeFlors')
 const TwitchService = require("./services/twitch");
 const ScreenshotService = require("./services/screenshot");
-const moment = require('moment')
+const moment = require('moment-timezone')
 
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
