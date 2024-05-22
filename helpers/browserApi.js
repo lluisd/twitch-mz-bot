@@ -67,7 +67,9 @@ class PuppeteerApi {
         }
         await this.page.$eval('.video-player__default-player button[data-a-target="player-play-pause-button"][data-a-player-state="playing"]', el =>  el.click()).catch(() => {})
         await this.page.$eval('button[data-a-target="player-settings-button"]', el =>  el.click()).catch(() => {})
+        await new Promise(r => setTimeout(r, 500))
         await this.page.$eval('button[data-a-target="player-settings-menu-item-quality"]', el =>  el.click()).catch(() => {})
+        await new Promise(r => setTimeout(r, 500))
         const inputs = await this.page.$$eval('input[name="player-settings-submenu-quality-option"]', elements => {
             return elements.map(e => {
                 return { id: e.id, checked: e.checked }}
