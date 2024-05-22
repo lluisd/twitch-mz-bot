@@ -92,6 +92,7 @@ class PuppeteerApi {
 
     async takeScreenshot(path) {
         let screenshot = null
+        await this.page.$eval('.video-player__default-player', el => el.style.display = "none")
         await this.page.$eval('.video-player__default-player button[data-a-target="player-play-pause-button"][data-a-player-state="paused"]', el =>  el.click()).catch(() => {})
         await new Promise(r => setTimeout(r, 500))
         this.svgImage = await this.page.$('div.persistent-player')
