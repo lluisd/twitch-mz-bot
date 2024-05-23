@@ -46,8 +46,6 @@ async function refreshPage() {
     const pageIsOpen = await browserApi.checkIfPageIsOpen()
     if (browserIsOpen && pageIsOpen) {
         await browserApi.refreshPage()
-    } else {
-        await startAndWarmUpBrowserIfNeeded()
     }
 }
 
