@@ -56,6 +56,7 @@ class PuppeteerApi {
     async removeElementsAndGetDiv() {
         await this.page.waitForSelector('div.persistent-player')
         await new Promise(r => setTimeout(r, 500))
+        await this.page.click('button[data-a-target="content-classification-gate-overlay-start-watching-button"]').catch(() => {})
         await this.page.$eval('div.consent-banner', el =>  el.remove()).catch(() => {})
         await this.page.$eval('#twilight-sticky-footer-root', el => el.remove()).catch(() => {})
         await this.page.$eval('button[data-a-target="content-classification-gate-overlay-start-watching-button"]', el =>  el.click()).catch(() => { })
