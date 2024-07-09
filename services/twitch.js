@@ -37,7 +37,6 @@ async function getStream() {
 async function getUnbanRequests () {
     let result
     const options = await _getHeaders()
-    options.
     const channel = await dbManager.getChannel(config.twitch.channels).lean()
     const endpoint = `${endpointPrefix}/moderation/unban_requests?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}&status=pending`
 
@@ -53,23 +52,27 @@ async function getUnbanRequests () {
     return result
 }
 
-async function annunce() {
+async function sendAnnouncement(text, color) {
     let result
     const options = await _getHeaders()
     options.method = 'POST'
     const channel = await dbManager.getChannel(config.twitch.channels).lean()
     const endpoint = `${endpointPrefix}/chat/announcements?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}`
-    try {
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-        result = data?.data ?? null
 
+    const body = {
+        data : {
+            message: text,
+            color: color
+        }
+    }
+
+    options.body = JSON.stringify(body)
+
+    try {
+        await fetch(endpoint, options)
     } catch {
         result = null
     }
-
-    return result
-
 }
 
 async function getChannel () {
@@ -104,7 +107,8 @@ module.exports = {
     getChannel,
     saveLastUpdate,
     getUnbanRequests,
-    setActiveSpot
+    setActiveSpot,
+    sendAnnouncement
 }
 
 
