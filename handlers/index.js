@@ -4,6 +4,7 @@ const Train = require('./Train')
 const Stream = require('./Stream')
 const Birthday = require('./Birthday')
 const TempsDeFlors = require('./TempsDeFlors')
+const Ban = require('./Ban')
 
 module.exports = {
     generic: new Generic(),
@@ -11,5 +12,6 @@ module.exports = {
     train: new Train(),
     stream: new Stream(),
     birthday: new Birthday(),
-    tempsDeFlors: new TempsDeFlors()
+    tempsDeFlors: new TempsDeFlors(),
+    ban: new Ban()
 }

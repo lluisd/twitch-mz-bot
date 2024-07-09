@@ -36,7 +36,7 @@ async function getStream() {
 
 async function getUnbanRequests () {
     let result
-    const options = await _getHeaders()
+    let options = await _getHeaders()
     const channel = await dbManager.getChannel(config.twitch.channels).lean()
     const endpoint = `${endpointPrefix}/moderation/unban_requests?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}&status=pending`
 
@@ -51,6 +51,73 @@ async function getUnbanRequests () {
 
     return result
 }
+
+async function banUser (user, duration) {
+    let result
+    let options = await _getHeaders()
+    options.method = 'POST'
+    const channel = await dbManager.getChannel(config.twitch.channels).lean()
+    const endpoint = `${endpointPrefix}/moderation/bans?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}`
+
+    const body = {
+        data : {
+            user_id: user,
+            ...duration && {duration:  duration},
+            reason: 'Bot'
+        }
+    }
+
+    options.body = JSON.stringify(body)
+    try {
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
+        result = data?.data ?? null
+
+    } catch {
+        result = null
+    }
+
+    return result
+}
+
+async function unBanUser (user) {
+    let result
+    let options = await _getHeaders()
+    options.method = 'DELETE'
+    const channel = await dbManager.getChannel(config.twitch.channels).lean()
+    const endpoint = `${endpointPrefix}/moderation/bans?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}&user_id=${user}`
+
+    try {
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
+        result = data?.data ?? null
+
+    } catch {
+        result = null
+    }
+
+    return result
+}
+
+async function getUser (userName) {
+    let result
+    let options = await _getHeaders()
+    options.method = 'GET'
+    const endpoint = `${endpointPrefix}/users?login=${userName}`
+
+    try {
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
+        result = data?.data?.[0] ?? null
+
+    } catch {
+        result = null
+    }
+
+    return result
+
+}
+
 
 async function getChannel () {
     return dbManager.getChannel(config.twitch.channels).lean()
@@ -84,7 +151,10 @@ module.exports = {
     getChannel,
     saveLastUpdate,
     getUnbanRequests,
-    setActiveSpot
+    setActiveSpot,
+    banUser,
+    unBanUser,
+    getUser
 }
 
 
