@@ -53,25 +53,22 @@ async function getUnbanRequests () {
 }
 
 async function sendAnnouncement(text, color) {
-    let result
     const options = await _getHeaders()
     options.method = 'POST'
     const channel = await dbManager.getChannel(config.twitch.channels).lean()
     const endpoint = `${endpointPrefix}/chat/announcements?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}`
 
     const body = {
-        data : {
-            message: text,
-            color: color
-        }
+        message: text,
+        color: color
     }
 
     options.body = JSON.stringify(body)
 
     try {
         await fetch(endpoint, options)
-    } catch {
-        result = null
+    } catch (e) {
+        console.log('error sending announcement: ' + e)
     }
 }
 
@@ -96,7 +93,8 @@ async function _getHeaders () {
     return {
         headers: {
             'Client-Id': config.twitch.clientId,
-            'Authorization': 'Bearer ' + token.accessToken
+            'Authorization': 'Bearer ' + token.accessToken,
+            'Content-Type': 'application/json'
         }
     }
 }
