@@ -26,5 +26,7 @@ module.exports = {
         password: process.env.MYSQL_PASSWORD,
         db: process.env.MYSQL_DB
     },
-    statusUrl: process.env.STATUS_URL
+    statusUrl: process.env.STATUS_URL,
+    whitelistAdmins: process.env.WHITE_LIST_ADMINS.split(','),
+    whitelistEditors: process.env.WHITE_LIST_EDITORS.split(',')
 }

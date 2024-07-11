@@ -15,14 +15,6 @@ class Stream {
         await BrowserService.refreshPage().catch(() => { console.error('refreshPage on refreshPage')})
     }
 
-    async getUnbanRequests(target, bot) {
-        const result = await TwitchService.getUnbanRequests()
-        if (result !== null) {
-            const text = result.length > 0 ? `Hay ${result.length} solicitudes de desbaneo pendientes de revisar (${this._getUserNames(result)})` : 'No hay solicitudes de desbaneo pendientes de revisar.'
-            await bot.say(target, text)
-        }
-    }
-
     _getUserNames (unbanRequests) {
         let text
         if (unbanRequests.length === 1){
