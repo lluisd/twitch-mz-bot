@@ -118,6 +118,25 @@ async function getUser (userName) {
 
 }
 
+async function sendAnnouncement(text, color) {
+    const options = await _getHeaders()
+    options.method = 'POST'
+    const channel = await dbManager.getChannel(config.twitch.channels).lean()
+    const endpoint = `${endpointPrefix}/chat/announcements?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}`
+
+    const body = {
+        message: text,
+        color: color
+    }
+
+    options.body = JSON.stringify(body)
+
+    try {
+        await fetch(endpoint, options)
+    } catch (e) {
+        console.log('error sending announcement: ' + e)
+    }
+}
 
 async function getChannel () {
     return dbManager.getChannel(config.twitch.channels).lean()
@@ -155,7 +174,8 @@ module.exports = {
     setActiveSpot,
     banUser,
     unBanUser,
-    getUser
+    getUser,
+    sendAnnouncement
 }
 
 
