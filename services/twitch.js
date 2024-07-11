@@ -71,7 +71,7 @@ async function banUser (user, duration) {
     try {
         const response = await fetch(endpoint, options)
         const data = await response.json()
-        result = data?.data ?? null
+        result = data?.data !== null ?? null
 
     } catch {
         result = null
@@ -90,9 +90,9 @@ async function unBanUser (user) {
     try {
         const response = await fetch(endpoint, options)
         const data = await response.json()
-        result = data?.data ?? null
+        result = data?.status === 204 ?? null
 
-    } catch {
+    } catch (e) {
         result = null
     }
 
@@ -140,7 +140,8 @@ async function _getHeaders () {
     return {
         headers: {
             'Client-Id': config.twitch.clientId,
-            'Authorization': 'Bearer ' + token.accessToken
+            'Authorization': 'Bearer ' + token.accessToken,
+            'Content-Type': 'application/json'
         }
     }
 }

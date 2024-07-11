@@ -19,14 +19,14 @@ class Ban {
         }
 
         if (user) {
-            const result = await TwitchService.banUser(user.id, duration)
+            await TwitchService.banUser(user.id, duration)
         }
     }
 
     async unban(target, username, bot) {
         const user = await TwitchService.getUser(username)
         if (user) {
-            const result = await TwitchService.unBanUser(user.id)
+            await TwitchService.unBanUser(user.id)
         }
     }
 }
