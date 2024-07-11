@@ -24,6 +24,10 @@ class Generic {
     setTitle (target, text, bot) {
         bot.say(target, `!title ${text}`)
     }
+
+    setGame (target, text, bot) {
+        bot.say(target, `!game ${text}`)
+    }
 }
 
 
