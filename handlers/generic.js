@@ -20,6 +20,14 @@ class Generic {
         const position = Math.floor(Math.random() * randomLinks.links.length)
         bot.say(target, `Mi OF ${config.externalUrl}/OF/${config.twitch.channels}${position}`)
     }
+
+    setTitle (target, text, bot) {
+        bot.say(target, `!title ${text}`)
+    }
+
+    setGame (target, text, bot) {
+        bot.say(target, `!game ${text}`)
+    }
 }
 
 

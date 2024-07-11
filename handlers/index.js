@@ -4,6 +4,7 @@ const Train = require('./Train')
 const Stream = require('./Stream')
 const Birthday = require('./Birthday')
 const TempsDeFlors = require('./TempsDeFlors')
+const Ban = require('./Ban')
 const Events = require('./Events')
 
 module.exports = {
@@ -13,5 +14,6 @@ module.exports = {
     stream: new Stream(),
     birthday: new Birthday(),
     tempsDeFlors: new TempsDeFlors(),
+    ban: new Ban(),
     events: new Events()
 }
