@@ -5,7 +5,7 @@ const endpointPrefix = 'https://opendata.aemet.es/opendata/api/'
 async function getSunsetPrediction(name) {
     let sunsetTime = null
     const result = await _getTimePrediction(name)
-    if (result && result.length > 1) {
+    if (result && result.length > 0) {
         sunsetTime = result[0].prediccion.dia[0].ocaso
     }
     return sunsetTime
@@ -14,7 +14,7 @@ async function getSunsetPrediction(name) {
 async function getSunrisePrediction(name) {
     let sunsetTime = null
     const result = await _getTimePrediction(name)
-    if (result && result.length > 1) {
+    if (result && result.length > 0) {
         sunsetTime = result[0].prediccion.dia[0].orto
     }
     return sunsetTime
