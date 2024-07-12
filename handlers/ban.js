@@ -29,6 +29,35 @@ class Ban {
             await TwitchService.unBanUser(user.id)
         }
     }
+
+    _getUserNames (unbanRequests) {
+        let text
+        if (unbanRequests.length === 1){
+            text = this._maskUserName(unbanRequests[0].user_name)
+        } else if (unbanRequests.length > 1) {
+            text = unbanRequests.map(ur => this._maskUserName(ur.user_name)).join(', ').replace(/, ([^,]*)$/, ' y $1')
+        }
+        return text
+    }
+
+    _maskUserName (userName) {
+        const unmaskedStartLength = 3
+        const unmaskedEndLength = 1
+
+        let unmaskedStart = userName.substring(0, unmaskedStartLength)
+        let masked = ''
+        let unmaskedEnd = ''
+
+        const unmaskedLength = unmaskedStartLength + unmaskedEndLength
+        if (userName.length > unmaskedLength) {
+            masked = '*'.repeat(userName.length - unmaskedLength)
+            unmaskedEnd = userName.substring(userName.length - unmaskedEndLength)
+        } else if (userName.length > unmaskedStartLength) {
+            masked = '*'.repeat(userName.length - unmaskedStartLength)
+        }
+
+        return unmaskedStart + masked + unmaskedEnd
+    }
 }
 
 
