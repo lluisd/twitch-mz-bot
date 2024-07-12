@@ -24,6 +24,8 @@ MYSQL_USER //mysql user
 MYSQL_PASSWORD //mysql password
 MYSQL_DB //mysql database
 STATUS_URL //uptime url for /status tiwtch chat command
+WHITE_LIST_ADMINS //twitch user ids seperated by comma to run ban/unban commands
+WHITE_LIST_EDITORS //twitch user ids seperated by comma to run !title/!game commands
 ```
 
 ## Weather
@@ -41,18 +43,18 @@ Information from weather comes from AEMET OpenData to get Spain weather predicti
 ```
 
 ## Train
-Find next departure time of the train from a given origin and destination. It uses the renfe GTFS dataset improved_gtfs.zip (https://gtfs.pro/en/spain/Renfe-Operadora/renfe)
+~Find next departure time of the train from a given origin and destination. It uses the renfe GTFS dataset improved_gtfs.zip (https://gtfs.pro/en/spain/Renfe-Operadora/renfe)~
 
 ### commands
 
 ```javascript
-!md girona, sant celoni
-//result: Próximo tren MD de Girona a Sant Celoni sale a las 14:49:00
+~!md girona, sant celoni~
+~//result: Próximo tren MD de Girona a Sant Celoni sale a las 14:49:00~
 ```
 
 ```javascript
-!ave girona, sants
-//result: Próximo tren AVE de Girona a Barcelona-Sants sale a las 16:30:00
+~!ave girona, sants~
+~//result: Próximo tren AVE de Girona a Barcelona-Sants sale a las 16:30:00~
 ```
 
 ## Photo
