@@ -2,7 +2,8 @@
 
 A twitch chatbot to get specific information about weather predictions, train timings and other information.
 
-Status: https://uptime.311312.xyz/status/twitch 
+Status: https://mz-status.311312.xyz/
+
 
 ## environment variables
 
