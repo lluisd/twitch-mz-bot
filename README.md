@@ -1,6 +1,6 @@
 # twitch-mz-bot
 
-A twitch chatbot to get specific information about weather predictions, train timings and other information.
+A twitch chatbot to get specific information about weather predictions and other information.
 
 Status: https://mz-status.311312.xyz/
 
@@ -20,10 +20,6 @@ TELEGRAM_CHAT_ID //Telegram chat id to send the notifications
 EXTERNAL_URL //external url of the running app to create the public image urls
 BROWSERLESS_URL //browserless websocket url to take screenshots
 BROWSERLESS_TOKEN //browserless token
-MYSQL_HOST //mysql host ip/domain
-MYSQL_USER //mysql user
-MYSQL_PASSWORD //mysql password
-MYSQL_DB //mysql database
 STATUS_URL //uptime url for /status tiwtch chat command
 WHITE_LIST_ADMINS //twitch user ids seperated by comma to run ban/unban commands
 WHITE_LIST_EDITORS //twitch user ids seperated by comma to run !title/!game commands
@@ -33,29 +29,14 @@ WHITE_LIST_EDITORS //twitch user ids seperated by comma to run !title/!game comm
 Information from weather comes from AEMET OpenData to get Spain weather predictions.
 
 ### commands
-```javascript
+```code
 !amanecer girona 
 //result: Girona amanece a las 08:02
 ```
 
-```javascript
+```code
 !atardecer girona 
 //result: Girona atardece a las 17:59
-```
-
-## Train
-~Find next departure time of the train from a given origin and destination. It uses the renfe GTFS dataset improved_gtfs.zip (https://gtfs.pro/en/spain/Renfe-Operadora/renfe)~
-
-### commands
-
-```javascript
-~!md girona, sant celoni~
-~//result: Próximo tren MD de Girona a Sant Celoni sale a las 14:49:00~
-```
-
-```javascript
-~!ave girona, sants~
-~//result: Próximo tren AVE de Girona a Barcelona-Sants sale a las 16:30:00~
 ```
 
 ## Photo
@@ -63,7 +44,7 @@ Take a screenshot of the current stream and send it to the chat.
 
 ### commands
 
-```javascript
+```code
 !foto
 //result: https://external.url/i/cclj35.jpg
 ```
@@ -73,12 +54,30 @@ Save your own birthdate and get other users birthdays
 
 ### commands
 
-```javascript
+```code
 !micumple 03-08
 //result: @myuser cumple el dia 3 de Setiembre
 ```
 
-```javascript
+```code
 !cumple @otheruser
 //result: @otheruser cumple el dia 3 de Setiembre
+```
+
+## Bans
+Get band requests, ban, unban, timeout
+
+### commands
+
+```code
+!bans
+//result: a**a, as**sd ban requests pending
+```
+
+```code
+!ban username //bans username from the cannel
+!timeout username //bans username during 600 (by default) seconds 
+!timeout username 60 //bans username during 60 seconds
+
+!unban username //removes the ban of the given username
 ```

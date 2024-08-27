@@ -20,12 +20,6 @@ module.exports = {
         token: process.env.BROWSERLESS_TOKEN,
         version: process.env.BROWSERLESS_VERSION
     },
-    mariadb: {
-        host: process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        db: process.env.MYSQL_DB
-    },
     statusUrl: process.env.STATUS_URL,
     whitelistAdmins: process.env.WHITE_LIST_ADMINS.split(','),
     whitelistEditors: process.env.WHITE_LIST_EDITORS.split(',')
