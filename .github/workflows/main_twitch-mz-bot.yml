@@ -35,13 +35,10 @@ jobs:
           envKey_BROWSERLESS_URL: ${{ secrets.BROWSERLESS_URL }}
           envKey_BROWSERLESS_TOKEN: ${{ secrets.BROWSERLESS_TOKEN }}
           envKey_BROWSERLESS_VERSION: v1
-          envKey_MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
-          envKey_MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          envKey_MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-          envKey_MYSQL_DB: ${{ secrets.MYSQL_DB }}
           envKey_STATUS_URL: ${{ secrets.STATUS_URL }}
           envKey_WHITE_LIST_ADMINS: ${{ secrets.WHITE_LIST_ADMINS }}
           envKey_WHITE_LIST_EDITORS: ${{ secrets.WHITE_LIST_EDITORS }}
+          envKey_FEATURE_TF_SPOTS: false
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:

@@ -22,5 +22,8 @@ module.exports = {
     },
     statusUrl: process.env.STATUS_URL,
     whitelistAdmins: process.env.WHITE_LIST_ADMINS.split(','),
-    whitelistEditors: process.env.WHITE_LIST_EDITORS.split(',')
+    whitelistEditors: process.env.WHITE_LIST_EDITORS.split(','),
+    features: {
+        TFSpots: process.env.FEATURE_TF_SPOTS === 'true',
+    }
 }

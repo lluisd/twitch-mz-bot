@@ -1,9 +1,8 @@
 # twitch-mz-bot
 
-A twitch chatbot to get specific information about weather predictions and other information.
+A twitch chatbot to get specific information about weather predictions, take screenshots, manage stream, manage bans and other random formation.
 
-Status: https://mz-status.311312.xyz/
-
+Bot status: https://mz-status.311312.xyz/
 
 ## environment variables
 
@@ -23,6 +22,7 @@ BROWSERLESS_TOKEN //browserless token
 STATUS_URL //uptime url for /status tiwtch chat command
 WHITE_LIST_ADMINS //twitch user ids seperated by comma to run ban/unban commands
 WHITE_LIST_EDITORS //twitch user ids seperated by comma to run !title/!game commands
+FEATURE_TF_SPOTS //true/false to enable/disable the tf spots feature
 ```
 
 ## Weather
@@ -49,6 +49,11 @@ Take a screenshot of the current stream and send it to the chat.
 //result: https://external.url/i/cclj35.jpg
 ```
 
+(only VIP, Mods and Broadcaster users)
+```code
+!f5 //refreshes ghost browser to screenshots if it hangs
+```
+
 ## Birthday
 Save your own birthdate and get other users birthdays
 
@@ -69,15 +74,32 @@ Get band requests, ban, unban, timeout
 
 ### commands
 
+(only VIP, Mods and Broadcaster users)
 ```code
 !bans
 //result: a**a, as**sd ban requests pending
 ```
 
+(only users in the admin white list)
 ```code
 !ban username //bans username from the cannel
 !timeout username //bans username during 600 (by default) seconds 
 !timeout username 60 //bans username during 60 seconds
 
 !unban username //removes the ban of the given username
+```
+
+## Stream
+
+Set stream title and game by using streamElements 
+
+### commands
+(only users in the editors white list)
+
+```code
+!titulo Testing title
+```
+
+```code
+!categoria IRL
 ```
