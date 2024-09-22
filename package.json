@@ -6,6 +6,8 @@
   "author": "Lluis <lluisdanes@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@azure/identity": "^4.4.1",
+    "@azure/openai": "^2.0.0-beta.2",
     "@twurple/auth": "^7.1.0",
     "@twurple/auth-tmi": "^7.1.0",
     "dotenv": "^16.4.5",
@@ -19,8 +21,9 @@
     "nanoid": "3.3.7",
     "node-cron": "^3.0.3",
     "node-telegram-bot-api": "^0.65.1",
+    "openai": "^4.63.0",
     "puppeteer-core": "^22.6.4",
-    "sharp": "^0.33.3",
+    "sharp": "^0.33.5",
     "tmi.js": "^1.8.5"
   },
   "scripts": {

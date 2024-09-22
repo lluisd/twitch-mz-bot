@@ -21,9 +21,13 @@ module.exports = {
         version: process.env.BROWSERLESS_VERSION
     },
     statusUrl: process.env.STATUS_URL,
-    whitelistAdmins: process.env.WHITE_LIST_ADMINS.split(','),
-    whitelistEditors: process.env.WHITE_LIST_EDITORS.split(','),
+    whitelistAdmins: process.env.WHITE_LIST_ADMINS?.split(',') ?? [],
+    whitelistEditors: process.env.WHITE_LIST_EDITORS?.split(',') ?? [],
     features: {
         TFSpots: process.env.FEATURE_TF_SPOTS === 'true',
+    },
+    openAI: {
+        endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+        key: process.env.AZURE_OPENAI_KEY
     }
 }
