@@ -5,6 +5,7 @@ const Birthday = require('./Birthday')
 const TempsDeFlors = require('./TempsDeFlors')
 const Ban = require('./Ban')
 const Events = require('./Events')
+const OpenAI = require('./OpenAI');
 
 module.exports = {
     generic: new Generic(),
@@ -13,5 +14,6 @@ module.exports = {
     birthday: new Birthday(),
     tempsDeFlors: new TempsDeFlors(),
     ban: new Ban(),
-    events: new Events()
+    events: new Events(),
+    openAI: new OpenAI()
 }
