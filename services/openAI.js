@@ -8,8 +8,8 @@ async function askOpenAI(message) {
 
     const body = {
         model: 'gpt-4o-mini',
-        messages: [{ "role": "user", "content": "responde en pocas frases: " + message}],
-        max_tokens: 30
+        messages: [{ "role": "user", "content": "resume en pocas palabras: " + message}],
+        max_tokens: 70
     }
 
     options.body = JSON.stringify(body)
