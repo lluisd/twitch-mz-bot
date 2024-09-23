@@ -21,7 +21,7 @@ jobs:
           envkey_TWITCH_CHANNELS: ${{ secrets.BN_TWITCH_CHANNELS }}
           envkey_TWITCH_USER_ID: ${{ secrets.BN_TWITCH_USER_ID }}
           envkey_TWITCH_ROOM_ID: ${{ secrets.BN_TWITCH_ROOM_ID }}
-          envkey_TWITCH_USER_NAME: ${{ secrets.BN_TWITCH_USER_NAME }
+          envkey_TWITCH_USER_NAME: ${{ secrets.BN_TWITCH_USER_NAME }}
           envKey_MONGODB_URI: ${{ secrets.MONGODB_URI }}
           envKey_AEMET_API_KEY: ${{ secrets.AEMET_API_KEY }}
           envkey_PORT: 3000
