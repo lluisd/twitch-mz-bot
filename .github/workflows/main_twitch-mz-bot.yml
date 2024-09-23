@@ -26,6 +26,7 @@ jobs:
           envkey_TWITCH_CHANNELS: ${{ secrets.TWITCH_CHANNELS }}
           envkey_TWITCH_USER_ID: ${{ secrets.TWITCH_USER_ID }}
           envkey_TWITCH_ROOM_ID: ${{ secrets.TWITCH_ROOM_ID }}
+          envkey_TWITCH_USER_NAME: ${{ secrets.TWITCH_USER_NAME }
           envKey_MONGODB_URI: ${{ secrets.MONGODB_URI }}
           envKey_AEMET_API_KEY: ${{ secrets.AEMET_API_KEY }}
           envkey_PORT: 3000
@@ -39,6 +40,8 @@ jobs:
           envKey_WHITE_LIST_ADMINS: ${{ secrets.WHITE_LIST_ADMINS }}
           envKey_WHITE_LIST_EDITORS: ${{ secrets.WHITE_LIST_EDITORS }}
           envKey_FEATURE_TF_SPOTS: false
+          envkey_AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          envkey_AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:

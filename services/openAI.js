@@ -1,7 +1,38 @@
-const openAI = require('../helpers/azureOpenAI')
+const config = require('../config')
 
 async function askOpenAI(message) {
-    return await openAI.chat(message)
+    let result
+    let options = await _getHeaders()
+    options.method = 'POST'
+    const endpoint = config.openAI.endpoint
+
+    const body = {
+        model: 'gpt-4o-mini',
+        messages: [{ "role": "user", "content": "responde en pocas frases: " + message}],
+        max_tokens: 30
+    }
+
+    options.body = JSON.stringify(body)
+
+    try {
+        const response = await fetch(endpoint, options)
+        const data = await response.json()
+        result = data?.choices[0]?.message?.content || null
+    } catch {
+        result = null
+    }
+
+    return result
+}
+
+async function _getHeaders () {
+    return {
+        headers: {
+            'accept': 'application/json',
+            'api-key': config.openAI.key,
+            'Content-Type': 'application/json'
+        }
+    }
 }
 
 module.exports = {
