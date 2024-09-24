@@ -4,6 +4,7 @@ const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
 const Screenshot = require('../models/screenshot')
 const tempsDeFlors = require('../models/tempsDeFlors')
+const Log = require('../models/log')
 const moment = require('moment')
 
 function getToken (userId) {
@@ -76,6 +77,10 @@ async function setTFSpot(roomId, number, update, returnOldDoc){
 
 async function getTFSpots(roomId){
     return tempsDeFlors.find({roomId: parseInt(roomId)}).sort('number').lean()
+}
+
+async function addLogLine (nick, text, date) {
+    return Log.insertOne({nick: nick, text: text, date: date})
 }
 
 module.exports = {
