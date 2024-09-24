@@ -1,12 +1,13 @@
 const mongoose = require('mongoose')
-const config = require("../config");
 const Schema = mongoose.Schema
-const db =    await mongoose.connect(config.openAI.database)
-    .then()
-    .catch(err => console.error("MongoDB secondary connection failed, " + err));
+const db =  require("../db.openai")();
 
 /* Log Schema */
 const LogSchema = new Schema({
+    roomId: {
+        type: Number,
+        required: true
+    },
     nick: {
         type: String,
         required: true
@@ -21,4 +22,5 @@ const LogSchema = new Schema({
     }
 })
 
-module.exports = db.model('log', LogSchema, 'logs')
+const twitchDB = db.useDb('twitch');
+module.exports = twitchDB.model('log', LogSchema, 'logs')

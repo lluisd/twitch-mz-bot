@@ -37,6 +37,7 @@ jobs:
           envKey_FEATURE_TF_SPOTS: false
           envkey_AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           envkey_AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
+          envkey_OPENAI_MONGODB_URI: ${{ secrets.OPENAI_MONGODB_URI }}
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:

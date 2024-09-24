@@ -6,6 +6,7 @@ const Screenshot = require('../models/screenshot')
 const tempsDeFlors = require('../models/tempsDeFlors')
 const Log = require('../models/log')
 const moment = require('moment')
+const {InsertOneModel} = require("mongoose");
 
 function getToken (userId) {
     return Token.findOne({userId: userId})
@@ -79,8 +80,8 @@ async function getTFSpots(roomId){
     return tempsDeFlors.find({roomId: parseInt(roomId)}).sort('number').lean()
 }
 
-async function addLogLine (nick, text, date) {
-    return Log.insertOne({nick: nick, text: text, date: date})
+async function addLogLine (roomId, nick, text, date) {
+    return Log.insertMany({roomId: roomId, nick: nick, text: text, date: date})
 }
 
 module.exports = {
@@ -99,5 +100,6 @@ module.exports = {
     getScreenshots,
     getTFSpot,
     getTFSpots,
-    setTFSpot
+    setTFSpot,
+    addLogLine
 }
