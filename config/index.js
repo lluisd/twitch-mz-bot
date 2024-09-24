@@ -29,6 +29,7 @@ module.exports = {
     },
     openAI: {
         endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-        key: process.env.AZURE_OPENAI_KEY
+        key: process.env.AZURE_OPENAI_KEY,
+        database: process.env.OPENAI_MONGODB_URI
     }
 }
