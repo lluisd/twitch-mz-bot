@@ -1,13 +1,20 @@
 const dbManager = require('../helpers/dbmanager')
 const moment = require('moment')
 
-async function logMessage(roomId, username, text) {
+async function logChatMessage(roomId, username, text) {
     let result = null
-    result = await dbManager.addLogLine(roomId, username, text, moment())
+    result = await dbManager.addChatLogLine(roomId, username, text, moment())
+    return result
+}
+
+async function logStreamTitle(roomId, title) {
+    let result = null
+    result = await dbManager.addTitleLogLine(roomId, title, moment())
     return result
 }
 
 
 module.exports = {
-    logMessage
+    logChatMessage,
+    logStreamTitle
 }
