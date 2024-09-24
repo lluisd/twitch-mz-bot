@@ -4,9 +4,8 @@ const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
 const Screenshot = require('../models/screenshot')
 const tempsDeFlors = require('../models/tempsDeFlors')
-const Log = require('../models/log')
-const moment = require('moment')
-const {InsertOneModel} = require("mongoose");
+const ChatLog = require('../models/chatLog')
+const TitleLog = require('../models/titleLog')
 
 function getToken (userId) {
     return Token.findOne({userId: userId})
@@ -80,9 +79,14 @@ async function getTFSpots(roomId){
     return tempsDeFlors.find({roomId: parseInt(roomId)}).sort('number').lean()
 }
 
-async function addLogLine (roomId, nick, text, date) {
-    return Log.insertMany({roomId: roomId, nick: nick, text: text, date: date})
+async function addChatLogLine (roomId, nick, text, date) {
+    return ChatLog.insertMany({roomId: roomId, nick: nick, text: text, date: date})
 }
+
+async function addTitleLogLine (roomId, title, date) {
+    return TitleLog.insertMany({roomId: roomId, title: title, date: date})
+}
+
 
 module.exports = {
     getToken,
@@ -101,5 +105,6 @@ module.exports = {
     getTFSpot,
     getTFSpots,
     setTFSpot,
-    addLogLine
+    addTitleLogLine,
+    addChatLogLine
 }

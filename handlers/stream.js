@@ -2,6 +2,7 @@ const TwitchService = require('../services/twitch')
 const BrowserService = require('../services/browser')
 const BirthdayService = require('../services/birthday')
 const ScreenshotService = require('../services/screenshot')
+const LoggerService = require('../services/logger')
 const config = require("../config")
 const moment = require('moment')
 require('moment-precise-range-plugin')
@@ -39,6 +40,7 @@ class Stream {
 
     async catchStream (telegramBot, twitchBot, target) {
         const result = await TwitchService.getStream()
+        await this._logStreamTitle(result)
         if (result && result.type === 'live' ) {
             await this.sendTodayBirthday(twitchBot, target)
             const text = this._getText(result)
@@ -137,6 +139,15 @@ class Stream {
     _getTodayBdayText(nick) {
         return `¡${nick} cumple años hoy!`
     }
+
+    async _logStreamTitle(result) {
+        if ((result.type === 'live' || result.type === 'stillLive') && result.lastTitle !== result.title ) {
+            await LoggerService.logStreamTitle(result.user_id, result.title)
+        }
+
+    }
+
+
 }
 
 module.exports = Stream
