@@ -29,7 +29,10 @@ module.exports = {
     },
     openAI: {
         endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+        endpoint_base: process.env.AZURE_OPENAI_ENDPOINT_BASE,
         key: process.env.AZURE_OPENAI_KEY,
-        database: process.env.OPENAI_MONGODB_URI
+        apiVersion: process.env.AZURE_OPENAI_API_VERSION,
+        database: process.env.OPENAI_MONGODB_URI,
+        vectorStoreId: process.env.AZURE_OPENAI_VECTOR_STORE_ID
     }
 }
