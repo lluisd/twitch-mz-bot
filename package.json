@@ -10,7 +10,6 @@
     "@twurple/auth": "^7.2.0",
     "@twurple/auth-tmi": "^7.2.0",
     "@twurple/eventsub-http": "^7.2.0",
-    "@twurple/eventsub-ws": "^7.2.0",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
