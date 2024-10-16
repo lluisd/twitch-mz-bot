@@ -7,12 +7,12 @@ const TempsDeFlorsService = require('./services/tempsDeFlors')
 const TwitchService = require("./services/twitch");
 const ScreenshotService = require("./services/screenshot");
 const moment = require('moment-timezone')
-const {EventSubMiddleware} = require("@twurple/eventsub-http");
+const EventSub = require('./lib/eventSub')
 
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
     messenger.init()
-        .then((apiClient) => {
+        .then((res) => {
             console.log('Connected')
 
             const app = express()
@@ -114,23 +114,13 @@ mongoose.connect(config.database).then(() => {
                 res.redirect(link.link);
             })
 
-            const middleware = new EventSubMiddleware({
-                apiClient,
-                hostName: config.twitch.hostname,
-                pathPrefix: '/twitch',
-                secret: config.twitch.eventSubSecret,
-                strictHostCheck: false
-            });
-            middleware.apply(app)
-
+            const eventSub = new EventSub();
+            eventSub.init(res.apiClient, res.bot)
+            eventSub.apply(app);
             const listener = app.listen(process.env.PORT, async ()=>  {
                 console.log('Listening on port ', + listener.address().port)
-
-                await middleware.markAsReady();
-                middleware.onChannelFollow(config.twitch.roomId, config.twitch.userId, event => {
-                    console.log(`${event.userDisplayName} just followed ${event.broadcasterDisplayName}!`);
-                });
-
+                await eventSub.markAsReady()
+                await eventSub.subscribeEvent(config.twitch.roomId)
                 app.get('/', (req, res) => res.redirect('/stream'))
             })
         })
