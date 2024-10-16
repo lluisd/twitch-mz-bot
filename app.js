@@ -21,6 +21,15 @@ mongoose.connect(config.database).then(() => {
 
             app.use(express.static('public'))
 
+            var num = 0;
+            app.use(function (req, res, next) {
+                const method = req.method;
+                const url = req.url;
+
+                console.log((++num) + " " + method + " " + url);
+                next();
+            });
+
             app.get('/p/:id', (req, res) => {
                 const spotNumber = parseInt(req.params.id)
                 if (typeof spotNumber === 'number') {
@@ -123,6 +132,7 @@ mongoose.connect(config.database).then(() => {
                 await eventSub.subscribeEvent(config.twitch.roomId)
                 app.get('/', (req, res) => res.redirect('/stream'))
             })
+
         })
 })
 
