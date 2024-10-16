@@ -4,12 +4,8 @@ const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
 const Screenshot = require('../models/screenshot')
 const tempsDeFlors = require('../models/tempsDeFlors')
-const config = require('../config')
-let ChatLog, TitleLog
-if (config.openAI.logging) {
-    ChatLog = require('../models/chatLog')
-    TitleLog = require('../models/titleLog')
-}
+const ChatLog = require('../models/chatLog')
+const TitleLog = require('../models/titleLog')
 
 
 function getToken (userId) {
@@ -85,11 +81,11 @@ async function getTFSpots(roomId){
 }
 
 async function addChatLogLine (roomId, nick, text, date) {
-    return ChatLog && ChatLog.insertMany({roomId: roomId, nick: nick, text: text, date: date})
+    return ChatLog.insertMany({roomId: roomId, nick: nick, text: text, date: date})
 }
 
 async function addTitleLogLine (roomId, title, date) {
-    return TitleLog && TitleLog.insertMany({roomId: roomId, title: title, date: date})
+    return TitleLog.insertMany({roomId: roomId, title: title, date: date})
 }
 
 
