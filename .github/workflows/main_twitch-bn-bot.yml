@@ -41,7 +41,6 @@ jobs:
           envkey_AZURE_OPENAI_ENDPOINT_BASE: ${{ secrets.AZURE_OPENAI_ENDPOINT_BASE }}
           envkey_AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
           envkey_AZURE_OPENAI_VECTOR_STORE_ID: ${{ secrets.AZURE_OPENAI_VECTOR_STORE_ID }}
-          envkey_OPENAI_LOGGING_ENABLED: false
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
