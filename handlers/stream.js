@@ -16,6 +16,14 @@ class Stream {
         await BrowserService.refreshPage().catch(() => { console.error('refreshPage on refreshPage')})
     }
 
+    async changeTitle(title) {
+        await TwitchService.setTitle(title).catch(() => { console.error('setTitle on changeTitle')})
+    }
+
+    async changeCategory(name) {
+        await TwitchService.setGame(name).catch(() => { console.error('setGame on changeCategory')})
+    }
+
     async getScreenshots(target, bot) {
         bot.say(target, `Fotos del stream ${config.externalUrl}/stream`)
     }

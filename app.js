@@ -12,7 +12,7 @@ const EventSub = require('./lib/eventSub')
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
     messenger.init()
-        .then((res) => {
+        .then(async (bot) => {
             console.log('Connected')
 
             const app = express()
@@ -124,7 +124,7 @@ mongoose.connect(config.database).then(() => {
             })
 
             const eventSub = new EventSub();
-            eventSub.init(res.apiClient, res.bot)
+            await eventSub.init(bot)
             eventSub.apply(app);
             const listener = app.listen(process.env.PORT, async ()=>  {
                 console.log('Listening on port ', + listener.address().port)
@@ -132,7 +132,6 @@ mongoose.connect(config.database).then(() => {
                 await eventSub.subscribeEvent(config.twitch.roomId)
                 app.get('/', (req, res) => res.redirect('/stream'))
             })
-
         })
 })
 
