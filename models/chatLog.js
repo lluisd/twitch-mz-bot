@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const db =  require("../db.openai")();
 
 /* Log Schema */
 const ChatLogSchema = new Schema({
@@ -22,5 +21,4 @@ const ChatLogSchema = new Schema({
     }
 })
 
-const twitchDB = db.useDb('twitch');
-module.exports = twitchDB.model('chatLog', ChatLogSchema, 'chatLogs')
+module.exports = ChatLogSchema
