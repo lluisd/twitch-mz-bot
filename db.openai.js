@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const config = require('./config')
 
-
 class Mongo {
     constructor() {
         this.connection = null
