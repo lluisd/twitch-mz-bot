@@ -4,9 +4,7 @@ const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
 const Screenshot = require('../models/screenshot')
 const tempsDeFlors = require('../models/tempsDeFlors')
-const ChatLog = require('../models/chatLog')
-const TitleLog = require('../models/titleLog')
-
+const logConn = require('../db.openai')
 
 function getToken (userId) {
     return Token.findOne({userId: userId})
@@ -81,11 +79,13 @@ async function getTFSpots(roomId){
 }
 
 async function addChatLogLine (roomId, nick, text, date) {
-    return ChatLog.insertMany({roomId: roomId, nick: nick, text: text, date: date})
+    const conn = await logConn.getConnection()
+    return conn.model('chatLog').insertMany({roomId: roomId, nick: nick, text: text, date: date})
 }
 
 async function addTitleLogLine (roomId, title, date) {
-    return TitleLog.insertMany({roomId: roomId, title: title, date: date})
+    const conn = await logConn.getConnection()
+    return conn.model('titleLog').insertMany({roomId: roomId, title: title, date: date})
 }
 
 
