@@ -1,7 +1,21 @@
 const config = require('../config')
 const dbManager = require('../helpers/dbmanager')
+const broadcasterApiClient = require('../broadcasterApiClient')
 
 const endpointPrefix = 'https://api.twitch.tv/helix'
+
+async function setTitle(title) {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.channels.updateChannelInfo(config.twitch.roomId, { title: title })
+}
+
+async function setGame(name) {
+    const api = await broadcasterApiClient.getApiClient()
+    const game = await api.games.getGameByName(name)
+    if (game) {
+        return await api.channels.updateChannelInfo(config.twitch.roomId, { gameId: game.id })
+    }
+}
 
 async function getStream() {
     let result = { type: 'notLive'}
@@ -175,7 +189,9 @@ module.exports = {
     banUser,
     unBanUser,
     getUser,
-    sendAnnouncement
+    sendAnnouncement,
+    setTitle,
+    setGame
 }
 
 
