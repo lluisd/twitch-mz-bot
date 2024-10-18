@@ -1,6 +1,7 @@
 const config = require('../config')
 const dbManager = require('../helpers/dbmanager')
 const broadcasterApiClient = require('../broadcasterApiClient')
+const moment = require('moment')
 
 const endpointPrefix = 'https://api.twitch.tv/helix'
 
@@ -15,6 +16,40 @@ async function setGame(name) {
     if (game) {
         return await api.channels.updateChannelInfo(config.twitch.roomId, { gameId: game.id })
     }
+}
+
+async function updateBannedUsers () {
+    const api = await broadcasterApiClient.getApiClient()
+    const bans = await api.moderation.getBannedUsersPaginated(config.twitch.roomId)
+    let bansList = []
+    for await (const ban of bans) {
+        const line = {roomId: config.twitch.roomId, userName: ban.userName, moderatorName: ban.moderatorName,
+            reason: ban.reason, creationDate: ban.creationDate, expiryDate: ban.expiryDate}
+
+        bansList.push(line)
+    }
+    if (bansList.length > 0) {
+        await dbManager.clearBans(config.twitch.roomId)
+        await dbManager.addBans(bansList)
+    }
+    return bansList
+}
+
+async function getBannedUsersCountByDate (date) {
+    const bans = await dbManager.getPermanentBans(config.twitch.roomId)
+    return bans.filter(ban => ban.creationDate > date)
+}
+
+async function getTimeouts () {
+    return dbManager.getTimeouts(config.twitch.roomId)
+}
+
+async function addBan (roomId, userName, moderatorName, reason, creationDate, expiryDate) {
+    await dbManager.addBan(roomId, userName, moderatorName, reason, creationDate, expiryDate);
+}
+
+async function removeBan (roomId, userName) {
+    await dbManager.removeBan(roomId, userName);
 }
 
 async function getStream() {
@@ -191,7 +226,12 @@ module.exports = {
     getUser,
     sendAnnouncement,
     setTitle,
-    setGame
+    setGame,
+    updateBannedUsers,
+    addBan,
+    getBannedUsersCountByDate,
+    getTimeouts,
+    removeBan
 }
 
 

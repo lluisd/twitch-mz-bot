@@ -94,6 +94,7 @@ async function askAssistant(message) {
                 assistantThread.id
             );
             result = messagesResponse.data[0].content[0].text.value;
+            result = cleanAssistantText(result)
         } else {
             console.log(`Run status is ${runStatus}, unable to fetch messages.`);
         }
@@ -102,6 +103,10 @@ async function askAssistant(message) {
     }
 
     return result
+}
+
+function cleanAssistantText(text) {
+    return text.replaceAll(/【.*?】/g, "")
 }
 
 
