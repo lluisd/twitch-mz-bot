@@ -2,6 +2,7 @@ const Token = require('../models/token')
 const Muncipio = require('../models/municipio')
 const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
+const Ban = require('../models/ban')
 const Screenshot = require('../models/screenshot')
 const tempsDeFlors = require('../models/tempsDeFlors')
 const logConn = require('../db.openai')
@@ -88,6 +89,31 @@ async function addTitleLogLine (roomId, title, date) {
     return conn.model('titleLog').insertMany({roomId: roomId, title: title, date: date})
 }
 
+async function addBan (roomId, userName, moderatorName, reason, creationDate, expiryDate) {
+    return Ban.insertMany({roomId: parseInt(roomId), userName: userName, moderatorName: moderatorName,
+        reason: reason, creationDate: creationDate, expiryDate: expiryDate})
+}
+
+async function removeBan (roomId, userName) {
+    return Ban.deleteOne({roomId: parseInt(roomId), userName: userName})
+}
+
+async function addBans (bans) {
+    return Ban.insertMany(bans)
+}
+
+async function clearBans (roomId) {
+    return Ban.deleteMany({roomId: parseInt(roomId)});
+}
+
+async function getPermanentBans(roomId) {
+    return Ban.find({roomId: parseInt(roomId), expiryDate: null,moderatorName: { $ne: "sery_bot" }}).lean()
+}
+
+async function getTimeouts(roomId) {
+    return Ban.find({roomId: parseInt(roomId), expiryDate: { $ne: null }}).lean()
+}
+
 
 module.exports = {
     getToken,
@@ -107,5 +133,11 @@ module.exports = {
     getTFSpots,
     setTFSpot,
     addTitleLogLine,
-    addChatLogLine
+    addChatLogLine,
+    addBan,
+    clearBans,
+    addBans,
+    getPermanentBans,
+    getTimeouts,
+    removeBan
 }
