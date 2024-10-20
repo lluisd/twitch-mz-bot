@@ -8,7 +8,7 @@ class Ban {
         const result = await TwitchService.getUnbanRequests()
         const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
         if (result && bans) {
-            const text = `${bans.length} bans.` + result.length > 0 ? ` Hay ${result.length} solicitud/es de desbaneo pendientes de revisar (${this._getUserNames(result)})` : ' No hay solicitudes de desbaneo pendientes de revisar.'
+            const text = `${bans.length} bans.` + (result.length > 0 ? ` Hay ${result.length} solicitud/es de desbaneo pendientes de revisar (${this._getUserNames(result)})` : ' No hay solicitudes de desbaneo pendientes de revisar.')
             await bot.say(target, text)
         }
     }
