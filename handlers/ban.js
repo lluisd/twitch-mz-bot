@@ -4,10 +4,11 @@ const moment = require('moment')
 require('mathjs')
 
 class Ban {
-    async getUnbanRequests(target, bot) {
+    async getBansCountAndUnbanRequests(target, bot) {
         const result = await TwitchService.getUnbanRequests()
-        if (result !== null) {
-            const text = result.length > 0 ? `Hay ${result.length} solicitud/es de desbaneo pendientes de revisar (${this._getUserNames(result)})` : 'No hay solicitudes de desbaneo pendientes de revisar.'
+        const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
+        if (result && bans) {
+            const text = `${bans.length} bans.` + result.length > 0 ? ` Hay ${result.length} solicitud/es de desbaneo pendientes de revisar (${this._getUserNames(result)})` : ' No hay solicitudes de desbaneo pendientes de revisar.'
             await bot.say(target, text)
         }
     }
@@ -32,6 +33,16 @@ class Ban {
         }
     }
 
+    async unbanRoulette(target, username, bot) {
+        const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
+        if (bans) {
+            const randomBan = bans[Math.floor(Math.random() * bans.length)]
+            await TwitchService.unBanUser(randomBan.userId)
+            const text = `Enhorabuena ${randomBan.userName}`
+            await bot.say(target, text)
+        }
+    }
+
     async updateBansList(target, bot) {
        const bansList = await TwitchService.updateBannedUsers().catch((e) => {
            console.error(e +'getBannedUsers on getBannedUsers')}
@@ -47,54 +58,6 @@ class Ban {
         if (timeouts) {
             const count = Math.min(timeouts.length, 5)
             const text = timeouts.length > 0 ? `Último/s ${count} timeouts: ${this._getUserNames(timeouts.slice(0,count))}` : 'Ho hay timeouts.'
-            await bot.say(target, text)
-        }
-    }
-
-    async getTimeoutsCount(target, bot) {
-        const timeouts = await TwitchService.getTimeouts()
-        if (timeouts) {
-            const text = `${timeouts.length} timeouts total`
-            await bot.say(target, text)
-        }
-    }
-
-    async getTodayBansCount(target, bot) {
-        const bans = await TwitchService.getBannedUsersCountByDate(moment().startOf('day').toDate())
-        if (bans) {
-            const text = `${bans.length} bans hoy`
-            await bot.say(target, text)
-        }
-    }
-
-    async getWeeklyBansCount(target, bot) {
-        const bans = await TwitchService.getBannedUsersCountByDate(moment().startOf('week').toDate())
-        if (bans) {
-            const text = `${bans.length} bans esta semana`
-            await bot.say(target, text)
-        }
-    }
-
-    async getMonthlyBansCount(target, bot) {
-        const bans = await TwitchService.getBannedUsersCountByDate(moment().startOf('month').toDate())
-        if (bans) {
-            const text = `${bans.length} bans este mes`
-            await bot.say(target, text)
-        }
-    }
-
-    async getYearlyBansCount(target, bot) {
-        const bans = await TwitchService.getBannedUsersCountByDate(moment().startOf('year').toDate())
-        if (bans) {
-            const text = `${bans.length} bans este año`
-            await bot.say(target, text)
-        }
-    }
-
-    async getTotalBansCount(target, bot) {
-        const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
-        if (bans) {
-            const text = `${bans.length} bans totales`
             await bot.say(target, text)
         }
     }
