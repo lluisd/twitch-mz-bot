@@ -33,7 +33,7 @@ class Ban {
         }
     }
 
-    async unbanRoulette(target, username, bot) {
+    async unbanRoulette(target, bot) {
         const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
         if (bans) {
             const randomBan = bans[Math.floor(Math.random() * bans.length)]
