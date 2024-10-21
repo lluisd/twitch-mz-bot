@@ -18,6 +18,16 @@ async function setGame(name) {
     }
 }
 
+async function getCurrentUsers() {
+    const api = await broadcasterApiClient.getApiClient()
+    const users = await api.chat.getChattersPaginated(config.twitch.roomId)
+    let usersList = []
+    for await (const user of users) {
+        usersList.push(user)
+    }
+    return usersList
+}
+
 async function updateBannedUsers () {
     const api = await broadcasterApiClient.getApiClient()
     const bans = await api.moderation.getBannedUsersPaginated(config.twitch.roomId)
@@ -231,7 +241,8 @@ module.exports = {
     addBan,
     getBannedUsersCountByDate,
     getTimeouts,
-    removeBan
+    removeBan,
+    getCurrentUsers
 }
 
 
