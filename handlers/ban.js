@@ -43,6 +43,16 @@ class Ban {
         }
     }
 
+    async timeoutRoulette(target, bot) {
+        const users = await TwitchService.getCurrentUsers()
+        if (users && users.length > 0) {
+            const randomUser = users[Math.floor(Math.random() * users.length)]
+            await TwitchService.banUser(randomUser.userId, 60)
+            const text = `¡Pum! ${randomUser.userDisplayName} se ha llevado un timeout de 1 minuto.`
+            await bot.say(target, text)
+        }
+    }
+
     async updateBansList(target, bot) {
        const bansList = await TwitchService.updateBannedUsers().catch((e) => {
            console.error(e +'getBannedUsers on getBannedUsers')}
