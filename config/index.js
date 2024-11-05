@@ -36,5 +36,8 @@ module.exports = {
         apiVersion: process.env.AZURE_OPENAI_API_VERSION,
         database: process.env.OPENAI_MONGODB_URI,
         vectorStoreId: process.env.AZURE_OPENAI_VECTOR_STORE_ID
+    },
+    whisper: {
+        endpoint: process.env.WHISPER_ENDPOINT,
     }
 }

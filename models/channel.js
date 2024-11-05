@@ -34,8 +34,15 @@ const ChannelSchema = new Schema({
     activeSpot: {
         type: Number,
         required: false
+    },
+    audioFile: {
+        type: String,
+        required: false
+    },
+    audioPID: {
+        type: Number,
+        required: false
     }
-
 })
 
 module.exports = mongoose.model('channel', ChannelSchema, 'channels')
