@@ -4,6 +4,7 @@ const config = require("../config");
 async function start () {
     let result
     let options = await _getHeaders()
+    options.method = 'POST'
     const endpoint = config.whisper.endpoint + '/start/' + config.twitch.channels
 
     try {
@@ -21,6 +22,7 @@ async function start () {
 async function stop () {
     let result
     let options = await _getHeaders()
+    options.method = 'POST'
     const endpoint = config.whisper.endpoint + '/stop'
 
     try {
