@@ -213,6 +213,10 @@ async function setActiveSpot (activeSpot) {
     return dbManager.updateChannel(config.twitch.channels, { activeSpot: activeSpot })
 }
 
+async function setNotifyChannelFollowMessage (isActive) {
+    return dbManager.updateChannel(config.twitch.channels, { notifyChannelFollowMessage: isActive })
+}
+
 async function _getHeaders () {
     const token = await dbManager.getToken(parseInt(config.twitch.userId)).lean()
     return {
@@ -242,7 +246,8 @@ module.exports = {
     getBannedUsersCountByDate,
     getTimeouts,
     removeBan,
-    getCurrentUsers
+    getCurrentUsers,
+    setNotifyChannelFollowMessage
 }
 
 

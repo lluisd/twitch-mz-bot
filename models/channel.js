@@ -42,6 +42,11 @@ const ChannelSchema = new Schema({
     audioPID: {
         type: Number,
         required: false
+    },
+    notifyChannelFollowMessage: {
+        type: Boolean,
+        required: false,
+        default: true
     }
 })
 

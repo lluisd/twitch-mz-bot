@@ -24,6 +24,13 @@ class Stream {
         await TwitchService.setGame(name).catch(() => { console.error('setGame on changeCategory')})
     }
 
+    async setNotifyChannelFollowMessage(value) {
+        const valueNumber = parseInt(value)
+        if (typeof valueNumber === 'number') {
+            await TwitchService.setNotifyChannelFollowMessage(!!valueNumber).catch(() => { console.error('setNotifyChannelFollowMessage on setNotifyChannelFollowMessage')})
+        }
+    }
+
     async getScreenshots(target, bot) {
         bot.say(target, `Fotos del stream ${config.externalUrl}/stream`)
     }
