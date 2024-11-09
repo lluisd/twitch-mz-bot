@@ -16,7 +16,7 @@ const assistantsClient = getClient();
 const options = {
     model: "gpt-4o-mini", // replace with model deployment name
     name: config.twitch.username,
-    instructions: "Eres un bot del canal de twitch de " + config.twitch.username + " que conoce todas las interacciones de los usuarios de su chat",
+    instructions: "Eres un bot del canal de twitch del streamer llamado " + config.twitch.username + " que conoce todas las interacciones de los usuarios de su chat",
     tools: [{"type":"file_search"}],
     tool_resources: {"file_search":{"vector_store_ids":[config.openAI.vectorStoreId]}},
     temperature: 1,
@@ -68,7 +68,8 @@ async function askAssistant(message) {
             }
         );
 
-        const assistantResponse = await assistantsClient.beta.assistants.create(options);
+        //const assistantResponse = await assistantsClient.beta.assistants.create(options);
+        const assistantResponse = await assistantsClient.beta.assistants.retrieve(config.openAI.assistantId)
         // Run the thread and poll it until it is in a terminal state
         const runResponse = await assistantsClient.beta.threads.runs.create(
             assistantThread.id,
