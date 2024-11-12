@@ -13,8 +13,15 @@ async function logStreamTitle(roomId, title) {
     return result
 }
 
+async function getLogChatMessagesBetweenDays(roomId, startOfDay, endOfDay) {
+    let result = null
+    result = await dbManager.getChatLogLines(roomId, startOfDay, endOfDay)
+    return result
+}
+
 
 module.exports = {
     logChatMessage,
-    logStreamTitle
+    logStreamTitle,
+    getLogChatMessagesBetweenDays
 }
