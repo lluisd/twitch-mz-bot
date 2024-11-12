@@ -51,6 +51,32 @@ async function askOpenAI(message) {
 
 let assistantThread = null
 
+
+async function uploadFileToVectorStore(json, formattedDate) {
+    try {
+        const filename = `chat_${formattedDate}.json`
+        const buffer = Buffer.from(json, 'utf-8');
+        const newFile = new File([buffer], filename, {
+            type: 'application/json',
+        });
+
+        const files = [];
+        for await (const file of assistantsClient.files.list()) {
+            files.push({id: file.id, name: file.filename });
+        }
+        const matchedFiles = files.filter((file) => file.name === filename);
+        for (const file of matchedFiles) {
+            await assistantsClient.files.del(file.id);
+        }
+
+        await assistantsClient.beta.vectorStores.files.uploadAndPoll(config.openAI.vectorStoreId, newFile);
+        return { success: true, filename: filename }
+
+    } catch (error) {
+        return { success: false }
+    }
+}
+
 async function askAssistant(message) {
     let result
     try {
@@ -106,6 +132,8 @@ async function askAssistant(message) {
     return result
 }
 
+
+
 function cleanAssistantText(text) {
     return text.replaceAll(/【.*?】/g, "")
 }
@@ -123,5 +151,6 @@ async function _getHeaders () {
 
 module.exports = {
     askOpenAI,
-    askAssistant
+    askAssistant,
+    uploadFileToVectorStore
 }

@@ -84,6 +84,13 @@ async function addChatLogLine (roomId, nick, text, date) {
     return conn.model('chatLog').insertMany({roomId: roomId, nick: nick, text: text, date: date})
 }
 
+async function getChatLogLines (roomId, startOfDay, endOfDay) {
+    const conn = await logConn.getConnection()
+    return conn.model('chatLog')
+        .find({roomId: roomId, date: { $gte: startOfDay, $lt: endOfDay }})
+        .select('nick text date -_id').lean()
+}
+
 async function addTitleLogLine (roomId, title, date) {
     const conn = await logConn.getConnection()
     return conn.model('titleLog').insertMany({roomId: roomId, title: title, date: date})
@@ -139,5 +146,6 @@ module.exports = {
     addBans,
     getPermanentBans,
     getTimeouts,
-    removeBan
+    removeBan,
+    getChatLogLines
 }
