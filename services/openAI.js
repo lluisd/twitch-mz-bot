@@ -52,9 +52,9 @@ async function askOpenAI(message) {
 let assistantThread = null
 
 
-async function uploadFileToVectorStore(json, formattedDate) {
+async function uploadFileToVectorStore(json, formattedDate, origin) {
     try {
-        const filename = `chat_${formattedDate}.json`
+        const filename = `${origin}_${formattedDate}.json`
         const buffer = Buffer.from(json, 'utf-8');
         const newFile = new File([buffer], filename, {
             type: 'application/json',
@@ -76,6 +76,8 @@ async function uploadFileToVectorStore(json, formattedDate) {
         return { success: false }
     }
 }
+
+
 
 async function askAssistant(message) {
     let result

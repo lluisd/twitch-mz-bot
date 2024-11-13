@@ -8,6 +8,7 @@ const TwitchService = require("./services/twitch");
 const ScreenshotService = require("./services/screenshot");
 const moment = require('moment-timezone')
 const EventSub = require('./lib/eventSub')
+const handlers = require('./handlers')
 
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
@@ -28,6 +29,15 @@ mongoose.connect(config.database).then(() => {
 
                 console.log((++num) + " " + method + " " + url);
                 next();
+            });
+
+            app.get('/transcribe', async function(req, res) {
+                await handlers.openAI.uploadStreamToOpenai(`#${config.twitch.channels}`, bot)
+                const response = {
+                    message: 'transcription started',
+                    status: 'success'
+                };
+                res.json(response);
             });
 
             app.get('/p/:id', (req, res) => {

@@ -50,6 +50,8 @@ jobs:
           envkey_TWITCH_HOSTNAME: ${{ secrets.TWITCH_HOSTNAME }}
           envkey_WHISPER_ENDPOINT: ${{ secrets.WHISPER_ENDPOINT }}
           envkey_AZURE_OPENAI_ASSISTANT_ID: ${{ secrets.AZURE_OPENAI_ASSISTANT_ID }}
+          envkey_AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          envkey_AZURE_STORAGE_CONTAINER_NAME: transcriptions
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
