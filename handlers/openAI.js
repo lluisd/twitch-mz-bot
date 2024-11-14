@@ -5,7 +5,7 @@ const moment = require("moment/moment");
 
 class OpenAI {
     async askOpenAI (target, text, username, bot) {
-        const response  = await OpenAIService.askAssistant(text)
+        const response  = await OpenAIService.askAssistant(text, username)
         if (response) {
             bot.say(target, `@${username} ${response}`)
         }
