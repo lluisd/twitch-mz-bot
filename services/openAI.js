@@ -79,7 +79,7 @@ async function uploadFileToVectorStore(json, formattedDate, origin) {
 
 
 
-async function askAssistant(message) {
+async function askAssistant(message, username) {
     let result
     try {
         // Create a thread
@@ -93,6 +93,9 @@ async function askAssistant(message) {
             {
                 role: "user",
                 content: "dime en 200 caracteres " + message,
+                metadata: {
+                    nick: username,
+                }
             }
         );
 
