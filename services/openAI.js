@@ -1,5 +1,6 @@
 const config = require('../config')
 const { AzureOpenAI } = require('openai');
+const moment = require("moment");
 
 
 const getClient = () => {
@@ -106,6 +107,7 @@ async function askAssistant(message, username) {
             assistantThread.id,
             {
                 assistant_id: assistantResponse.id,
+                additional_instructions: `Today's date: ${moment().tz('Europe/Madrid').format('MMMM Do YYYY, h:mm:ss a')}`
             }
         );
 
