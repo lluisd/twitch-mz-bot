@@ -1,6 +1,7 @@
 const config = require('../config')
-const { AzureOpenAI } = require('openai')
-const moment = require('moment')
+const { AzureOpenAI } = require('openai');
+const moment = require("moment");
+const TranscriptionsService = require('../services/transcriptions')
 require('moment/locale/es')
 moment.locale('es')
 
@@ -61,6 +62,8 @@ async function uploadFileToVectorStore(json, formattedDate, origin) {
         const newFile = new File([buffer], filename, {
             type: 'application/json',
         });
+
+        await TranscriptionsService.uploadBlob(filename, json)
 
         const files = [];
         for await (const file of assistantsClient.files.list()) {

@@ -2,6 +2,7 @@ const { BlobServiceClient } = require('@azure/storage-blob');
 const moment = require('moment');
 const config = require('../config')
 const {Buffer} = require("buffer");
+const { Readable } = require('stream');
 
 async function deleteBlobs (blobNames) {
     const blobServiceClient = BlobServiceClient.fromConnectionString(config.blobStorage.connectionString);
@@ -14,6 +15,16 @@ async function deleteBlobs (blobNames) {
             await blockBlobClient.delete();
         }
     }
+}
+
+async function uploadBlob (filename, json){
+    const blobServiceClient = BlobServiceClient.fromConnectionString(config.blobStorage.connectionString)
+    const containerClient = blobServiceClient.getContainerClient(config.blobStorage.containerName)
+    const blockBlobClient = containerClient.getBlockBlobClient(filename)
+
+    const readableStream = Readable.from([json])
+    const uploadBlobResponse = await blockBlobClient.uploadStream(readableStream)
+    console.log(`Upload block blob ${filename} successfully`, uploadBlobResponse.requestId)
 }
 
 async function getBlobs() {
@@ -91,5 +102,6 @@ async function streamToBuffer(readableStream) {
 
 module.exports = {
     getBlobs,
-    deleteBlobs
+    deleteBlobs,
+    uploadBlob
 }
