@@ -1,7 +1,8 @@
 const config = require('../config')
-const { AzureOpenAI } = require('openai');
-const moment = require("moment");
-
+const { AzureOpenAI } = require('openai')
+const moment = require('moment')
+require('moment/locale/es')
+moment.locale('es')
 
 const getClient = () => {
     const assistantsClient = new AzureOpenAI({
@@ -100,14 +101,16 @@ async function askAssistant(message, username) {
             }
         );
 
+
         //const assistantResponse = await assistantsClient.beta.assistants.create(options);
         const assistantResponse = await assistantsClient.beta.assistants.retrieve(config.openAI.assistantId)
         // Run the thread and poll it until it is in a terminal state
+        moment.locale('es')
         const runResponse = await assistantsClient.beta.threads.runs.create(
             assistantThread.id,
             {
                 assistant_id: assistantResponse.id,
-                additional_instructions: `Today's date: ${moment().tz('Europe/Madrid').format('MMMM Do YYYY, h:mm:ss a')}`
+                additional_instructions: `Fecha actual: ${moment().tz('Europe/Madrid').format('MMMM Do YYYY, h:mm:ss a')}`
             }
         );
 
