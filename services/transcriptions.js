@@ -27,33 +27,35 @@ async function getBlobs() {
     const blobs = containerClient.listBlobsFlat();
     for await (const blob of blobs) {
         const blobName = blob.name;
-        blobNames.push(blobName);
-        const match = blobName.match(pattern);
-        const date = match[1]; // '20241109'
-        const time = match[2]; // '143907'
+        const match = blobName.match(pattern)
+        if (match) {
+            blobNames.push(blobName);
+            const date = match[1]; // '20241109'
+            const time = match[2]; // '143907'
 
-        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-        const datetimeStr = blobName.split('whisper-live')[1].split('.')[0];
-        const dateTime = moment(datetimeStr, 'YYYYMMDD-HHmmss').toISOString();
+            const datetimeStr = blobName.split('whisper-live')[1].split('.')[0];
+            const dateTime = moment(datetimeStr, 'YYYYMMDD-HHmmss').toISOString();
 
-        const downloadBlockBlobResponse = await blockBlobClient.download(0);
-        const downloaded = (
-            await streamToBuffer(downloadBlockBlobResponse.readableStreamBody)
-        ).toString();
+            const downloadBlockBlobResponse = await blockBlobClient.download(0);
+            const downloaded = (
+                await streamToBuffer(downloadBlockBlobResponse.readableStreamBody)
+            ).toString();
 
-        const lines = downloaded.toString().split('\r\n');
+            const lines = downloaded.toString().split('\r\n');
 
-        const modifiedLines = lines.map(line => ({
-            nick: 'manzana_oscura',
-            text: line,
-            date: dateTime
-        }));
+            const modifiedLines = lines.map(line => ({
+                nick: 'manzana_oscura',
+                text: line,
+                date: dateTime
+            }));
 
-        //const jsonData = JSON.stringify(modifiedLines);
+            //const jsonData = JSON.stringify(modifiedLines);
 
-        jsons[date] = jsons[date] || {};
-        jsons[date][time] = modifiedLines;
+            jsons[date] = jsons[date] || {};
+            jsons[date][time] = modifiedLines;
+        }
     }
 
     let mergedJsons = {};
