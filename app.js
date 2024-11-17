@@ -6,6 +6,7 @@ const randomLinks = require("./config/randomLinks.json");
 const TempsDeFlorsService = require('./services/tempsDeFlors')
 const TwitchService = require("./services/twitch");
 const ScreenshotService = require("./services/screenshot");
+const HAService = require("./services/ha");
 const moment = require('moment-timezone')
 const EventSub = require('./lib/eventSub')
 const handlers = require('./handlers')
@@ -32,6 +33,7 @@ mongoose.connect(config.database).then(() => {
             });
 
             app.get('/transcribe', async function(req, res) {
+                await HAService.hibernateTranscriberPC()
                 await handlers.openAI.uploadStreamToOpenai(`#${config.twitch.channels}`, bot)
                 const response = {
                     message: 'transcription started',

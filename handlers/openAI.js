@@ -7,7 +7,12 @@ class OpenAI {
     async askOpenAI (target, text, username, bot) {
         const response  = await OpenAIService.askAssistant(text, username)
         if (response) {
-            bot.say(target, `@${username} ${response}`)
+            if (username) {
+                bot.say(target, `@${username} ${response}`)
+            } else {
+                bot.say(target, `/me response`)
+            }
+
         }
     }
 
