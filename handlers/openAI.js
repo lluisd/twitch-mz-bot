@@ -10,7 +10,7 @@ class OpenAI {
             if (username) {
                 bot.say(target, `@${username} ${response}`)
             } else {
-                bot.say(target, `/me response`)
+                bot.say(target, `${response}`)
             }
 
         }
