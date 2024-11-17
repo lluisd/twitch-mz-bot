@@ -44,5 +44,9 @@ module.exports = {
     blobStorage: {
         connectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
         containerName: process.env.AZURE_STORAGE_CONTAINER_NAME
+    },
+    ha: {
+        apiKey: process.env.HA_API_KEY,
+        endpoint: process.env.HA_ENDPOINT
     }
 }
