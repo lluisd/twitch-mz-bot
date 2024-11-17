@@ -99,7 +99,7 @@ async function askAssistant(message, username) {
                 role: "user",
                 content: "dime en 200 caracteres " + message,
                 metadata: {
-                    nick: username,
+                    nick: username || config.twitch.username,
                 }
             }
         );
