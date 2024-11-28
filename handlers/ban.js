@@ -43,14 +43,34 @@ class Ban {
         }
     }
 
-    async timeoutRoulette(target, bot) {
+    async timeoutRoulette(target, bot, nicks) {
         const users = await TwitchService.getCurrentUsers()
-        if (users && users.length > 0) {
-            const randomUser = users[Math.floor(Math.random() * users.length)]
-            await TwitchService.banUser(randomUser.userId, 60)
-            const text = `¡Pum! ${randomUser.userDisplayName} se ha llevado un timeout de 1 minuto.`
-            await bot.say(target, text)
+        let players = []
+        nicks.forEach(nick => {
+            const matchedUser = users.find(u => u.userDisplayName.toLowerCase() === nick.replace(/^@/, '').toLowerCase())
+            if (matchedUser) {
+                players.push(matchedUser)
+            }
+        })
+
+        const chambers = 6
+        let gun = Array(chambers).fill(false);
+        gun[0] = true
+        gun = gun.sort(() => Math.random() - 0.5)
+
+        for (let i = 0; i < players.length; i++) {
+            const shot = gun.pop()
+            if (shot) {
+                const text = `¡Pum! ${players[i].userDisplayName} se ha llevado un disparo.`
+                await bot.say(target, text)
+                await TwitchService.banUser(players[i].userId, 60)
+                return;
+            } else {
+                await bot.say(target, `${players[i].userDisplayName} está a salvo.`)
+            }
+            await new Promise(resolve => setTimeout(resolve, 2000))
         }
+        await bot.say(target, "¡Todo el mundo esta a salvo!")
     }
 
     async updateBansList(target, bot) {
@@ -101,6 +121,5 @@ class Ban {
         return unmaskedStart + masked + unmaskedEnd
     }
 }
-
 
 module.exports = Ban
