@@ -2,6 +2,7 @@ const Token = require('../models/token')
 const Muncipio = require('../models/municipio')
 const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
+const Strike = require('../models/strike')
 const Ban = require('../models/ban')
 const Screenshot = require('../models/screenshot')
 const tempsDeFlors = require('../models/tempsDeFlors')
@@ -52,6 +53,26 @@ async function updateBirthday (nick, update) {
 
 async function getBirthdayFromDate(day, month) {
     return Birthday.find({day: day, month: month}).lean()
+}
+
+async function setStrike (userId) {
+    return Strike.findOneAndUpdate(
+        {userId: parseInt(userId)},
+        { $inc: { number: 1, total: 1 } },
+        {new: true, upsert: true}
+    ).lean()
+}
+
+async function resetStrike (userId) {
+    return Strike.findOneAndUpdate(
+        {userId: parseInt(userId)},
+        { number: 0},
+        {new: true, upsert: true}
+    ).lean()
+}
+
+async function getStrikes (userId) {
+    return Strike.findOne({userId: userId}).lean()
 }
 
 async function updateScreenshot (name, update) {
@@ -147,5 +168,8 @@ module.exports = {
     getPermanentBans,
     getTimeouts,
     removeBan,
-    getChatLogLines
+    getChatLogLines,
+    getStrikes,
+    setStrike,
+    resetStrike
 }
