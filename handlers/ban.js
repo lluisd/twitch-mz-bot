@@ -1,5 +1,6 @@
 const config = require("../config")
 const TwitchService = require('../services/twitch')
+const StrikeService = require('../services/strike')
 const moment = require('moment')
 require('mathjs')
 
@@ -89,6 +90,24 @@ class Ban {
             const count = Math.min(timeouts.length, 5)
             const text = timeouts.length > 0 ? `Último/s ${count} timeouts: ${this._getUserNames(timeouts.slice(0,count))}` : 'Ho hay timeouts.'
             await bot.say(target, text)
+        }
+    }
+
+    async setStrike(target, username, bot) {
+        const user = await TwitchService.getUser(username)
+        if (user) {
+            const strikes = await StrikeService.getStrikes(user.id)
+            const strikesCount = strikes ? strikes.number : 0
+            await StrikeService.setStrike(user.id)
+            if (strikesCount < 2) {
+                await bot.say(target, `Strike ${strikesCount+ 1}/3 para ${user.display_name}, cuidadín, primer aviso!`)
+            } else if (strikesCount < 2) {
+                await bot.say(target, `Strike ${strikesCount+ 1}/3 para ${user.display_name}, me estas calentando, segundo aviso!`)
+            } else {
+                await TwitchService.banUser(user.userId, 600)
+                await bot.say(target, `Strike ${strikesCount + 1}/3 para ${user.display_name}, al carrer 10 minutos comemierda!`)
+                await StrikeService.resetStrike(user.id)
+            }
         }
     }
 
