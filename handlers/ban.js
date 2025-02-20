@@ -3,6 +3,7 @@ const TwitchService = require('../services/twitch')
 const StrikeService = require('../services/strike')
 const moment = require('moment')
 require('mathjs')
+const {forEach} = require("mathjs");
 
 class Ban {
     async getBansCountAndUnbanRequests(target, bot) {
@@ -34,13 +35,37 @@ class Ban {
         }
     }
 
-    async unbanRoulette(target, bot) {
-        const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
+    async unbanAll(target, bot) {
+        let totalCount = 0
+        let bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
         if (bans) {
-            const randomBan = bans[Math.floor(Math.random() * bans.length)]
-            await TwitchService.unBanUser(randomBan.userId)
-            const text = `Enhorabuena ${randomBan.userName}`
-            await bot.say(target, text)
+            bans = bans.filter(b => config.blacklistUsers.indexOf(b.userId) === -1)
+            forEach(bans, async ban => {
+                await this.unban(target, ban.userName)
+            })
+            totalCount += bans.length
+        }
+        const timeouts = await TwitchService.getTimeouts()
+        if (timeouts) {
+            forEach(timeouts, async timeout => {
+                await this.unban(target, ban.userName)
+            })
+            totalCount += timeouts.length
+        }
+        const text = `¡Ojo, ${totalCount} usuarios desbaneados!`
+        await bot.say(target, text)
+    }
+
+    async unbanRoulette(target, bot) {
+        let bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
+        if (bans) {
+            bans = bans.filter(b => config.blacklistUsers.indexOf(b.userId) === -1)
+            if (bans.length > 0) {
+                const randomBan = bans[Math.floor(Math.random() * bans.length)]
+                await this.unban(target, randomBan.userName)
+                const text = `Enhorabuena ${randomBan.userName}`
+                await bot.say(target, text)
+            }
         }
     }
 
