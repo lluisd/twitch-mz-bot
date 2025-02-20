@@ -37,22 +37,29 @@ class Ban {
 
     async unbanAll(target, bot) {
         let totalCount = 0
-        let bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
-        if (bans) {
-            bans = bans.filter(b => config.blacklistUsers.indexOf(b.userId) === -1)
-            forEach(bans, async ban => {
-                await this.unban(target, ban.userName)
-            })
-            totalCount += bans.length
-        }
+        let nicks = ""
+        const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
         const timeouts = await TwitchService.getTimeouts()
-        if (timeouts) {
-            forEach(timeouts, async timeout => {
-                await this.unban(target, ban.userName)
-            })
-            totalCount += timeouts.length
+        let bansList = []
+        if (bans) {
+            bansList = bansList.concat(bans)
         }
-        const text = `¡Ojo, ${totalCount} usuarios desbaneados!`
+        if (timeouts) {
+            bansList = bansList.concat(timeouts)
+        }
+
+        let bansDone = []
+        for (let ban of bansList) {
+            let user = await TwitchService.getUser(ban.userName)
+            if (user && config.blacklistUsers.indexOf(user.id) === -1) {
+                await TwitchService.unBanUser(user.id)
+                bansDone.push(ban)
+            }
+        }
+        const bansCount = Math.min(bansDone.length, 20)
+        nicks += this._getUserNames(bansDone.slice(0,bansCount))
+
+        const text =  bansCount > 0 ? `¡Ojo, ${totalCount} desbaneados! 🎉 ${nicks} 🎉 ¡A disfrutar!` : 'No hay nadie que desbanear. 🎉'
         await bot.say(target, text)
     }
 
@@ -148,7 +155,7 @@ class Ban {
 
     _maskUserName (userName) {
         const unmaskedStartLength = 3
-        const unmaskedEndLength = 1
+        const unmaskedEndLength = 3
 
         let unmaskedStart = userName.substring(0, unmaskedStartLength)
         let masked = ''
