@@ -36,7 +36,6 @@ class Ban {
     }
 
     async unbanAll(target, bot) {
-        let totalCount = 0
         let nicks = ""
         const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
         const timeouts = await TwitchService.getTimeouts()
@@ -48,18 +47,18 @@ class Ban {
             bansList = bansList.concat(timeouts)
         }
 
-        let bansDone = []
+        let unbansList = []
         for (let ban of bansList) {
             let user = await TwitchService.getUser(ban.userName)
             if (user && config.blacklistUsers.indexOf(user.id) === -1) {
                 await TwitchService.unBanUser(user.id)
-                bansDone.push(ban)
+                unbansList.push(ban)
             }
         }
-        const bansCount = Math.min(bansDone.length, 20)
-        nicks += this._getUserNames(bansDone.slice(0,bansCount))
+        const bansCount = Math.min(unbansList.length, 20)
+        nicks += this._getUserNames(unbansList.slice(0,bansCount))
 
-        const text =  bansCount > 0 ? `¡Ojo, ${totalCount} desbaneados! 🎉 ${nicks} 🎉 ¡A disfrutar!` : 'No hay nadie que desbanear. 🎉'
+        const text =  bansCount > 0 ? `¡Ojo, ${unbansList.length} desbaneados! 🎉 ${nicks} 🎉 ¡A disfrutar!` : 'No hay nadie que desbanear. 🎉'
         await bot.say(target, text)
     }
 
