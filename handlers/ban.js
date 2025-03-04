@@ -35,6 +35,17 @@ class Ban {
         }
     }
 
+    async unbanExpiredTimeouts() {
+        const timeouts = await TwitchService.getTimeouts()
+        if (timeouts) {
+            for (const timeout of timeouts) {
+                if (moment().isAfter(moment(timeout.expiryDate))) {
+                    await TwitchService.removeBan(config.twitch.roomId, timeout.userName)
+                }
+            }
+        }
+    }
+
     async unbanAll(target, bot) {
         let nicks = ""
         const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
@@ -50,7 +61,7 @@ class Ban {
         let unbansList = []
         for (let ban of bansList) {
             let user = await TwitchService.getUser(ban.userName)
-            if (user && config.blacklistUsers.indexOf(user.id) === -1) {
+            if (user && config.blacklistUsers.indexOf(user.id) === -1 && !unbansList.includes(b => b.userName === user.login)) {
                 await TwitchService.unBanUser(user.id)
                 unbansList.push(ban)
             }

@@ -118,8 +118,12 @@ async function addTitleLogLine (roomId, title, date) {
 }
 
 async function addBan (roomId, userName, moderatorName, reason, creationDate, expiryDate) {
-    return Ban.insertMany({roomId: parseInt(roomId), userName: userName, moderatorName: moderatorName,
-        reason: reason, creationDate: creationDate, expiryDate: expiryDate})
+    return Ban.findOneAndUpdate(
+        {roomId: parseInt(roomId), userName: userName },
+        { moderatorName: moderatorName,
+            reason: reason, creationDate: creationDate, expiryDate: expiryDate },
+        {new: true, upsert: true}
+    ).lean()
 }
 
 async function removeBan (roomId, userName) {
