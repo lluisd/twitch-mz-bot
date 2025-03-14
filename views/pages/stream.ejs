@@ -19,6 +19,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/plugins/zoom/lg-zoom.min.js" integrity="sha512-BLW2Jrofiqm6m7JhkQDIh2olT0EBI58+hIL/AXWvo8gOXKmsNlU6myJyEkTy6rOAAZjn0032FRk8sl9RgXPYIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/plugins/hash/lg-hash.min.js" integrity="sha512-7c9ZgozFwxmWalyapzhmzAChRvi0p7vhxWdrE3OjvFHnxuw6h6DBSOvtO1XytEj8MQI2Jp0Tm2BJwLUU7zAMvA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <h4>Stream actual - <a href="https://twitch.tv/<%= channel %>" target="_blank"><%= channel %></a></h4>
+<span></span>
+<ul class="nav">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#"><strong>Fotos stream</strong></a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="bans">Bans</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="timeouts">Timeouts</a>
+    </li>
+</ul>
 <h5><p><em><%= title %></em></p></h5>
 <div id="lightgallery">
     <% screenshots.forEach(function(screenshot) { %>
