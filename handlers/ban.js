@@ -15,10 +15,10 @@ class Ban {
             const unbanRequestsText = unbanRequests.length > 0 ?
                 ` Hay ${unbanRequests.length} solicitud/es de desbaneo pendientes de revisar (${this._getUserNames(unbanRequests)}).` :
                 ''
-            const text = bans.length > 0 ?
+            let text = bans.length > 0 ?
                 `${bans.length} bans. Último/s ${count} bans: ${this._getUserNames(bans.slice(0,count))}.` :
-                '' + unbanRequestsText + ` Detalles en ${config.externalUrl}/bans`
-
+                '' + unbanRequestsText
+            text = text + ` Detalles en ${config.externalUrl}/bans`
             await bot.say(target, text)
         }
     }
@@ -139,7 +139,8 @@ class Ban {
         const timeouts = await TwitchService.getTimeouts()
         if (timeouts) {
             const count = Math.min(timeouts.length, 5)
-            const text = timeouts.length > 0 ? `Último/s ${count} timeouts: ${this._getUserNames(timeouts.slice(0,count))}` : 'Ho hay timeouts.' + + ` Detalles en ${config.externalUrl}/timeouts`
+            let text = timeouts.length > 0 ? `Último/s ${count} timeouts: ${this._getUserNames(timeouts.slice(0,count))}` : 'Ho hay timeouts.'
+            text = text + ` Detalles en ${config.externalUrl}/timeouts`
             await bot.say(target, text)
         }
     }

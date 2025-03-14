@@ -117,10 +117,10 @@ async function addTitleLogLine (roomId, title, date) {
     return conn.model('titleLog').insertMany({roomId: roomId, title: title, date: date})
 }
 
-async function addBan (roomId, userName, moderatorName, reason, creationDate, expiryDate) {
+async function addBan (roomId, userId, userName, moderatorName, reason, creationDate, expiryDate) {
     return Ban.findOneAndUpdate(
         {roomId: parseInt(roomId), userName: userName },
-        { moderatorName: moderatorName,
+        { moderatorName: moderatorName, userId: userId,
             reason: reason, creationDate: creationDate, expiryDate: expiryDate },
         {new: true, upsert: true}
     ).lean()
