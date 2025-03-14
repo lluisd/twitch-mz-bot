@@ -33,7 +33,7 @@ async function updateBannedUsers () {
     const bans = await api.moderation.getBannedUsersPaginated(config.twitch.roomId)
     let bansList = []
     for await (const ban of bans) {
-        const line = {roomId: config.twitch.roomId, userName: ban.userName, moderatorName: ban.moderatorName,
+        const line = {roomId: config.twitch.roomId, userId: ban.userId, userName: ban.userName, moderatorName: ban.moderatorName,
             reason: ban.reason, creationDate: ban.creationDate, expiryDate: ban.expiryDate}
 
         bansList.push(line)

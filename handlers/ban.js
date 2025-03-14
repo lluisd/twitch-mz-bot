@@ -3,17 +3,27 @@ const TwitchService = require('../services/twitch')
 const StrikeService = require('../services/strike')
 const moment = require('moment')
 require('mathjs')
-const {forEach} = require("mathjs");
 
 class Ban {
     async getBansCountAndUnbanRequests(target, bot) {
-        const result = await TwitchService.getUnbanRequests()
-        const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
-        if (result && bans) {
-            const text = `${bans.length} bans.` + (result.length > 0 ? ` Hay ${result.length} solicitud/es de desbaneo pendientes de revisar (${this._getUserNames(result)})` : ' No hay solicitudes de desbaneo pendientes de revisar.')
+        const unbanRequests = await TwitchService.getUnbanRequests()
+        let bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
+        bans = bans.filter(ban => config.blacklistUsers.indexOf(ban.userId.toString()) === -1)
+
+        if (unbanRequests && bans) {
+            const count = Math.min(bans.length, 5)
+            const unbanRequestsText = unbanRequests.length > 0 ?
+                ` Hay ${unbanRequests.length} solicitud/es de desbaneo pendientes de revisar (${this._getUserNames(unbanRequests)}).` :
+                ''
+            const text = bans.length > 0 ?
+                `${bans.length} bans. Último/s ${count} bans: ${this._getUserNames(bans.slice(0,count))}.` :
+                '' + unbanRequestsText + ` Detalles en ${config.externalUrl}/bans`
+
             await bot.say(target, text)
         }
     }
+
+
 
     async ban(target, username, bot, duration) {
         const user = await TwitchService.getUser(username)
@@ -60,9 +70,8 @@ class Ban {
 
         let unbansList = []
         for (let ban of bansList) {
-            let user = await TwitchService.getUser(ban.userName)
-            if (user && config.blacklistUsers.indexOf(user.id) === -1 && !unbansList.includes(b => b.userName === user.login)) {
-                await TwitchService.unBanUser(user.id)
+            if (config.blacklistUsers.indexOf(ban.userId.toString()) === -1 && !unbansList.includes(b => b.userName === ban.userName)) {
+                await TwitchService.unBanUser(ban.userId)
                 unbansList.push(ban)
             }
         }
@@ -76,7 +85,7 @@ class Ban {
     async unbanRoulette(target, bot) {
         let bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
         if (bans) {
-            bans = bans.filter(b => config.blacklistUsers.indexOf(b.userId) === -1)
+            bans = bans.filter(b => config.blacklistUsers.indexOf(b.userId.toString()) === -1)
             if (bans.length > 0) {
                 const randomBan = bans[Math.floor(Math.random() * bans.length)]
                 await this.unban(target, randomBan.userName)
@@ -130,7 +139,7 @@ class Ban {
         const timeouts = await TwitchService.getTimeouts()
         if (timeouts) {
             const count = Math.min(timeouts.length, 5)
-            const text = timeouts.length > 0 ? `Último/s ${count} timeouts: ${this._getUserNames(timeouts.slice(0,count))}` : 'Ho hay timeouts.'
+            const text = timeouts.length > 0 ? `Último/s ${count} timeouts: ${this._getUserNames(timeouts.slice(0,count))}` : 'Ho hay timeouts.' + + ` Detalles en ${config.externalUrl}/timeouts`
             await bot.say(target, text)
         }
     }

@@ -7,6 +7,10 @@ const BanSchema = new Schema({
         type: Number,
         required: true
     },
+    userId: {
+        type: Number,
+        required: true
+    },
     userName: {
         type: String,
         required: true
