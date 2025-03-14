@@ -139,7 +139,7 @@ async function clearBans (roomId) {
 }
 
 async function getPermanentBans(roomId) {
-    return Ban.find({roomId: parseInt(roomId), expiryDate: null,moderatorName: { $ne: "sery_bot" }}).lean()
+    return Ban.find({roomId: parseInt(roomId), expiryDate: null,moderatorName: { $ne: "sery_bot" }}).sort({ creationDate: -1 }).lean()
 }
 
 async function getTimeouts(roomId) {

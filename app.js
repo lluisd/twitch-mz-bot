@@ -101,6 +101,47 @@ mongoose.connect(config.database).then(() => {
                 });
             });
 
+            app.get('/bans', function(req, res) {
+                TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate()).then((bans) => {
+                    res.render('pages/bans',{
+                        bans:  bans.filter(ban => config.blacklistUsers.indexOf(ban.userId.toString()) === -1)
+                            .map(e => {
+                                return {
+                                    ...e,
+                                    days: moment(e.creationDate).preciseDiff(moment().tz('Europe/Madrid'), true).days,
+                                    hours: moment(e.creationDate).preciseDiff(moment().tz('Europe/Madrid'), true).hours,
+                                    minutes: moment(e.creationDate).preciseDiff(moment().tz('Europe/Madrid'), true).minutes
+                                }
+                            })
+                            .reverse(),
+                        url: config.externalUrl,
+                        channel: config.twitch.channels
+                    });
+                });
+            });
+
+            app.get('/timeouts', function(req, res) {
+                TwitchService.getTimeouts().then((timeouts) => {
+                    res.render('pages/timeouts',{
+                        timeouts:  timeouts
+                            .map(e => {
+                                const now = moment().tz('Europe/Madrid');
+                                const expiryMoment = moment(e.expiryDate);
+                                const duration = moment.duration(expiryMoment.diff(now));
+                                return {
+                                    ...e,
+                                    hours: duration.hours(),
+                                    minutes: duration.minutes(),
+                                    seconds: duration.seconds()
+                                }
+                            })
+                            .reverse(),
+                        url: config.externalUrl,
+                        channel: config.twitch.channels
+                    });
+                });
+            });
+
             app.use('/images', express.static('images'));
 
             app.get('/i/:id',  async(req, res) => {
