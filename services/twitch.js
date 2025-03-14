@@ -54,8 +54,8 @@ async function getTimeouts () {
     return dbManager.getTimeouts(config.twitch.roomId)
 }
 
-async function addBan (roomId, userName, moderatorName, reason, creationDate, expiryDate) {
-    await dbManager.addBan(roomId, userName, moderatorName, reason, creationDate, expiryDate);
+async function addBan (roomId, userId, userName, moderatorName, reason, creationDate, expiryDate) {
+    await dbManager.addBan(roomId, userId, userName, moderatorName, reason, creationDate, expiryDate);
 }
 
 async function removeBan (roomId, userName) {
