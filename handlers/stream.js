@@ -8,12 +8,23 @@ const moment = require('moment')
 require('moment-precise-range-plugin')
 require('mathjs')
 const randomLinks = require("../config/randomLinks.json");
+import photoSemaphore from "../semaphore.js"
 
 const twitchUrl = 'https://www.twitch.tv/'
 
 class Stream {
     async refreshPage() {
-        await BrowserService.refreshPage().catch(() => { console.error('refreshPage on refreshPage')})
+        if (photoSemaphore.isLocked()) {
+            return;
+        }
+        const [value, release] = await photoSemaphore.acquire()
+        try {
+            await BrowserService.refreshPage().catch(() => {
+                console.error('refreshPage on refreshPage')
+            })
+        } finally {
+        release()
+        }
     }
 
     async changeTitle(title) {
@@ -36,20 +47,30 @@ class Stream {
     }
 
     async captureScreenshot(target, bot, notifierBot, displayName, roomId) {
-        const image = await BrowserService.getScreenshot().catch(() => { console.error('getScreenshot on captureScreenshot')})
-        if (image) {
+        if (photoSemaphore.isLocked()) {
+            return;
+        }
+        const [value, release] = await photoSemaphore.acquire()
+        try {
+            const image = await BrowserService.getScreenshot().catch(() => {
+                console.error('getScreenshot on captureScreenshot')
+            })
+            if (image) {
 
-            await bot.say(target, `Captura de ${displayName}: ${config.externalUrl}/i/${image.fileName}`)
-            const channel = await TwitchService.getChannel()
-            await ScreenshotService.addScreenshot(image.fileName, channel.streamId, displayName, roomId)
+                await bot.say(target, `Captura de ${displayName}: ${config.externalUrl}/i/${image.fileName}`)
+                const channel = await TwitchService.getChannel()
+                await ScreenshotService.addScreenshot(image.fileName, channel.streamId, displayName, roomId)
 
 
-            // if (channel.live) {
-            //     await notifierBot.sendPhoto(config.telegram.chatId, image.buffer, {
-            //         caption: `Captura del directo _${channel.title}_ \n por *${user}*`,
-            //         parse_mode: 'Markdown'
-            //     })
-            // }
+                // if (channel.live) {
+                //     await notifierBot.sendPhoto(config.telegram.chatId, image.buffer, {
+                //         caption: `Captura del directo _${channel.title}_ \n por *${user}*`,
+                //         parse_mode: 'Markdown'
+                //     })
+                // }
+            }
+        } finally {
+            release()
         }
     }
 
