@@ -1,6 +1,7 @@
-// semaphore.js
-import { Semaphore } from 'async-mutex'
+const Semaphore = require('async-mutex').Semaphore
 
 const photoSemaphore = new Semaphore(1)
 
-export default photoSemaphore
+module.exports = {
+    photoSemaphore
+}
