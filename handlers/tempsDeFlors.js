@@ -88,6 +88,7 @@ class TempsDeFlors {
             spot = await TempsDeFlorsService.setTFScreenshot(roomId, spot.number, image.fileName)
             await bot.say(target, `Captura de punto ${this._getText(spot)}, punto desactivado.`)
             await ScreenshotService.addScreenshot(image.fileName, channel.streamId, displayName, roomId)
+            await BrowserService.refreshPage()
         }
     }
 
