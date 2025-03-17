@@ -61,7 +61,7 @@ class Stream {
                 await bot.say(target, `Captura de ${displayName}: ${config.externalUrl}/i/${image.fileName}`)
                 const channel = await TwitchService.getChannel()
                 await ScreenshotService.addScreenshot(image.fileName, channel.streamId, displayName, roomId)
-
+                await BrowserService.refreshPage()
 
                 // if (channel.live) {
                 //     await notifierBot.sendPhoto(config.telegram.chatId, image.buffer, {

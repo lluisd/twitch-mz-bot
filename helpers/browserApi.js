@@ -87,7 +87,7 @@ class PuppeteerApi {
     }
 
     async refreshPage() {
-        await this.page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })
+        await this.page.reload({ waitUntil: ["networkidle2", "domcontentloaded"], timeout: 90000 })   //
         await this.removeElementsAndGetDiv()
     }
 
