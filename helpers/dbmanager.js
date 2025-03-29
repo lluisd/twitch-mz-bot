@@ -126,8 +126,8 @@ async function addBan (roomId, userId, userName, moderatorName, reason, creation
     ).lean()
 }
 
-async function removeBan (roomId, userName) {
-    return Ban.deleteOne({roomId: parseInt(roomId), userName: userName})
+async function removeBan (roomId, userId) {
+    return Ban.deleteOne({roomId: parseInt(roomId), userId: userId})
 }
 
 async function addBans (bans) {

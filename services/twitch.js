@@ -58,8 +58,8 @@ async function addBan (roomId, userId, userName, moderatorName, reason, creation
     await dbManager.addBan(roomId, userId, userName, moderatorName, reason, creationDate, expiryDate);
 }
 
-async function removeBan (roomId, userName) {
-    await dbManager.removeBan(roomId, userName);
+async function removeBan (roomId, userId) {
+    await dbManager.removeBan(roomId, userId);
 }
 
 async function getStream() {
