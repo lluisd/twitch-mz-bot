@@ -106,11 +106,14 @@ mongoose.connect(config.database).then(() => {
                     res.render('pages/bans',{
                         bans:  bans.filter(ban => config.blacklistUsers.indexOf(ban.userId.toString()) === -1)
                             .map(e => {
+                                const now = moment().tz('Europe/Madrid');
+                                const creationDate = moment(e.creationDate);
+                                const duration = moment.duration(now.diff(creationDate));
                                 return {
                                     ...e,
-                                    days: moment(e.creationDate).preciseDiff(moment().tz('Europe/Madrid'), true).days,
-                                    hours: moment(e.creationDate).preciseDiff(moment().tz('Europe/Madrid'), true).hours,
-                                    minutes: moment(e.creationDate).preciseDiff(moment().tz('Europe/Madrid'), true).minutes
+                                    days: Math.floor(duration.asDays()),
+                                    hours: duration.hours(),
+                                    minutes: duration.minutes()
                                 }
                             })
                             .reverse(),
