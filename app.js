@@ -133,6 +133,7 @@ mongoose.connect(config.database).then(() => {
                                 const duration = moment.duration(expiryMoment.diff(now));
                                 return {
                                     ...e,
+                                    days: duration.days(),
                                     hours: duration.hours(),
                                     minutes: duration.minutes(),
                                     seconds: duration.seconds()
