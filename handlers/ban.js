@@ -50,7 +50,7 @@ class Ban {
         if (timeouts) {
             for (const timeout of timeouts) {
                 if (moment().isAfter(moment(timeout.expiryDate))) {
-                    await TwitchService.removeBan(config.twitch.roomId, timeout.userName)
+                    await TwitchService.removeBan(config.twitch.roomId, timeout.userId)
                 }
             }
         }
