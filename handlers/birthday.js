@@ -10,7 +10,7 @@ class Birthday {
 
         const result = await BirthdayService.addBirthday(nick, day, month)
         if (result) {
-            bot.say(target, this._getText(result))
+            await bot.say(target, this._getText(result))
         }
     }
 
@@ -19,7 +19,7 @@ class Birthday {
         const result  = await BirthdayService.getBirthday(nick)
 
         if (result) {
-            bot.say(target, this._getText(result))
+            await bot.say(target, this._getText(result))
         }
     }
 
