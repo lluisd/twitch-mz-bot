@@ -7,8 +7,6 @@ const config = require("../config")
 const moment = require('moment')
 require('moment-precise-range-plugin')
 require('mathjs')
-const randomLinks = require("../config/randomLinks.json");
-require
 const { photoSemaphore } = require("../semaphore.js")
 
 const twitchUrl = 'https://www.twitch.tv/'
