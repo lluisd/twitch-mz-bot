@@ -14,7 +14,7 @@ const handlers = require('./handlers')
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
     messenger.init()
-        .then(async (bot) => {
+        .then(async ({twitchBot, telegramBot}) => {
             console.log('Connected')
 
             const app = express()
@@ -34,7 +34,7 @@ mongoose.connect(config.database).then(() => {
 
             app.get('/transcribe', async function(req, res) {
                 await HAService.hibernateTranscriberPC()
-                await handlers.openAI.uploadStreamToOpenai(`#${config.twitch.channels}`, bot)
+                await handlers.openAI.uploadStreamToOpenai(`#${config.twitch.channels}`, twitchBot, telegramBot)
                 const response = {
                     message: 'transcription started',
                     status: 'success'
@@ -181,7 +181,7 @@ mongoose.connect(config.database).then(() => {
             })
 
             const eventSub = new EventSub();
-            await eventSub.init(bot)
+            await eventSub.init(twitchBot, telegramBot)
             eventSub.apply(app);
             const listener = app.listen(process.env.PORT, async ()=>  {
                 console.log('Listening on port ', + listener.address().port)
