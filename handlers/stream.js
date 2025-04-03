@@ -7,8 +7,6 @@ const config = require("../config")
 const moment = require('moment')
 require('moment-precise-range-plugin')
 require('mathjs')
-const randomLinks = require("../config/randomLinks.json");
-require
 const { photoSemaphore } = require("../semaphore.js")
 
 const twitchUrl = 'https://www.twitch.tv/'
@@ -24,7 +22,7 @@ class Stream {
                 console.error('refreshPage on refreshPage')
             })
         } finally {
-        release()
+            release()
         }
     }
 
@@ -44,10 +42,10 @@ class Stream {
     }
 
     async getScreenshots(target, bot) {
-        bot.say(target, `Fotos del stream ${config.externalUrl}/stream`)
+        await bot.say(target, `Fotos del stream ${config.externalUrl}/stream`)
     }
 
-    async captureScreenshot(target, bot, notifierBot, displayName, roomId) {
+    async captureScreenshot(target, bot, displayName, roomId) {
         if (photoSemaphore.isLocked()) {
             return;
         }
@@ -62,13 +60,6 @@ class Stream {
                 const channel = await TwitchService.getChannel()
                 await ScreenshotService.addScreenshot(image.fileName, channel.streamId, displayName, roomId)
                 await BrowserService.refreshPage()
-
-                // if (channel.live) {
-                //     await notifierBot.sendPhoto(config.telegram.chatId, image.buffer, {
-                //         caption: `Captura del directo _${channel.title}_ \n por *${user}*`,
-                //         parse_mode: 'Markdown'
-                //     })
-                // }
             }
         } finally {
             release()
@@ -131,7 +122,7 @@ class Stream {
                 const nicks = bdays.map(bday => `${bday.nick}`).join(', ').replace(/, ([^,]*)$/, ' y $1')
                 text = this._getTodayBdaysText(nicks)
             }
-            twitchBot.say(target, text)
+            await twitchBot.say(target, text)
         }
     }
 

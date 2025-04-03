@@ -8,7 +8,7 @@ class Weather {
             const code = `${municipio.codigoProvincia}${municipio.codigoMunicipio}`
             const sunsetTime = await AemetService.getSunsetPrediction(code)
             if (sunsetTime) {
-                bot.say(target, `${municipio.nombre} atardece a las ${sunsetTime}`)
+                await bot.say(target, `${municipio.nombre} atardece a las ${sunsetTime}`)
             }
         }
     }
@@ -19,7 +19,7 @@ class Weather {
             const code = `${municipio.codigoProvincia}${municipio.codigoMunicipio}`
             const sunriseTime = await AemetService.getSunrisePrediction(code)
             if (sunriseTime) {
-                bot.say(target, `${municipio.nombre} amanece a las ${sunriseTime}`)
+                await bot.say(target, `${municipio.nombre} amanece a las ${sunriseTime}`)
             }
         }
     }
