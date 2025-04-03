@@ -10,7 +10,7 @@ class TempsDeFlors {
         if (typeof spotNumber === 'number') {
             const spot = await TempsDeFlorsService.getTFSpot(roomId, spotNumber)
             if (spot) {
-                this._printSpot(spot, target, bot)
+                await this._printSpot(spot, target, bot)
             }
         }
     }
@@ -25,7 +25,7 @@ class TempsDeFlors {
     async getTotalSpot (target, bot, roomId) {
         const spots = await TempsDeFlorsService.getTFSpots(roomId)
         const count = spots.filter((s) => s.visited).length
-        bot.say(target, `Puntos: ${config.externalUrl} (${count}/${spots.length} vistos)`)
+        await bot.say(target, `Puntos: ${config.externalUrl} (${count}/${spots.length} vistos)`)
     }
 
     async setVisited (target, text, bot, roomId, isVisited) {
@@ -33,7 +33,7 @@ class TempsDeFlors {
         if (typeof spotNumber === 'number') {
             const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber, isVisited)
             if (spot) {
-                this._printSpot(spot, target, bot)
+                await this._printSpot(spot, target, bot)
             }
         }
     }
@@ -44,7 +44,7 @@ class TempsDeFlors {
             const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber, true, true)
             if (spot) {
                 await TwitchService.setActiveSpot(spotNumber)
-                bot.say(target, `Punto: ${this._getText(spot)} activo para !foto`)
+                await bot.say(target, `Punto: ${this._getText(spot)} activo para !foto`)
             }
         }
     }
@@ -52,7 +52,7 @@ class TempsDeFlors {
     async setDeactivate (target, bot) {
         const channelBeforeUpdate = await TwitchService.setActiveSpot(0)
         if (channelBeforeUpdate?.activeSpot && channelBeforeUpdate.activeSpot !== 0) {
-            bot.say(target, `Punto ${channelBeforeUpdate.activeSpot} desactivado.`)
+            await bot.say(target, `Punto ${channelBeforeUpdate.activeSpot} desactivado.`)
         }
     }
 
@@ -61,10 +61,10 @@ class TempsDeFlors {
         if (channel.activeSpot !== 0) {
             const spot = await TempsDeFlorsService.getTFSpot(roomId, channel.activeSpot)
             if (spot) {
-                bot.say(target, `Punto: ${this._getText(spot)} activo para !foto`)
+                await bot.say(target, `Punto: ${this._getText(spot)} activo para !foto`)
             }
         } else {
-            bot.say(target, `No hay ningún punto activo para !foto`)
+            await bot.say(target, `No hay ningún punto activo para !foto`)
         }
     }
 
@@ -82,7 +82,7 @@ class TempsDeFlors {
         }
     }
 
-    async   _getScreenshot(target, bot, displayName, roomId, spot, channel) {
+    async _getScreenshot(target, bot, displayName, roomId, spot, channel) {
         const image = await BrowserService.getScreenshot().catch(() => { console.error('getScreenshot on captureScreenshot')})
         if (image) {
             spot = await TempsDeFlorsService.setTFScreenshot(roomId, spot.number, image.fileName)
@@ -92,9 +92,9 @@ class TempsDeFlors {
         }
     }
 
-    _printSpot(spot, target, bot) {
+    async _printSpot(spot, target, bot) {
         if (spot !== null) {
-            bot.say(target, this._getText(spot))
+            await bot.say(target, this._getText(spot))
         }
     }
 

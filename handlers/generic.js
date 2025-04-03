@@ -2,9 +2,9 @@ const config = require("../config")
 const randomLinks = require("../config/randomLinks.json");
 
 class Generic {
-    rollDice (target, bot) {
+    async rollDice (target, bot) {
         const num = this._rollDice();
-        bot.say(target, `Ha salido el número ${num}`)
+        await bot.say(target, `Ha salido el número ${num}`)
     }
 
     _rollDice () {
@@ -12,21 +12,13 @@ class Generic {
         return Math.floor(Math.random() * sides) + 1
     }
 
-    status (target, bot) {
-        bot.say(target, `${config.statusUrl}`)
+    async status (target, bot) {
+        await bot.say(target, `${config.statusUrl}`)
     }
 
-    randomYoutubeLink (target, bot) {
+    async randomYoutubeLink (target, bot) {
         const position = Math.floor(Math.random() * randomLinks.links.length)
-        bot.say(target, `Mi OF ${config.externalUrl}/OF/${config.twitch.channels}${position}`)
-    }
-
-    setTitle (target, text, bot) {
-        bot.say(target, `!title ${text}`)
-    }
-
-    setGame (target, text, bot) {
-        bot.say(target, `!game ${text}`)
+        await bot.say(target, `Mi OF ${config.externalUrl}/OF/${config.twitch.channels}${position}`)
     }
 }
 
