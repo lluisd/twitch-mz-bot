@@ -52,7 +52,7 @@ class OpenAI {
                     console.log('Stream uploaded to openai ' + result.filename)
                 } else {
                     error = true
-                    console.log('Error uploading stream to openai of date ' + formattedDate)
+                    console.log('Error uploading stream to openai of date ' + formattedDate + ' error:' + result.error)
                 }
             }
         }
