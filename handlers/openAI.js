@@ -23,7 +23,8 @@ class OpenAI {
         const startOfDay = date.startOf('day').toDate();
         const endOfDay = date.endOf('day').toDate();
 
-        const response = await LoggerService.getLogChatMessagesBetweenDays(config.twitch.roomId,startOfDay, endOfDay)
+        const response = await LoggerService.getLogChatMessagesBetweenDays(config.twitch.roomId, startOfDay, endOfDay)
+        if (response.length === 0 ) return
         const json = JSON.stringify(response)
 
         const formattedDate = date.format('YYYY-MM-DD');
@@ -51,7 +52,7 @@ class OpenAI {
                     console.log('Stream uploaded to openai ' + result.filename)
                 } else {
                     error = true
-                    console.log('Error uploading stream to openai of date ' + formattedDate)
+                    console.log('Error uploading stream to openai of date ' + formattedDate + ' error:' + result.error)
                 }
             }
         }
