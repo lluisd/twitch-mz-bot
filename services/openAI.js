@@ -78,7 +78,7 @@ async function uploadFileToVectorStore(json, formattedDate, origin) {
         return { success: true, filename: filename }
 
     } catch (error) {
-        return { success: false }
+        return { success: false, error: error }
     }
 }
 
