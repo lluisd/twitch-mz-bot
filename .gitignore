@@ -7,3 +7,5 @@ node.log
 .vscode/
 public/images/*
 .cache/
+files/*
+merged/*
