@@ -20,12 +20,17 @@ class TempsDeFlors {
     }
 
     getHelpLink (target, bot) {
-        bot.say(target, `${config.externalUrl}/TdF`)
+        bot.say(target, `${config.externalUrl}/listado`)
     }
+
+    getNotification (target, bot) {
+        bot.say(target, `Reto temps de Flors '25 ${config.externalUrl}/listado Puedes usar los comandos: !puntos, !punto <número> `)
+    }
+
     async getTotalSpot (target, bot, roomId) {
         const spots = await TempsDeFlorsService.getTFSpots(roomId)
         const count = spots.filter((s) => s.visited).length
-        await bot.say(target, `Puntos: ${config.externalUrl} (${count}/${spots.length} vistos)`)
+        await bot.say(target, `Puntos: ${config.externalUrl}/listado (${count}/${spots.length} vistos)`)
     }
 
     async setVisited (target, text, bot, roomId, isVisited) {
