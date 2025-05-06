@@ -35,7 +35,7 @@ jobs:
           envKey_WHITE_LIST_ADMINS: ${{ secrets.WHITE_LIST_ADMINS }}
           envKey_WHITE_LIST_EDITORS: ${{ secrets.WHITE_LIST_EDITORS }}
           envKey_BLACK_LIST_USERS: ${{ secrets.BLACK_LIST_USERS }}
-          envKey_FEATURE_TF_SPOTS: false
+          envKey_FEATURE_TF_SPOTS: true
           envkey_AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           envkey_AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
           envkey_OPENAI_MONGODB_URI: ${{ secrets.OPENAI_MONGODB_URI }}
