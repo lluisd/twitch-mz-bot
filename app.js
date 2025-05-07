@@ -59,6 +59,7 @@ mongoose.connect(config.database).then(() => {
                         url: config.externalUrl,
                         channel: config.twitch.channels,
                         percentage: percentage,
+                        moment: moment,
                         bgClass: percentage > 50 ? 'bg-success' : (percentage > 25 ? 'bg-warning' : 'bg-danger')
                     });
                 })
