@@ -24,8 +24,8 @@ class TempsDeFlors {
         bot.say(target, `${config.externalUrl}/listado`)
     }
 
-    getNotification (target, bot) {
-        bot.say(target, `Reto temps de Flors '25 ${config.externalUrl}/listado Puedes usar los comandos: !puntos, !punto <número> `)
+    getNotification (bot, target) {
+        bot.say(target, `¡Reto temps de Flors '25 del 10 al 18 de Mayo! ${config.externalUrl}/listado Comandos: !puntos, !punto <número>`)
     }
 
     async getTotalSpot (target, bot, roomId) {
