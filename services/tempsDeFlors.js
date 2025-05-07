@@ -1,5 +1,5 @@
 const dbManager = require('../helpers/dbmanager')
-const moment = require('moment')
+const moment = require('moment-timezone')
 const config = require('../config')
 
 async function getTFSpot(roomId, number) {
@@ -7,11 +7,11 @@ async function getTFSpot(roomId, number) {
 }
 
 async function setTFVisited(roomId, number, state, returnOldDoc = false) {
-    return await dbManager.setTFSpot(roomId, number , {screenshot: null, screenshotOn: null, visited: state, visitedOn: moment() }, returnOldDoc)
+    return await dbManager.setTFSpot(roomId, number , {screenshot: null, created: null, capturedBy: null, visited: state }, returnOldDoc)
 }
 
-async function setTFScreenshot(roomId, number, screenshot) {
-    return await dbManager.setTFSpot(roomId, number , { screenshot: screenshot, screenshotOn: moment() })
+async function setTFScreenshot(roomId, number, screenshot, displayName) {
+    return await dbManager.setTFSpot(roomId, number , { screenshot: screenshot, created: moment().tz('Europe/Madrid'), capturedBy:displayName })
 }
 
 async function getTFSpots(roomId) {

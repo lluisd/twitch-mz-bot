@@ -1,8 +1,9 @@
 const config = require("../config")
 const TempsDeFlorsService = require('../services/tempsDeFlors')
 const TwitchService = require('../services/twitch')
-const BrowserService = require("../services/browser");
-const ScreenshotService = require("../services/screenshot");
+const BrowserService = require("../services/browser")
+const ScreenshotService = require("../services/screenshot")
+const {photoSemaphore} = require("../semaphore")
 
 class TempsDeFlors {
     async getSpot (target, text, bot, roomId) {
@@ -79,18 +80,26 @@ class TempsDeFlors {
     }
 
     async captureScreenshot(target, text, bot, displayName, roomId) {
-        const channel = await TwitchService.getChannel()
-        const spot = await TempsDeFlorsService.getTFSpot(roomId, channel.activeSpot)
-        if (spot){
-            await TwitchService.setActiveSpot(0)
-            await this._getScreenshot(target, bot, displayName, roomId, spot, channel)
+        if (photoSemaphore.isLocked()) {
+            return
+        }
+        const [value, release] = await photoSemaphore.acquire()
+        try {
+            const channel = await TwitchService.getChannel()
+            const spot = await TempsDeFlorsService.getTFSpot(roomId, channel.activeSpot)
+            if (spot){
+                await TwitchService.setActiveSpot(0)
+                await this._getScreenshot(target, bot, displayName, roomId, spot, channel)
+            }
+        } finally {
+            release()
         }
     }
 
     async _getScreenshot(target, bot, displayName, roomId, spot, channel) {
         const image = await BrowserService.getScreenshot().catch(() => { console.error('getScreenshot on captureScreenshot')})
         if (image) {
-            spot = await TempsDeFlorsService.setTFScreenshot(roomId, spot.number, image.fileName)
+            spot = await TempsDeFlorsService.setTFScreenshot(roomId, spot.number, image.fileName, displayName)
             await bot.say(target, `Captura de punto ${this._getText(spot)}, punto desactivado.`)
             await ScreenshotService.addScreenshot(image.fileName, channel.streamId, displayName, roomId)
             await BrowserService.refreshPage()
