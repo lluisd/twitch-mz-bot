@@ -31,7 +31,7 @@
     </ul>
     <div id="lightgallery">
         <% spots.forEach(function(spot) { %>
-                <a href="<%= url + '/img/' + spot.screenshot %>" data-sub-html="<%= spot.number + ' - ' + spot.description %>" data-lg-size="1340-754" data-slide-name="<%=spot.screenshot %>">
+                <a href="<%= url + '/img/' + spot.screenshot %>" data-sub-html="<h4><%= spot.number + ' - ' + spot.description %></h4><p>Captura de - <%= spot.capturedBy %></p><p class='capitalize' > Fecha -  <%= moment(spot.created).tz('Europe/Madrid').locale('es').format('LLLL') %></p>" data-lg-size="1340-754" data-slide-name="<%=spot.screenshot %>">
                     <img src="<%= url + '/img/t_' + spot.screenshot %>"  alt="<%=  spot.description %>>"  width="200" >
                 </a>
         <% }); %>

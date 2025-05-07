@@ -47,7 +47,7 @@ class Stream {
 
     async captureScreenshot(target, bot, displayName, roomId) {
         if (photoSemaphore.isLocked()) {
-            return;
+            return
         }
         const [value, release] = await photoSemaphore.acquire()
         try {
