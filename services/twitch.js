@@ -2,6 +2,7 @@ const config = require('../config')
 const dbManager = require('../helpers/dbmanager')
 const broadcasterApiClient = require('../broadcasterApiClient')
 const moment = require('moment')
+const logger = require('../lib/logger')
 
 const endpointPrefix = 'https://api.twitch.tv/helix'
 
@@ -193,7 +194,7 @@ async function sendAnnouncement(text, color) {
     try {
         await fetch(endpoint, options)
     } catch (e) {
-        console.log('error sending announcement: ' + e)
+        logger.error('error sending announcement: ' + e)
     }
 }
 

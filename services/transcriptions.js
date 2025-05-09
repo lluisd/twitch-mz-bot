@@ -3,6 +3,7 @@ const moment = require('moment');
 const config = require('../config')
 const {Buffer} = require("buffer");
 const { Readable } = require('stream');
+const logger = require('../lib/logger')
 
 async function deleteBlobs (blobNames) {
     const blobServiceClient = BlobServiceClient.fromConnectionString(config.blobStorage.connectionString);
@@ -24,7 +25,7 @@ async function uploadBlob (filename, json){
 
     const readableStream = Readable.from([json])
     const uploadBlobResponse = await blockBlobClient.uploadStream(readableStream)
-    console.log(`Upload block blob ${filename} successfully`, uploadBlobResponse.requestId)
+    logger.info(`Upload block blob ${filename} successfully`, uploadBlobResponse.requestId)
 }
 
 async function getBlobs() {

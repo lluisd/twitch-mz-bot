@@ -2,13 +2,14 @@ const browserApi = require('../helpers/browserApi.js')
 const { customAlphabet, urlAlphabet } = require('nanoid')
 const nanoid = customAlphabet(urlAlphabet, 5)
 const sharp = require('sharp')
+const logger = require('../lib/logger')
 
 async function getScreenshot() {
     let bufferImage
     try {
         await this.startAndWarmUpBrowserIfNeeded()
     } catch (error) {
-        console.log(error)
+        logger.error(error)
         return null
     }
     const name = nanoid()
@@ -16,9 +17,9 @@ async function getScreenshot() {
         bufferImage = await browserApi.takeScreenshot(`public/images/${name}.jpg`)
         sharp(bufferImage)
             .resize({ width: 200 })
-            .toFile(`public/images/t_${name}.jpg`).catch(() => { console.error('rsize image for thumbnail')})
+            .toFile(`public/images/t_${name}.jpg`).catch(() => { logger.error('rsize image for thumbnail')})
     } catch (error) {
-        console.log(error)
+        logger.error(error)
         return null
     }
     return {buffer: bufferImage, fileName: name }
@@ -28,14 +29,14 @@ async function startAndWarmUpBrowserIfNeeded() {
     const browserIsOpen = await browserApi.checkIfBrowserIsOpen()
 
     if (!browserIsOpen) {
-        console.log('Browser is not open, creating new one')
+        logger.info('Browser is not open, creating new one')
         await browserApi.createNewBrowser()
-        console.log('creating new page also')
+        logger.info('creating new page also')
         await browserApi.createNewPage()
     } else {
         const pageIsOpen = await browserApi.checkIfPageIsOpen()
         if (!pageIsOpen) {
-            console.log('Page is not open, creating new one')
+            logger.info('Page is not open, creating new one')
             await browserApi.createNewPage()
         }
     }

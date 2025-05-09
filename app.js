@@ -10,12 +10,13 @@ const HAService = require("./services/ha");
 const moment = require('moment-timezone')
 const EventSub = require('./lib/eventSub')
 const handlers = require('./handlers')
+const logger = require('./lib/logger')
 
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
     messenger.init()
         .then(async ({twitchBot, telegramBot}) => {
-            console.log('Connected')
+            logger.info('Connected')
 
             const app = express()
 
@@ -28,7 +29,7 @@ mongoose.connect(config.database).then(() => {
                 const method = req.method;
                 const url = req.url;
 
-                console.log((++num) + " " + method + " " + url);
+                logger.info((++num) + " " + method + " " + url);
                 next();
             });
 
@@ -185,7 +186,7 @@ mongoose.connect(config.database).then(() => {
             await eventSub.init(twitchBot, telegramBot)
             eventSub.apply(app);
             const listener = app.listen(process.env.PORT, async ()=>  {
-                console.log('Listening on port ', + listener.address().port)
+                logger.info('Listening on port ' + listener.address().port)
                 await eventSub.markAsReady()
                 await eventSub.subscribeEvent(config.twitch.roomId)
                 app.get('/', (req, res) => res.redirect('/stream'))

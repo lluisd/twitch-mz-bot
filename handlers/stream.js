@@ -8,7 +8,7 @@ const moment = require('moment')
 require('moment-precise-range-plugin')
 require('mathjs')
 const { photoSemaphore } = require("../semaphore.js")
-
+const logger = require('../lib/logger')
 const twitchUrl = 'https://www.twitch.tv/'
 
 class Stream {
@@ -19,7 +19,7 @@ class Stream {
         const [value, release] = await photoSemaphore.acquire()
         try {
             await BrowserService.refreshPage().catch(() => {
-                console.error('refreshPage on refreshPage')
+                logger.error('refreshPage on refreshPage')
             })
         } finally {
             release()
@@ -27,17 +27,17 @@ class Stream {
     }
 
     async changeTitle(title) {
-        await TwitchService.setTitle(title).catch(() => { console.error('setTitle on changeTitle')})
+        await TwitchService.setTitle(title).catch(() => { logger.error('setTitle on changeTitle')})
     }
 
     async changeCategory(name) {
-        await TwitchService.setGame(name).catch(() => { console.error('setGame on changeCategory')})
+        await TwitchService.setGame(name).catch(() => { logger.error('setGame on changeCategory')})
     }
 
     async setNotifyChannelFollowMessage(value) {
         const valueNumber = parseInt(value)
         if (typeof valueNumber === 'number') {
-            await TwitchService.setNotifyChannelFollowMessage(!!valueNumber).catch(() => { console.error('setNotifyChannelFollowMessage on setNotifyChannelFollowMessage')})
+            await TwitchService.setNotifyChannelFollowMessage(!!valueNumber).catch(() => { logger.error('setNotifyChannelFollowMessage on setNotifyChannelFollowMessage')})
         }
     }
 
@@ -52,7 +52,7 @@ class Stream {
         const [value, release] = await photoSemaphore.acquire()
         try {
             const image = await BrowserService.getScreenshot().catch(() => {
-                console.error('getScreenshot on captureScreenshot')
+                logger.error('getScreenshot on captureScreenshot')
             })
             if (image) {
 
@@ -74,26 +74,26 @@ class Stream {
             const text = this._getText(result)
             const options = { parse_mode: 'Markdown' }
             const msg = await telegramBot.sendMessage(config.telegram.chatId, text, options)
-            await telegramBot.pinChatMessage(config.telegram.chatId, msg.message_id).catch((err) => { console.error(`cannot pin chat: ${err}`)})
+            await telegramBot.pinChatMessage(config.telegram.chatId, msg.message_id).catch((err) => { logger.error(`cannot pin chat: ${err}`)})
             await TwitchService.saveLastMessage(msg)
-            await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on live')})
+            await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { logger.error('startAndWarmUpBrowserIfNeeded on live')})
         } else if (result && result.type === 'finished' && result.messageId) {
-            await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: result.messageId}).catch((err) => { console.error(`cannot unpin chat: ${err}`)})
-            await telegramBot.deleteMessage(config.telegram.chatId, result.messageId).catch((err) => { console.error(`cannot delete message: ${err}`)})
+            await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: result.messageId}).catch((err) => { logger.error(`cannot unpin chat: ${err}`)})
+            await telegramBot.deleteMessage(config.telegram.chatId, result.messageId).catch((err) => { logger.error(`cannot delete message: ${err}`)})
             await this._sendStreamScreenshots(telegramBot, result.streamId)
-            await BrowserService.closeBrowser().catch(() => { console.error('closeBrowser on finished')})
+            await BrowserService.closeBrowser().catch(() => { logger.error('closeBrowser on finished')})
         } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000))) {
             const options = {
                 chat_id: config.telegram.chatId,
                 message_id: result.messageId,
                 parse_mode: 'Markdown'
             }
-            console.log('still alive' + this._getText(result))
+            logger.info('still alive' + this._getText(result))
             await TwitchService.saveLastUpdate()
-            await telegramBot.editMessageText(this._getText(result), options).catch((err) => { console.error(`cannot edit message: ${err}`)})
-            await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { console.error('startAndWarmUpBrowserIfNeeded on stillLive')})
+            await telegramBot.editMessageText(this._getText(result), options).catch((err) => { logger.error(`cannot edit message: ${err}`)})
+            await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { logger.error('startAndWarmUpBrowserIfNeeded on stillLive')})
         } else if (result && result.type === 'notLive') {
-            await BrowserService.closeBrowserIfNeeded().catch(() => { console.error('closeBrowserIfNeeded on notLive')})
+            await BrowserService.closeBrowserIfNeeded().catch(() => { logger.error('closeBrowserIfNeeded on notLive')})
         }
     }
 
@@ -128,7 +128,7 @@ class Stream {
 
     async _sendStreamScreenshots(telegramBot, streamId) {
         const screenshots = await ScreenshotService.getScreenshots(streamId)
-        console.log('sending images: ' + screenshots.length)
+        logger.info('sending images: ' + screenshots.length)
         if (screenshots && screenshots.length > 1) {
             const chunkSize = 10
             let index = 0
@@ -144,10 +144,10 @@ class Stream {
                     }));
                 ((ind, p) => {
                     setTimeout(async () => {
-                        console.log('sending chunk: ' + ind + 'with photos' + p.map(photo => photo.media).join(', '))
+                        logger.info('sending chunk: ' + ind + 'with photos' + p.map(photo => photo.media).join(', '))
                         await telegramBot.sendMediaGroup(config.telegram.chatId, p, { disable_notification: true }).catch((err) => {
-                            console.log(err.code)
-                            console.log(err.response?.body)
+                            logger.error(err.code)
+                            logger.error(err.response?.body)
                         })
                     }, 65000 * ind);
                 })(index, photos);
