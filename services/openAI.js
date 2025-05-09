@@ -4,6 +4,7 @@ const moment = require("moment");
 const TranscriptionsService = require('../services/transcriptions')
 require('moment/locale/es')
 moment.locale('es')
+const logger = require('../lib/logger')
 
 const getClient = () => {
     const assistantsClient = new AzureOpenAI({
@@ -136,10 +137,10 @@ async function askAssistant(message, username) {
             result = messagesResponse.data[0].content[0].text.value;
             result = cleanAssistantText(result)
         } else {
-            console.log(`Run status is ${runStatus}, unable to fetch messages.`);
+            logger.info(`Run status is ${runStatus}, unable to fetch messages.`);
         }
     } catch (error) {
-        console.error(`Error running the assistant: ${error.message}`);
+        logger.error(`Error running the assistant: ${error.message}`);
     }
 
     return result

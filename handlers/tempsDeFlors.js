@@ -4,6 +4,7 @@ const TwitchService = require('../services/twitch')
 const BrowserService = require("../services/browser")
 const ScreenshotService = require("../services/screenshot")
 const {photoSemaphore} = require("../semaphore")
+const logger = require('../lib/logger')
 
 class TempsDeFlors {
     async getSpot (target, text, bot, roomId) {
@@ -97,7 +98,7 @@ class TempsDeFlors {
     }
 
     async _getScreenshot(target, bot, displayName, roomId, spot, channel) {
-        const image = await BrowserService.getScreenshot().catch(() => { console.error('getScreenshot on captureScreenshot')})
+        const image = await BrowserService.getScreenshot().catch(() => { logger.error('getScreenshot on captureScreenshot')})
         if (image) {
             spot = await TempsDeFlorsService.setTFScreenshot(roomId, spot.number, image.fileName, displayName)
             await bot.say(target, `Captura de punto ${this._getText(spot)}, punto desactivado.`)

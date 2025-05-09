@@ -3,6 +3,7 @@ const LoggerService = require('../services/logger')
 const TranscriptionsService = require('../services/transcriptions')
 const moment = require("moment/moment");
 const config = require("../config");
+const logger = require('../lib/logger')
 
 class OpenAI {
     async askOpenAI (target, text, username, twitchBot) {
@@ -31,9 +32,9 @@ class OpenAI {
         const result = await OpenAIService.uploadFileToVectorStore(json, formattedDate, 'chat')
         if (result.success) {
             await twitchBot.say(target, `IA actualizada con el chat de ${formattedDate}`)
-            console.log('Chat uploaded to openai ' + result.filename)
+            logger.info('Chat uploaded to openai ' + result.filename)
         } else {
-            console.log('Error uploading chat to openai of date ' + formattedDate)
+            logger.error('Error uploading chat to openai of date ' + formattedDate)
         }
     }
 
@@ -49,10 +50,10 @@ class OpenAI {
                     await twitchBot.say(target, message)
                     await telegramBot.sendMessage(config.telegram.chatId, message, { parse_mode: 'Markdown' })
 
-                    console.log('Stream uploaded to openai ' + result.filename)
+                    logger.info('Stream uploaded to openai ' + result.filename)
                 } else {
                     error = true
-                    console.log('Error uploading stream to openai of date ' + formattedDate + ' error:' + result.error)
+                    logger.error('Error uploading stream to openai of date ' + formattedDate + ' error:' + result.error)
                 }
             }
         }

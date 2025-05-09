@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer-core')
 const config = require('../config')
+const logger = require('../lib/logger')
 
 class PuppeteerApi {
     browser = null
@@ -27,14 +28,14 @@ class PuppeteerApi {
     }
 
     async closeBrowser() {
-        console.log("browser closed")
+        logger.info("browser closed")
         await this.browser.close()
     }
 
     async createNewBrowser() {
         await this.connectBrowser()
         this.browser.on('disconnected', async () => {
-            console.log('disconnected browser')
+            logger.info('disconnected browser')
             if (this.browser) await this.browser.close()
             if (this.browser && this.browser.process() != null) this.browser.process().kill('SIGINT')
             this.browser = null

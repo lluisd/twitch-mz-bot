@@ -3,6 +3,7 @@ const TwitchService = require('../services/twitch')
 const StrikeService = require('../services/strike')
 const moment = require('moment')
 require('mathjs')
+const logger = require('../lib/logger')
 
 class Ban {
     async getBansCountAndUnbanRequests(target, bot) {
@@ -127,7 +128,7 @@ class Ban {
 
     async updateBansList(target, bot) {
        const bansList = await TwitchService.updateBannedUsers().catch((e) => {
-           console.error(e +'getBannedUsers on getBannedUsers')}
+           logger.error(e +'getBannedUsers on getBannedUsers')}
        )
        if (bansList && bansList.length > 0) {
            const text = `Actualizados ${bansList.length} bans`

@@ -1,5 +1,6 @@
 const dbManager = require('../helpers/dbmanager')
 const config = require("../config");
+const logger = require('../lib/logger')
 
 async function start () {
     let result
@@ -12,7 +13,7 @@ async function start () {
         result = await response.json()
         dbManager.updateChannel(config.twitch.channels, { audioFile: result.filename, audioPID: result.pid })
     } catch (e) {
-        console.log(e)
+        logger.error(e)
         result = null
     }
 
@@ -30,7 +31,7 @@ async function stop () {
         result = await response.json()
         dbManager.updateChannel(config.twitch.channels, { audioFile: null, audioPID: null })
     } catch (e) {
-        console.log(e)
+        logger.error(e)
         result = null
     }
 
