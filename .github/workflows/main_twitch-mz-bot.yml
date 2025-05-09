@@ -56,7 +56,7 @@ jobs:
           envkey_HA_ENDPOINT: ${{ secrets.HA_ENDPOINT }}
           envkey_HA_API_KEY: ${{ secrets.HA_API_KEY }}
           envKey_LOKI_BASIC_AUTH: ${{ secrets.LOKI_BASIC_AUTH }}
-          envKey_LOKI_HOST: ${{ secrets.LOKI_HOST }}
+          envKey_LOKI_HOST: '"${{ secrets.LOKI_HOST }}"'
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
