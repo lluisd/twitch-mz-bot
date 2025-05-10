@@ -6,8 +6,12 @@ async function getTFSpot(roomId, number) {
     return await dbManager.getTFSpot(roomId, number)
 }
 
-async function setTFVisited(roomId, number, state, returnOldDoc = false) {
-    return await dbManager.setTFSpot(roomId, number , {screenshot: null, created: null, capturedBy: null, visited: state }, returnOldDoc)
+async function deleteTF(roomId, number, returnOldDoc = false) {
+    return await dbManager.setTFSpot(roomId, number , {screenshot: null, created: null, capturedBy: null, visited: false }, returnOldDoc)
+}
+
+async function setTFVisited(roomId, number, returnOldDoc = false) {
+    return await dbManager.setTFSpot(roomId, number , { visited: true }, returnOldDoc)
 }
 
 async function setTFScreenshot(roomId, number, screenshot, displayName) {
@@ -21,6 +25,7 @@ async function getTFSpots(roomId) {
 module.exports = {
     getTFSpot,
     setTFVisited,
+    deleteTF,
     getTFSpots,
     setTFScreenshot
 }
