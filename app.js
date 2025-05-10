@@ -191,7 +191,7 @@ mongoose.connect(config.database).then(() => {
                         if (screenshots.length > 0) {
                             const image = screenshots.find((s) => s.name === id)
                             if (image) {
-                                res.redirect(config.externalUrl + `/stream/#lg=1&slide=${id}`);
+                                res.redirect(config.externalUrl + `/fotos/#lg=1&slide=${id}`);
                             } else {
                                 res.sendFile(__dirname + `/public/images/${id}.jpg`)
                             }
