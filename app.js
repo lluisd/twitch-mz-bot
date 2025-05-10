@@ -35,10 +35,12 @@ mongoose.connect(config.database).then(() => {
 
             app.use((err, req, res, next) => {
                 logger.error(err.stack)
-                res.status(500).json({ message: 'Internal Server Error' })
+                res.status(500).json({
+                    message: "Server error."
+                });
             })
 
-            app.get('/transcribe', async function(req, res, next) {
+            app.get('/transcribe', async (req, res, next) => {
                 try{
                     await HAService.hibernateTranscriberPC()
                     await handlers.openAI.uploadStreamToOpenai(`#${config.twitch.channels}`, twitchBot, telegramBot)
@@ -52,13 +54,60 @@ mongoose.connect(config.database).then(() => {
                 }
             });
 
-            app.get('/p/:id', (req, res, next) => {
+            app.get('/p/:id', async (req, res, next) => {
                 try{
                     const spotNumber = parseInt(req.params.id)
+                    if (!isNaN(spotNumber)) {
+                        const spot = await TempsDeFlorsService.getTFSpot(config.twitch.roomId, spotNumber)
+                        res.redirect(`https://www.google.com/maps?q=${spot.coordinates}`)
+                    }
+                    res.json('invalid spot')
+                } catch (error) {
+                    next(error)
+                }
+            });
 
-                    if (typeof spotNumber === 'number') {
-                        TempsDeFlorsService.getTFSpot(config.twitch.roomId, spotNumber).then((spot) => {
-                            res.redirect(`https://www.google.com/maps?q=${spot.coordinates}`)
+            app.get('/reto', async (req, res, next) => {
+                try {
+                    const spots = await TempsDeFlorsService.getTFSpots(config.twitch.roomId)
+                    const percentage = parseFloat((spots.filter((s) => s.visited).length / spots.length * 100).toFixed(2))
+                    res.render('pages/list',{
+                        spots: spots,
+                        url: config.externalUrl,
+                        channel: config.twitch.channels,
+                        percentage: percentage,
+                        moment: moment,
+                        bgClass: percentage > 50 ? 'bg-success' : (percentage > 25 ? 'bg-warning' : 'bg-danger')
+                    })
+                } catch (error) {
+                    next(error)
+                }
+            });
+
+            app.get('/fotos', async (req, res, next) => {
+                try{
+                    const spots = await TempsDeFlorsService.getTFSpots(config.twitch.roomId)
+                    res.render('pages/gallery',{
+                        spots: spots.filter((s) => s.screenshot !== null),
+                        url: config.externalUrl,
+                        channel: config.twitch.channels
+                    })
+                } catch (error) {
+                    next(error)
+                }
+            });
+
+            app.get('/stream', async (req, res, next)  => {
+                try {
+                    const channel = TwitchService.getChannel()
+                    if (channel) {
+                        const screenshots = await ScreenshotService.getScreenshots(channel.streamId)
+                        res.render('pages/stream',{
+                            screenshots: screenshots,
+                            url: config.externalUrl,
+                            channel: config.twitch.channels,
+                            moment: moment,
+                            title: channel.title
                         })
                     }
                 } catch (error) {
@@ -66,58 +115,7 @@ mongoose.connect(config.database).then(() => {
                 }
             });
 
-            app.get('/reto', function(req, res, next) {
-                try {
-                    TempsDeFlorsService.getTFSpots(config.twitch.roomId).then((spots) => {
-                        const percentage = parseFloat((spots.filter((s) => s.visited).length / spots.length * 100).toFixed(2))
-                        res.render('pages/list',{
-                            spots: spots,
-                            url: config.externalUrl,
-                            channel: config.twitch.channels,
-                            percentage: percentage,
-                            moment: moment,
-                            bgClass: percentage > 50 ? 'bg-success' : (percentage > 25 ? 'bg-warning' : 'bg-danger')
-                        });
-                    })
-                } catch (error) {
-                    next(error)
-                }
-            });
-
-            app.get('/fotos', function(req, res, next) {
-                try{
-                    TempsDeFlorsService.getTFSpots(config.twitch.roomId).then((spots) => {
-                        res.render('pages/gallery',{
-                            spots: spots.filter((s) => s.screenshot !== null),
-                            url: config.externalUrl,
-                            channel: config.twitch.channels
-                        });
-                    })
-                } catch (error) {
-                    next(error)
-                }
-            });
-
-            app.get('/stream', function(req, res, next) {
-                try {
-                    TwitchService.getChannel().then(async (channel) => {
-                        if (channel) {
-                            const screenshots = await ScreenshotService.getScreenshots(channel.streamId)
-                            res.render('pages/stream',{
-                                screenshots: screenshots,
-                                url: config.externalUrl,
-                                channel: config.twitch.channels,
-                                moment: moment,
-                                title: channel.title
-                            });
-                        }
-                    });
-                } catch (error) {
-                    next(error)
-                }
-            });
-
-            app.get('/comandos', function(req, res, next) {
+            app.get('/comandos', async (req, res, next) => {
                 try {
                     res.render('pages/comandos',{
                         channel: config.twitch.channels
@@ -127,7 +125,7 @@ mongoose.connect(config.database).then(() => {
                 }
             });
 
-            app.get('/rutas', function(req, res, next) {
+            app.get('/rutas', async (req, res, next) => {
                 try {
                     res.render('pages/rutas',{
                         channel: config.twitch.channels
@@ -137,54 +135,52 @@ mongoose.connect(config.database).then(() => {
                 }
             });
 
-            app.get('/bans', function(req, res, next) {
+            app.get('/bans', async (req, res, next) => {
                 try {
-                    TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate()).then((bans) => {
-                        res.render('pages/bans',{
-                            bans:  bans.filter(ban => config.blacklistUsers.indexOf(ban.userId.toString()) === -1)
-                                .map(e => {
-                                    const now = moment().tz('Europe/Madrid');
-                                    const creationDate = moment(e.creationDate);
-                                    const duration = moment.duration(now.diff(creationDate));
-                                    return {
-                                        ...e,
-                                        days: Math.floor(duration.asDays()),
-                                        hours: duration.hours(),
-                                        minutes: duration.minutes()
-                                    }
-                                })
-                                .reverse(),
-                            url: config.externalUrl,
-                            channel: config.twitch.channels
-                        });
+                    const bans = TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
+                    res.render('pages/bans',{
+                        bans:  bans.filter(ban => config.blacklistUsers.indexOf(ban.userId.toString()) === -1)
+                            .map(e => {
+                                const now = moment().tz('Europe/Madrid');
+                                const creationDate = moment(e.creationDate);
+                                const duration = moment.duration(now.diff(creationDate));
+                                return {
+                                    ...e,
+                                    days: Math.floor(duration.asDays()),
+                                    hours: duration.hours(),
+                                    minutes: duration.minutes()
+                                }
+                            })
+                            .reverse(),
+                        url: config.externalUrl,
+                        channel: config.twitch.channels
                     });
                 } catch (error) {
                     next(error)
                 }
             });
 
-            app.get('/timeouts', function(req, res, next) {
+            app.get('/timeouts', async (req, res, next) => {
                 try {
-                    TwitchService.getTimeouts().then((timeouts) => {
-                        res.render('pages/timeouts',{
-                            timeouts:  timeouts
-                                .map(e => {
-                                    const now = moment().tz('Europe/Madrid');
-                                    const expiryMoment = moment(e.expiryDate);
-                                    const duration = moment.duration(expiryMoment.diff(now));
-                                    return {
-                                        ...e,
-                                        days: duration.days(),
-                                        hours: duration.hours(),
-                                        minutes: duration.minutes(),
-                                        seconds: duration.seconds()
-                                    }
-                                })
-                                .reverse(),
-                            url: config.externalUrl,
-                            channel: config.twitch.channels
-                        });
-                    });
+                    const timeouts = TwitchService.getTimeouts()
+                    res.render('pages/timeouts',{
+                        timeouts:  timeouts
+                            .map(e => {
+                                const now = moment().tz('Europe/Madrid');
+                                const expiryMoment = moment(e.expiryDate);
+                                const duration = moment.duration(expiryMoment.diff(now));
+                                return {
+                                    ...e,
+                                    days: duration.days(),
+                                    hours: duration.hours(),
+                                    minutes: duration.minutes(),
+                                    seconds: duration.seconds()
+                                }
+                            })
+                            .reverse(),
+                        url: config.externalUrl,
+                        channel: config.twitch.channels
+                    })
                 } catch (error) {
                     next(error)
                 }
@@ -195,30 +191,28 @@ mongoose.connect(config.database).then(() => {
             app.get('/i/:id',  async(req, res , next) => {
                 try {
                     const { id } = req.params;
-                    TwitchService.getChannel().then((channel) => {
-                        if (channel) {
-                            ScreenshotService.getScreenshots(channel.streamId).then ((screenshots) => {
-                                if (screenshots.length > 0) {
-                                    const image = screenshots.find((s) => s.name === id)
-                                    if (image) {
-                                        res.redirect(config.externalUrl + `/stream/#lg=1&slide=${id}`);
-                                    } else {
-                                        res.sendFile(__dirname + `/public/images/${id}.jpg`)
-                                    }
-                                } else {
-                                    res.sendFile(__dirname + `/public/images/${id}.jpg`)
-                                }
-                            });
+                    const channel = TwitchService.getChannel()
+                    if (channel) {
+                        const screenshots= ScreenshotService.getScreenshots(channel.streamId)
+                        if (screenshots.length > 0) {
+                            const image = screenshots.find((s) => s.name === id)
+                            if (image) {
+                                res.redirect(config.externalUrl + `/stream/#lg=1&slide=${id}`);
+                            } else {
+                                res.sendFile(__dirname + `/public/images/${id}.jpg`)
+                            }
                         } else {
                             res.sendFile(__dirname + `/public/images/${id}.jpg`)
                         }
-                    });
+                    } else {
+                        res.sendFile(__dirname + `/public/images/${id}.jpg`)
+                    }
                 } catch (error) {
                     next(error)
                 }
             });
 
-            app.get('/img/:id', (req, res, next) => {
+            app.get('/img/:id', async (req, res, next) => {
                 try {
                     res.sendFile(__dirname + `/public/images/${req.params.id}.jpg`)
                 } catch (error) {
@@ -226,7 +220,7 @@ mongoose.connect(config.database).then(() => {
                 }
             });
 
-            app.get('/OF/:id', (req, res, next) => {
+            app.get('/OF/:id', async (req, res, next) => {
                 try {
                     const position = parseInt(req.params.id.replace(config.twitch.channels, ''))
                     const link = randomLinks.links[position]
@@ -245,7 +239,11 @@ mongoose.connect(config.database).then(() => {
                 await eventSub.subscribeEvent(config.twitch.roomId)
                 app.get('/', (req, res) => res.redirect('/stream'))
             })
+        }).catch((err) => {
+            logger.error('Error on bot initialization', err)
         })
+}).catch((err) => {
+    logger.error('Error connecting to MongoDB', err)
 })
 
 
