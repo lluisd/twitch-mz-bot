@@ -9,7 +9,7 @@ const logger = require('../lib/logger')
 class TempsDeFlors {
     async getSpot (target, text, bot, roomId) {
         const spotNumber = parseInt(text)
-        if (typeof spotNumber === 'number') {
+        if (!isNaN(spotNumber)) {
             const spot = await TempsDeFlorsService.getTFSpot(roomId, spotNumber)
             if (spot) {
                 await this._printSpot(spot, target, bot)
@@ -39,7 +39,7 @@ class TempsDeFlors {
 
     async setVisited (target, text, bot, roomId) {
         const spotNumber = parseInt(text)
-        if (typeof spotNumber === 'number') {
+        if (!isNaN(spotNumber)) {
             const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber)
             if (spot) {
                 await this._printSpot(spot, target, bot)
@@ -49,7 +49,7 @@ class TempsDeFlors {
 
     async delete (target, text, bot, roomId) {
         const spotNumber = parseInt(text)
-        if (typeof spotNumber === 'number') {
+        if (!isNaN(spotNumber)) {
             const spot = await TempsDeFlorsService.deleteTF(roomId, spotNumber)
             if (spot) {
                 await this._printSpot(spot, target, bot)
@@ -59,7 +59,7 @@ class TempsDeFlors {
 
     async setActive (target, text, bot, roomId) {
         const spotNumber = parseInt(text)
-        if (typeof spotNumber === 'number') {
+        if (!isNaN(spotNumber)) {
             const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber, true)
             if (spot) {
                 await TwitchService.setActiveSpot(spotNumber)
@@ -131,7 +131,7 @@ class TempsDeFlors {
         if (spot.visited) {
             text = `${text} (✔️ ${this._getScreenshotText(spot)} )`
         } else {
-            text = `${text} (❌${this._getScreenshotText(spot)} ) (maps ${config.externalUrl}/p/${spot.number} ) ${timetable}`
+            text = `${text} (❌${this._getScreenshotText(spot)} ) (maps ${config.externalUrl}/p/${spot.number} ) info: ${config.externalUrl}/pdf/${spot.number}`
         }
         return text
     }
