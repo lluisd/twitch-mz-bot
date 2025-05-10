@@ -21,8 +21,8 @@ class TempsDeFlors {
         bot.say(target, `Mapa de puntos https://tempsdeflors.girona.cat/docs/planol-tempsdeflors2024.pdf`)
     }
 
-    getHelpLink (target, bot) {
-        bot.say(target, `${config.externalUrl}/reto`)
+    getCommands (target, bot) {
+        bot.say(target, `${config.externalUrl}/comandos`)
     }
 
     async getNotification (bot, target) {

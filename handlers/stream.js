@@ -42,7 +42,7 @@ class Stream {
     }
 
     async getScreenshots(target, bot) {
-        await bot.say(target, `Fotos del stream ${config.externalUrl}/stream`)
+        await bot.say(target, `Fotos del reto Temps de Flors ${config.externalUrl}/fotos`)
     }
 
     async captureScreenshot(target, bot, displayName, roomId) {
