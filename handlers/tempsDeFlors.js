@@ -22,17 +22,19 @@ class TempsDeFlors {
     }
 
     getHelpLink (target, bot) {
-        bot.say(target, `${config.externalUrl}/listado`)
+        bot.say(target, `${config.externalUrl}/reto`)
     }
 
-    getNotification (bot, target) {
-        bot.say(target, `¡Reto temps de Flors '25 del 10 al 18 de Mayo! ${config.externalUrl}/listado Comandos: !puntos, !punto <número>`)
+    async getNotification (bot, target) {
+        const spots = await TempsDeFlorsService.getTFSpots(config.twitch.roomId)
+        const count = spots.filter((s) => s.visited).length
+        bot.say(target, `¡Empezó el reto de temps de Flors! ${config.externalUrl}/reto (${count}/${spots.length} completado) Comandos: !puntos, !punto 2`)
     }
 
     async getTotalSpot (target, bot, roomId) {
         const spots = await TempsDeFlorsService.getTFSpots(roomId)
         const count = spots.filter((s) => s.visited).length
-        await bot.say(target, `Puntos: ${config.externalUrl}/listado (${count}/${spots.length} vistos)`)
+        await bot.say(target, `Puntos: ${config.externalUrl}/reto (${count}/${spots.length} vistos)`)
     }
 
     async setVisited (target, text, bot, roomId, isVisited) {
