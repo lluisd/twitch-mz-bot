@@ -37,10 +37,20 @@ class TempsDeFlors {
         await bot.say(target, `Puntos: ${config.externalUrl}/reto (${count}/${spots.length} vistos)`)
     }
 
-    async setVisited (target, text, bot, roomId, isVisited) {
+    async setVisited (target, text, bot, roomId) {
         const spotNumber = parseInt(text)
         if (typeof spotNumber === 'number') {
-            const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber, isVisited)
+            const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber)
+            if (spot) {
+                await this._printSpot(spot, target, bot)
+            }
+        }
+    }
+
+    async delete (target, text, bot, roomId) {
+        const spotNumber = parseInt(text)
+        if (typeof spotNumber === 'number') {
+            const spot = await TempsDeFlorsService.deleteTF(roomId, spotNumber)
             if (spot) {
                 await this._printSpot(spot, target, bot)
             }
@@ -50,7 +60,7 @@ class TempsDeFlors {
     async setActive (target, text, bot, roomId) {
         const spotNumber = parseInt(text)
         if (typeof spotNumber === 'number') {
-            const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber, true, true)
+            const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber, true)
             if (spot) {
                 await TwitchService.setActiveSpot(spotNumber)
                 await bot.say(target, `Punto: ${this._getText(spot)} activo para !foto`)
