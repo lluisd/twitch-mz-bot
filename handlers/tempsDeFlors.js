@@ -41,7 +41,7 @@ class TempsDeFlors {
         const spotNumber = parseInt(text)
         if (!isNaN(spotNumber)) {
             const spot = await TempsDeFlorsService.setTFVisited(roomId, spotNumber)
-            await TwitchService.setActiveSpot(0)
+            //await TwitchService.setActiveSpot(0)
             if (spot) {
                 await this._printSpot(spot, target, bot)
             }
