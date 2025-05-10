@@ -53,8 +53,22 @@ mongoose.connect(config.database).then(() => {
                     if (!isNaN(spotNumber)) {
                         const spot = await TempsDeFlorsService.getTFSpot(config.twitch.roomId, spotNumber)
                         res.redirect(`https://www.google.com/maps?q=${spot.coordinates}`)
+                    } else {
+                        res.json('invalid spot')
                     }
-                    res.json('invalid spot')
+                } catch (error) {
+                    next(error)
+                }
+            });
+
+            app.get('/pdf/:id', async (req, res, next) => {
+                try{
+                    const spotNumber = parseInt(req.params.id)
+                    if (!isNaN(spotNumber)) {
+                        res.redirect(`https://web2.girona.cat/tempsdeflors/docs/espais/2025/${spotNumber}.pdf`)
+                    } else {
+                        res.json('invalid spot')
+                    }
                 } catch (error) {
                     next(error)
                 }

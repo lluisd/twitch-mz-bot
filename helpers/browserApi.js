@@ -64,7 +64,7 @@ class PuppeteerApi {
         await this.page.$eval('.video-player__default-player', el => el.style.display = "")
         const volumeValue = await this.page.$eval('input[data-a-target="player-volume-slider"]', el => el.value);
         const volume = parseInt(volumeValue)
-        if (typeof volume === 'number' && volume > 0) {
+        if (!isNaN(volume) && volume > 0) {
             await this.page.$eval('.video-player__default-player button[data-a-target="player-mute-unmute-button"]', el =>  el.click()).catch(() => {})
         }
         await this.page.$eval('.video-player__default-player button[data-a-target="player-play-pause-button"][data-a-player-state="playing"]', el =>  el.click()).catch(() => {})

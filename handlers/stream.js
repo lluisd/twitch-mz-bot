@@ -36,7 +36,7 @@ class Stream {
 
     async setNotifyChannelFollowMessage(value) {
         const valueNumber = parseInt(value)
-        if (typeof valueNumber === 'number') {
+        if (!isNaN(valueNumber)){
             await TwitchService.setNotifyChannelFollowMessage(!!valueNumber).catch(() => { logger.error('setNotifyChannelFollowMessage on setNotifyChannelFollowMessage')})
         }
     }
