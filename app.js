@@ -33,13 +33,6 @@ mongoose.connect(config.database).then(() => {
                 next();
             });
 
-            app.use((err, req, res, next) => {
-                logger.error(err.stack)
-                res.status(500).json({
-                    message: "Server error."
-                });
-            })
-
             app.get('/transcribe', async (req, res, next) => {
                 try{
                     await HAService.hibernateTranscriberPC()
@@ -228,6 +221,13 @@ mongoose.connect(config.database).then(() => {
                 } catch (error) {
                     next(error)
                 }
+            })
+
+            app.use((err, req, res, next) => {
+                logger.error(err.stack)
+                res.status(500).json({
+                    message: "Server error."
+                });
             })
 
             const eventSub = new EventSub();
