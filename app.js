@@ -99,7 +99,7 @@ mongoose.connect(config.database).then(() => {
 
             app.get('/stream', async (req, res, next)  => {
                 try {
-                    const channel = TwitchService.getChannel()
+                    const channel = await TwitchService.getChannel()
                     if (channel) {
                         const screenshots = await ScreenshotService.getScreenshots(channel.streamId)
                         res.render('pages/stream',{
@@ -137,7 +137,7 @@ mongoose.connect(config.database).then(() => {
 
             app.get('/bans', async (req, res, next) => {
                 try {
-                    const bans = TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
+                    const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
                     res.render('pages/bans',{
                         bans:  bans.filter(ban => config.blacklistUsers.indexOf(ban.userId.toString()) === -1)
                             .map(e => {
@@ -162,7 +162,7 @@ mongoose.connect(config.database).then(() => {
 
             app.get('/timeouts', async (req, res, next) => {
                 try {
-                    const timeouts = TwitchService.getTimeouts()
+                    const timeouts = await TwitchService.getTimeouts()
                     res.render('pages/timeouts',{
                         timeouts:  timeouts
                             .map(e => {
@@ -191,9 +191,9 @@ mongoose.connect(config.database).then(() => {
             app.get('/i/:id',  async(req, res , next) => {
                 try {
                     const { id } = req.params;
-                    const channel = TwitchService.getChannel()
+                    const channel = await TwitchService.getChannel()
                     if (channel) {
-                        const screenshots= ScreenshotService.getScreenshots(channel.streamId)
+                        const screenshots= await ScreenshotService.getScreenshots(channel.streamId)
                         if (screenshots.length > 0) {
                             const image = screenshots.find((s) => s.name === id)
                             if (image) {
