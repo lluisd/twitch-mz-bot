@@ -83,7 +83,8 @@ mongoose.connect(config.database).then(() => {
                     res.render('pages/gallery',{
                         spots: spots.filter((s) => s.screenshot !== null),
                         url: config.externalUrl,
-                        channel: config.twitch.channels
+                        channel: config.twitch.channels,
+                        moment: moment,
                     })
                 } catch (error) {
                     next(error)
