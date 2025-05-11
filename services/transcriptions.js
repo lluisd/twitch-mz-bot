@@ -58,7 +58,7 @@ async function getBlobs() {
             const lines = downloaded.toString().split('\r\n');
 
             const modifiedLines = lines.map(line => ({
-                nick: 'manzana_oscura',
+                nick: config.twitch.channels,
                 text: line,
                 date: dateTime
             }));
