@@ -140,7 +140,7 @@ class TempsDeFlors {
     _getScreenshotText(spot){
         let text = ''
         if (spot.screenshot) {
-            text = ` ${config.externalUrl}/i/${spot.screenshot}`
+            text = ` ${config.externalUrl}/t/${spot.screenshot}`
         }
         return text
     }

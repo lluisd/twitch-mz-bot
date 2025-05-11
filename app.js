@@ -205,6 +205,30 @@ mongoose.connect(config.database).then(() => {
                         if (screenshots.length > 0) {
                             const image = screenshots.find((s) => s.name === id)
                             if (image) {
+                                res.redirect(config.externalUrl + `/stream/#lg=1&slide=${id}`);
+                            } else {
+                                res.sendFile(__dirname + `/public/images/${id}.jpg`)
+                            }
+                        } else {
+                            res.sendFile(__dirname + `/public/images/${id}.jpg`)
+                        }
+                    } else {
+                        res.sendFile(__dirname + `/public/images/${id}.jpg`)
+                    }
+                } catch (error) {
+                    next(error)
+                }
+            });
+
+            app.get('/t/:id',  async(req, res , next) => {
+                try {
+                    const { id } = req.params;
+                    const channel = await TwitchService.getChannel()
+                    if (channel) {
+                        const screenshots= await ScreenshotService.getScreenshots(channel.streamId)
+                        if (screenshots.length > 0) {
+                            const image = screenshots.find((s) => s.name === id)
+                            if (image) {
                                 res.redirect(config.externalUrl + `/fotos/#lg=1&slide=${id}`);
                             } else {
                                 res.sendFile(__dirname + `/public/images/${id}.jpg`)
