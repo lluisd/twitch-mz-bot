@@ -148,7 +148,11 @@ async function clearBlocks (roomId) {
 }
 
 async function getPermanentBans(roomId) {
-    return Ban.find({roomId: parseInt(roomId), expiryDate: null,moderatorName: { $ne: "sery_bot" }}).sort({ creationDate: -1 }).lean()
+    return Ban.find({roomId: parseInt(roomId), expiryDate: null}).sort({ creationDate: -1 }).lean()
+}
+
+async function getBlocks(roomId) {
+    return Block.find({roomId: parseInt(roomId)}).lean()
 }
 
 async function getTimeouts(roomId) {
@@ -186,5 +190,6 @@ module.exports = {
     setStrike,
     resetStrike,
     clearBlocks,
-    addBlocks
+    addBlocks,
+    getBlocks
 }

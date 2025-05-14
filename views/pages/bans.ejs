@@ -28,17 +28,17 @@
     <tr>
         <th scope="col">#</th>
         <th scope="col">Usuario</th>
-        <th scope="col">Dias</th>
-        <th scope="col">Razón</th>
+        <th scope="col">RIP (bloqueado)</th>
+        <th scope="col">Tiempo</th>
     </tr>
     </thead>
     <tbody>
     <%  bans.forEach(function(ban, index) { %>
-        <tr class="table-danger">
+        <tr class="<%= ban.isBlocked ? "table-danger" : "table-danger" %>">
             <th scope="row"><%= index+1 %></th>
             <td><%= ban.userName %></td>
+            <td><%= ban.isBlocked ? '💀' : '' %></td>
             <td><%= ban.days  > 0 ? ban.days  + ' dias' : (ban.hours >0 ? ban.hours + ' horas': ban.minutes + ' minutos') %></td>
-            <td><%= ban.reason %></td>
         </tr>
     <% }); %>
     </tbody>
