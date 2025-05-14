@@ -145,7 +145,7 @@ mongoose.connect(config.database).then(() => {
 
             app.get('/bans', async (req, res, next) => {
                 try {
-                    const bans = await TwitchService.getBannedUsersCountByDate(moment().subtract(10, 'years').startOf('year').toDate())
+                    const bans = await TwitchService.getBannedAndBlockedUsers(moment().subtract(10, 'years').startOf('year').toDate())
                     res.render('pages/bans',{
                         bans:  bans.filter(ban => config.blacklistUsers.indexOf(ban.userId.toString()) === -1)
                             .map(e => {

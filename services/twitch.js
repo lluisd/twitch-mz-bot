@@ -74,7 +74,19 @@ async function updateBlockedUsers () {
 
 async function getBannedUsersCountByDate (date) {
     const bans = await dbManager.getPermanentBans(config.twitch.roomId)
-    return bans.filter(ban => ban.creationDate > date)
+    return bans.filter(ban => ban.moderatorName !== 'sery_bot' && ban.creationDate > date)
+}
+
+async function getBannedAndBlockedUsers () {
+    let bans = await dbManager.getPermanentBans(config.twitch.roomId)
+    const blocks = await dbManager.getBlocks(config.twitch.roomId)
+
+    return bans
+        .filter(ban => ban.moderatorName !== 'sery_bot')
+        .map(ban => {
+        const isBlocked = blocks.some(block => block.userId === ban.userId);
+        return { ...ban, isBlocked: isBlocked, isBanned: true  };
+    })
 }
 
 async function getTimeouts () {
@@ -277,7 +289,8 @@ module.exports = {
     setNotifyChannelFollowMessage,
     updateBlockedUsers,
     addVip,
-    removeVip
+    removeVip,
+    getBannedAndBlockedUsers
 }
 
 
