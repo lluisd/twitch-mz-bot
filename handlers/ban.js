@@ -142,7 +142,7 @@ class Ban {
             logger.error(e +'updateBlockedUsers on updateBlocksList')}
         )
         if (blocksList && blocksList.length > 0) {
-            const text = `Actualizados ${blocksList.length} bans`
+            const text = `Actualizados ${blocksList.length} bloqueos`
             logger.info(text)
         }
     }
