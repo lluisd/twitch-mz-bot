@@ -26,6 +26,22 @@ class Stream {
         }
     }
 
+    async addVip (username) {
+        const user = await TwitchService.getUser(username)
+        if (user) {
+            await TwitchService.addVip(user.id)
+            logger.info(`Added vip to ${username}`)
+        }
+    }
+
+    async removeVip (username) {
+        const user = await TwitchService.getUser(username)
+        if (user) {
+            await TwitchService.removeVip(user.id)
+            logger.info(`Removed vip from ${username}`)
+        }
+    }
+
     async changeTitle(title) {
         await TwitchService.setTitle(title).catch(() => { logger.error('setTitle on changeTitle')})
     }

@@ -46,6 +46,32 @@ async function updateBannedUsers () {
     return bansList
 }
 
+async function addVip (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.channels.addVip(config.twitch.roomId, userId);
+}
+
+async function removeVip (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.channels.removeVip(config.twitch.roomId, userId);
+}
+
+async function updateBlockedUsers () {
+    const api = await broadcasterApiClient.getApiClient()
+    const blockedUsers = await api.users.getBlocksPaginated(config.twitch.roomId)
+    let blockedUsersList = []
+    for await (const user of blockedUsers) {
+        const line = {roomId: config.twitch.roomId, userId: user.userId, userName: user.userName }
+        blockedUsersList.push(line)
+    }
+    if (blockedUsers.length > 0) {
+        await dbManager.clearBlocks(config.twitch.roomId)
+        await dbManager.addBlocks(blockedUsersList)
+    }
+
+    return blockedUsersList
+}
+
 async function getBannedUsersCountByDate (date) {
     const bans = await dbManager.getPermanentBans(config.twitch.roomId)
     return bans.filter(ban => ban.creationDate > date)
@@ -248,7 +274,10 @@ module.exports = {
     getTimeouts,
     removeBan,
     getCurrentUsers,
-    setNotifyChannelFollowMessage
+    setNotifyChannelFollowMessage,
+    updateBlockedUsers,
+    addVip,
+    removeVip
 }
 
 

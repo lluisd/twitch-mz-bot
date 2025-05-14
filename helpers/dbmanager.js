@@ -4,6 +4,7 @@ const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
 const Strike = require('../models/strike')
 const Ban = require('../models/ban')
+const Block = require('../models/block')
 const Screenshot = require('../models/screenshot')
 const tempsDeFlors = require('../models/tempsDeFlors')
 const logConn = require('../db.openai')
@@ -134,8 +135,16 @@ async function addBans (bans) {
     return Ban.insertMany(bans)
 }
 
+async function addBlocks (blocks) {
+    return Block.insertMany(blocks)
+}
+
 async function clearBans (roomId) {
     return Ban.deleteMany({roomId: parseInt(roomId)});
+}
+
+async function clearBlocks (roomId) {
+    return Block.deleteMany({roomId: parseInt(roomId)});
 }
 
 async function getPermanentBans(roomId) {
@@ -175,5 +184,7 @@ module.exports = {
     getChatLogLines,
     getStrikes,
     setStrike,
-    resetStrike
+    resetStrike,
+    clearBlocks,
+    addBlocks
 }
