@@ -132,8 +132,19 @@ class Ban {
        )
        if (bansList && bansList.length > 0) {
            const text = `Actualizados ${bansList.length} bans`
+           logger.info(text)
            await bot.say(target, text)
        }
+    }
+
+    async updateBlocksList(target, bot) {
+        const blocksList = await TwitchService.updateBlockedUsers().catch((e) => {
+            logger.error(e +'updateBlockedUsers on updateBlocksList')}
+        )
+        if (blocksList && blocksList.length > 0) {
+            const text = `Actualizados ${blocksList.length} bans`
+            logger.info(text)
+        }
     }
 
     async getTimeouts(target, bot) {
