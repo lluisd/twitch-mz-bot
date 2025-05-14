@@ -64,7 +64,7 @@ async function updateBlockedUsers () {
         const line = {roomId: config.twitch.roomId, userId: user.userId, userName: user.userName }
         blockedUsersList.push(line)
     }
-    if (blockedUsers.length > 0) {
+    if (blockedUsersList.length > 0) {
         await dbManager.clearBlocks(config.twitch.roomId)
         await dbManager.addBlocks(blockedUsersList)
     }
