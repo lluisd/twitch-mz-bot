@@ -43,6 +43,21 @@ class Ban {
         const user = await TwitchService.getUser(username)
         if (user) {
             await TwitchService.unBanUser(user.id)
+            await TwitchService.unBlockUser(user.id)
+        }
+    }
+
+    async unBlock(target, username, bot) {
+        const user = await TwitchService.getUser(username)
+        if (user) {
+            await TwitchService.unBlockUser(user.id)
+        }
+    }
+
+    async block(target, username, bot) {
+        const user = await TwitchService.getUser(username)
+        if (user) {
+            await TwitchService.blockUser(user.id)
         }
     }
 
@@ -73,6 +88,7 @@ class Ban {
         for (let ban of bansList) {
             if (config.blacklistUsers.indexOf(ban.userId.toString()) === -1 && !unbansList.includes(b => b.userName === ban.userName)) {
                 await TwitchService.unBanUser(ban.userId)
+                await TwitchService.unBlockUser(ban.userId)
                 unbansList.push(ban)
             }
         }

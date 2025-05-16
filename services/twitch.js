@@ -48,12 +48,14 @@ async function updateBannedUsers () {
 
 async function addVip (userId) {
     const api = await broadcasterApiClient.getApiClient()
-    return await api.channels.addVip(config.twitch.roomId, userId);
+    await api.channels.addVip(config.twitch.roomId, userId);
+    logger.info('User added as VIP: ' + userId)
 }
 
 async function removeVip (userId) {
     const api = await broadcasterApiClient.getApiClient()
-    return await api.channels.removeVip(config.twitch.roomId, userId);
+    await api.channels.removeVip(config.twitch.roomId, userId);
+    logger.info('User removed as VIP: ' + userId)
 }
 
 async function updateBlockedUsers () {
@@ -69,6 +71,7 @@ async function updateBlockedUsers () {
         await dbManager.addBlocks(blockedUsersList)
     }
 
+    logger.info('Blocked users updated: ' + blockedUsersList.length)
     return blockedUsersList
 }
 
@@ -98,7 +101,7 @@ async function addBan (roomId, userId, userName, moderatorName, reason, creation
 }
 
 async function removeBan (roomId, userId) {
-    await dbManager.removeBan(roomId, userId);
+    await dbManager.removeBan(roomId, userId)
 }
 
 async function getStream() {
@@ -150,6 +153,7 @@ async function getUnbanRequests () {
     return result
 }
 
+
 async function banUser (user, duration) {
     let result
     let options = await _getHeaders()
@@ -195,6 +199,20 @@ async function unBanUser (user) {
     }
 
     return result
+}
+
+async function unBlockUser (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    await api.users.deleteBlock(config.twitch.roomId, userId)
+    logger.info('User unblocked: ' + userId)
+    await this.updateBlockedUsers()
+}
+
+async function blockUser (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    await api.users.createBlock(config.twitch.roomId, userId);
+    logger.info('User blocked: ' + userId)
+    await this.updateBlockedUsers()
 }
 
 async function getUser (userName) {
@@ -290,7 +308,9 @@ module.exports = {
     updateBlockedUsers,
     addVip,
     removeVip,
-    getBannedAndBlockedUsers
+    getBannedAndBlockedUsers,
+    unBlockUser,
+    blockUser
 }
 
 
