@@ -42,6 +42,22 @@ class Stream {
         }
     }
 
+    async addMod (username) {
+        const user = await TwitchService.getUser(username)
+        if (user) {
+            await TwitchService.addMod(user.id)
+            logger.info(`Added mod to ${username}`)
+        }
+    }
+
+    async removeMod (username) {
+        const user = await TwitchService.getUser(username)
+        if (user) {
+            await TwitchService.removeMod(user.id)
+            logger.info(`Removed mod from ${username}`)
+        }
+    }
+
     async changeTitle(title) {
         await TwitchService.setTitle(title).catch(() => { logger.error('setTitle on changeTitle')})
     }

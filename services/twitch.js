@@ -58,6 +58,18 @@ async function removeVip (userId) {
     logger.info('User removed as VIP: ' + userId)
 }
 
+async function removeMod (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    await api.moderation.removeModerator(config.twitch.roomId, userId);
+    logger.info('User removed as Mod: ' + userId)
+}
+
+async function addMod (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    await api.moderation.addModerator(config.twitch.roomId, userId);
+    logger.info('User added as Mod: ' + userId)
+}
+
 async function updateBlockedUsers () {
     const api = await broadcasterApiClient.getApiClient()
     const blockedUsers = await api.users.getBlocksPaginated(config.twitch.roomId)
@@ -310,7 +322,9 @@ module.exports = {
     removeVip,
     getBannedAndBlockedUsers,
     unBlockUser,
-    blockUser
+    blockUser,
+    addMod,
+    removeMod
 }
 
 
