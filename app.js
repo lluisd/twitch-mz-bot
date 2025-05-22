@@ -11,6 +11,7 @@ const moment = require('moment-timezone')
 const EventSub = require('./lib/eventSub')
 const handlers = require('./handlers')
 const logger = require('./lib/logger')
+const basicAuth = require('./middleware/basicAuth')
 
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
@@ -28,12 +29,13 @@ mongoose.connect(config.database).then(() => {
             app.use(function (req, res, next) {
                 const method = req.method;
                 const url = req.url;
+                const ip = req.ip;
 
-                logger.info((++num) + " " + method + " " + url);
+                logger.info((++num) + " " + method + " " + url + " from ip:" + ip);
                 next();
             });
 
-            app.get('/transcribe', async (req, res, next) => {
+            app.get('/transcribe', basicAuth, async (req, res, next) => {
                 try{
                     await HAService.hibernateTranscriberPC()
                     await handlers.openAI.uploadStreamToOpenai(`#${config.twitch.channels}`, twitchBot, telegramBot)
