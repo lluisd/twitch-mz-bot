@@ -64,6 +64,18 @@ async function removeMod (userId) {
     logger.info('User removed as Mod: ' + userId)
 }
 
+async function ban (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    await api.moderation.banUser(config.twitch.roomId, userId);
+    logger.info('User unbanned: ' + userId)
+}
+
+async function unban (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    await api.moderation.unbanUser(config.twitch.roomId, userId);
+    logger.info('User unbanned: ' + userId)
+}
+
 async function addMod (userId) {
     const api = await broadcasterApiClient.getApiClient()
     await api.moderation.addModerator(config.twitch.roomId, userId);
@@ -324,7 +336,9 @@ module.exports = {
     unBlockUser,
     blockUser,
     addMod,
-    removeMod
+    removeMod,
+    ban,
+    unban
 }
 
 

@@ -30,19 +30,19 @@ class Ban {
         const user = await TwitchService.getUser(username)
 
         let durationNumber = parseInt(duration)
-        if (typeof durationNumber !== 'number') {
+        if (isNaN(durationNumber)) {
             durationNumber = null
         }
 
         if (user) {
-            await TwitchService.banUser(user.id, duration)
+            await TwitchService.ban(user.id, duration)
         }
     }
 
     async unban(target, username, bot) {
         const user = await TwitchService.getUser(username)
         if (user) {
-            await TwitchService.unBanUser(user.id)
+            await TwitchService.unban(user.id)
             await TwitchService.unBlockUser(user.id)
         }
     }
