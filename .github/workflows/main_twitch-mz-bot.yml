@@ -40,7 +40,7 @@ jobs:
           envKey_WHITE_LIST_ADMINS: ${{ secrets.WHITE_LIST_ADMINS }}
           envKey_WHITE_LIST_EDITORS: ${{ secrets.WHITE_LIST_EDITORS }}
           envKey_BLACK_LIST_USERS: ${{ secrets.BLACK_LIST_USERS }}
-          envKey_FEATURE_TF_SPOTS: true
+          envKey_FEATURE_TF_SPOTS: false
           envkey_AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           envkey_AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
           envkey_AZURE_OPENAI_ENDPOINT_BASE: ${{ secrets.AZURE_OPENAI_ENDPOINT_BASE }}
@@ -57,6 +57,8 @@ jobs:
           envkey_HA_API_KEY: ${{ secrets.HA_API_KEY }}
           envKey_LOKI_BASIC_AUTH: ${{ secrets.LOKI_BASIC_AUTH }}
           envKey_LOKI_HOST: ${{ secrets.LOKI_HOST }}
+          envKey_BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
+          envKey_BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:

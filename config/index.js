@@ -53,5 +53,9 @@ module.exports = {
     loki: {
         basicAuth: process.env.LOKI_BASIC_AUTH,
         host: process.env.LOKI_HOST,
+    },
+    basicAuth: {
+        username: process.env.BASIC_AUTH_USERNAME,
+        password: process.env.BASIC_AUTH_PASSWORD
     }
 }
