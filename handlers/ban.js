@@ -44,6 +44,7 @@ class Ban {
         if (user) {
             await TwitchService.unban(user.id)
             await TwitchService.unBlockUser(user.id)
+            await TwitchService.updateBlockedUsers()
         }
     }
 
@@ -51,6 +52,7 @@ class Ban {
         const user = await TwitchService.getUser(username)
         if (user) {
             await TwitchService.unBlockUser(user.id)
+            await TwitchService.updateBlockedUsers()
         }
     }
 
@@ -58,6 +60,7 @@ class Ban {
         const user = await TwitchService.getUser(username)
         if (user) {
             await TwitchService.blockUser(user.id)
+            await TwitchService.updateBlockedUsers()
         }
     }
 
@@ -87,11 +90,12 @@ class Ban {
         let unbansList = []
         for (let ban of bansList) {
             if (config.blacklistUsers.indexOf(ban.userId.toString()) === -1 && !unbansList.includes(b => b.userName === ban.userName)) {
-                await TwitchService.unBanUser(ban.userId)
+                await TwitchService.unban(ban.userId)
                 await TwitchService.unBlockUser(ban.userId)
                 unbansList.push(ban)
             }
         }
+        await TwitchService.updateBlockedUsers()
         const bansCount = Math.min(unbansList.length, 20)
         nicks += this._getUserNames(unbansList.slice(0,bansCount))
 
