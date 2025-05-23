@@ -229,14 +229,12 @@ async function unBlockUser (userId) {
     const api = await broadcasterApiClient.getApiClient()
     await api.users.deleteBlock(config.twitch.roomId, userId)
     logger.info('User unblocked: ' + userId)
-    await this.updateBlockedUsers()
 }
 
 async function blockUser (userId) {
     const api = await broadcasterApiClient.getApiClient()
     await api.users.createBlock(config.twitch.roomId, userId);
     logger.info('User blocked: ' + userId)
-    await this.updateBlockedUsers()
 }
 
 async function getUser (userName) {
