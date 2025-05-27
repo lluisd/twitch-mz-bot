@@ -27,6 +27,7 @@ module.exports = {
     whitelistAdmins: process.env.WHITE_LIST_ADMINS?.split(',') ?? [],
     whitelistEditors: process.env.WHITE_LIST_EDITORS?.split(',') ?? [],
     blacklistUsers: process.env.BLACK_LIST_USERS?.split(',') ?? [],
+    whitelistUsers: process.env.WHITE_LIST_USERS?.split(',') ?? [],
     features: {
         TFSpots: process.env.FEATURE_TF_SPOTS === 'true',
     },
