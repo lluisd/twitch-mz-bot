@@ -136,7 +136,7 @@ class Ban {
             if (shot) {
                 const text = `¡Pum! ${players[i].userDisplayName} se ha llevado un disparo.`
                 await bot.say(target, text)
-                await TwitchService.banUser(players[i].userId, 60)
+                await TwitchService.ban(players[i].userId, 60)
                 return;
             } else {
                 await bot.say(target, `${players[i].userDisplayName} está a salvo.`)
@@ -188,7 +188,7 @@ class Ban {
             } else if (strikesCount < 2) {
                 await bot.say(target, `Strike ${strikesCount+ 1}/3 para ${user.display_name}, me estas calentando, segundo aviso!`)
             } else {
-                await TwitchService.banUser(user.id, 600)
+                await TwitchService.ban(user.id, 600)
                 await bot.say(target, `Strike ${strikesCount + 1}/3 para ${user.display_name}, al carrer 10 minutos comemierda!`)
                 await StrikeService.resetStrike(user.id)
             }

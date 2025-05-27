@@ -64,9 +64,9 @@ async function removeMod (userId) {
     logger.info('User removed as Mod: ' + userId)
 }
 
-async function ban (userId) {
+async function ban (userId, duration = null) {
     const api = await broadcasterApiClient.getApiClient()
-    await api.moderation.banUser(config.twitch.roomId, userId);
+    await api.moderation.banUser(config.twitch.roomId, {user: userId, reason: '', duration: duration});
     logger.info('User unbanned: ' + userId)
 }
 
