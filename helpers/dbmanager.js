@@ -160,16 +160,16 @@ async function getTimeouts(roomId) {
 }
 
 async function addUserIdToChannelWhitelist(roomId, userId) {
-    await Channel.findByIdAndUpdate(
-        parseInt(roomId),
+    await Channel.findOneAndUpdate(
+        { roomId: parseInt(roomId) },
         { $addToSet: { whitelistUsers: parseInt(userId) } },
         { new: true }
     );
 }
 
 async function removeUserIdFromChannelWhitelist(roomId, userId) {
-    await Channel.findByIdAndUpdate(
-        parseInt(roomId),
+    await Channel.findOneAndUpdate(
+        { roomId: parseInt(roomId) },
         { pull: { whitelistUsers: parseInt(userId) } },
         { new: true }
     );
