@@ -159,6 +159,21 @@ async function getTimeouts(roomId) {
     return Ban.find({roomId: parseInt(roomId), expiryDate: { $ne: null }}).lean()
 }
 
+async function addUserIdToChannelWhitelist(roomId, userId) {
+    await Channel.findByIdAndUpdate(
+        roomId,
+        { $addToSet: { whitelistUsers: parseInt(userId) } },
+        { new: true }
+    );
+}
+
+async function removeUserIdFromChannelWhitelist(roomId, userId) {
+    await Channel.findByIdAndUpdate(
+        roomId,
+        { pull: { whitelistUsers: parseInt(userId) } },
+        { new: true }
+    );
+}
 
 module.exports = {
     getToken,
@@ -191,5 +206,7 @@ module.exports = {
     resetStrike,
     clearBlocks,
     addBlocks,
-    getBlocks
+    getBlocks,
+    addUserIdToChannelWhitelist,
+    removeUserIdFromChannelWhitelist
 }

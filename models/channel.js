@@ -47,6 +47,10 @@ const ChannelSchema = new Schema({
         type: Boolean,
         required: false,
         default: true
+    },
+    whitelistUsers: {
+        type: [Number],
+        required: false,
     }
 })
 
