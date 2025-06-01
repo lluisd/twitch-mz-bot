@@ -60,6 +60,7 @@ jobs:
           envKey_LOKI_HOST: ${{ secrets.LOKI_HOST }}
           envKey_BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
           envKey_BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
+          envKey_CUSTOM_REWARD_VIP: 3eb520c1-0ed9-4a91-a92e-e6df15d91832
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:

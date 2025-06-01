@@ -64,6 +64,20 @@ class Ban {
         }
     }
 
+    async addUserToChannelWhitelist(target, username, bot) {
+        const user = await TwitchService.getUser(username)
+        if (user) {
+            await TwitchService.addUserIdToChannelWhitelist(user.id)
+        }
+    }
+
+    async removeUserFromChannelWhitelist(target, username, bot) {
+        const user = await TwitchService.getUser(username)
+        if (user) {
+            await TwitchService.removeUserIdFromChannelWhitelist(user.id)
+        }
+    }
+
     async unbanExpiredTimeouts() {
         const timeouts = await TwitchService.getTimeouts()
         if (timeouts) {

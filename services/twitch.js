@@ -19,6 +19,12 @@ async function setGame(name) {
     }
 }
 
+async function cancelRedeemption(rewardId, redemptionId) {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.channelPoints.updateRedemptionStatusByIds(config.twitch.roomId, rewardId, [redemptionId], 'CANCELED')
+}
+
+
 async function getCurrentUsers() {
     const api = await broadcasterApiClient.getApiClient()
     const users = await api.chat.getChattersPaginated(config.twitch.roomId)
@@ -44,6 +50,11 @@ async function updateBannedUsers () {
         await dbManager.addBans(bansList)
     }
     return bansList
+}
+
+async function isVip (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.channels.checkVipForUser(config.twitch.roomId, userId)
 }
 
 async function addVip (userId) {
@@ -296,6 +307,14 @@ async function setNotifyChannelFollowMessage (isActive) {
     return dbManager.updateChannel(config.twitch.channels, { notifyChannelFollowMessage: isActive })
 }
 
+async function addUserIdToChannelWhitelist (userId) {
+    return dbManager.addUserIdToChannelWhitelist(config.twitch.channels, userId)
+}
+
+async function removeUserIdFromChannelWhitelist (userId) {
+    return dbManager.removeUserIdFromChannelWhitelist(config.twitch.channels, userId)
+}
+
 async function _getHeaders () {
     const token = await dbManager.getToken(parseInt(config.twitch.userId)).lean()
     return {
@@ -336,7 +355,11 @@ module.exports = {
     addMod,
     removeMod,
     ban,
-    unban
+    unban,
+    addUserIdToChannelWhitelist,
+    removeUserIdFromChannelWhitelist,
+    isVip,
+    cancelRedeemption
 }
 
 
