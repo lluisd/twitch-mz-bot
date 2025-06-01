@@ -308,11 +308,11 @@ async function setNotifyChannelFollowMessage (isActive) {
 }
 
 async function addUserIdToChannelWhitelist (userId) {
-    return dbManager.addUserIdToChannelWhitelist(config.twitch.channels, userId)
+    return dbManager.addUserIdToChannelWhitelist(config.twitch.roomId, userId)
 }
 
 async function removeUserIdFromChannelWhitelist (userId) {
-    return dbManager.removeUserIdFromChannelWhitelist(config.twitch.channels, userId)
+    return dbManager.removeUserIdFromChannelWhitelist(config.twitch.roomId, userId)
 }
 
 async function _getHeaders () {
