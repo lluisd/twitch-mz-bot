@@ -164,15 +164,14 @@ async function addUserIdToChannelWhitelist(roomId, userId) {
         { roomId: parseInt(roomId) },
         { $addToSet: { whitelistUsers: parseInt(userId) } },
         { new: true }
-    );
+    )
 }
 
 async function removeUserIdFromChannelWhitelist(roomId, userId) {
     await Channel.findOneAndUpdate(
         { roomId: parseInt(roomId) },
-        { pull: { whitelistUsers: parseInt(userId) } },
-        { new: true }
-    );
+        { $pull: { whitelistUsers: parseInt(userId) } },
+    )
 }
 
 module.exports = {
