@@ -4,6 +4,8 @@ const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
 const Strike = require('../models/strike')
 const Ban = require('../models/ban')
+const Vip = require('../models/vip')
+const Mod = require('../models/mod')
 const Block = require('../models/block')
 const Screenshot = require('../models/screenshot')
 const tempsDeFlors = require('../models/tempsDeFlors')
@@ -120,9 +122,25 @@ async function addTitleLogLine (roomId, title, date) {
 
 async function addBan (roomId, userId, userName, moderatorName, reason, creationDate, expiryDate) {
     return Ban.findOneAndUpdate(
-        {roomId: parseInt(roomId), userName: userName },
-        { moderatorName: moderatorName, userId: userId,
+        {roomId: parseInt(roomId), userId: userId },
+        { moderatorName: moderatorName, userName: userName,
             reason: reason, creationDate: creationDate, expiryDate: expiryDate },
+        {new: true, upsert: true}
+    ).lean()
+}
+
+async function addVip (roomId, userId, userName) {
+    return Ban.findOneAndUpdate(
+        {roomId: parseInt(roomId), userId: userId },
+        {  userName: userName },
+        {new: true, upsert: true}
+    ).lean()
+}
+
+async function addMod (roomId, userId, userName) {
+    return Ban.findOneAndUpdate(
+        {roomId: parseInt(roomId), userId: userId },
+        {  userName: userName },
         {new: true, upsert: true}
     ).lean()
 }
@@ -131,8 +149,24 @@ async function removeBan (roomId, userId) {
     return Ban.deleteOne({roomId: parseInt(roomId), userId: userId})
 }
 
+async function removeVip (roomId, userId) {
+    return Vip.deleteOne({roomId: parseInt(roomId), userId: userId})
+}
+
+async function removeMod (roomId, userId) {
+    return Mod.deleteOne({roomId: parseInt(roomId), userId: userId})
+}
+
 async function addBans (bans) {
     return Ban.insertMany(bans)
+}
+
+async function addVips (vips) {
+    return Vip.insertMany(vips)
+}
+
+async function addMods (mods) {
+    return Mod.insertMany(mods)
 }
 
 async function addBlocks (blocks) {
@@ -142,6 +176,15 @@ async function addBlocks (blocks) {
 async function clearBans (roomId) {
     return Ban.deleteMany({roomId: parseInt(roomId)});
 }
+
+async function clearVips (roomId) {
+    return Vip.deleteMany({roomId: parseInt(roomId)});
+}
+
+async function clearMods (roomId) {
+    return Mod.deleteMany({roomId: parseInt(roomId)});
+}
+
 
 async function clearBlocks (roomId) {
     return Block.deleteMany({roomId: parseInt(roomId)});
@@ -157,6 +200,14 @@ async function getBlocks(roomId) {
 
 async function getTimeouts(roomId) {
     return Ban.find({roomId: parseInt(roomId), expiryDate: { $ne: null }}).lean()
+}
+
+async function getVips(roomId) {
+    return Vip.find({roomId: parseInt(roomId) }).lean()
+}
+
+async function getMods(roomId) {
+    return Mod.find({roomId: parseInt(roomId) }).lean()
 }
 
 async function addUserIdToChannelWhitelist(roomId, userId) {
@@ -207,5 +258,15 @@ module.exports = {
     addBlocks,
     getBlocks,
     addUserIdToChannelWhitelist,
-    removeUserIdFromChannelWhitelist
+    removeUserIdFromChannelWhitelist,
+    clearVips,
+    clearMods,
+    addMods,
+    addVips,
+    addVip,
+    addMod,
+    removeMod,
+    removeVip,
+    getVips,
+    getMods
 }

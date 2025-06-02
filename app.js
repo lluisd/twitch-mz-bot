@@ -31,7 +31,7 @@ mongoose.connect(config.database).then(() => {
                 const url = req.url;
                 const ip = req.ip;
 
-                logger.info((++num) + " " + method + " " + url + " from ip:" + ip);
+                logger.debug((++num) + " " + method + " " + url + " from ip:" + ip);
                 next();
             });
 
@@ -188,6 +188,32 @@ mongoose.connect(config.database).then(() => {
                                 }
                             })
                             .reverse(),
+                        url: config.externalUrl,
+                        channel: config.twitch.channels
+                    })
+                } catch (error) {
+                    next(error)
+                }
+            });
+
+            app.get('/vips', async (req, res, next) => {
+                try {
+                    const vips = await TwitchService.getVips()
+                    res.render('pages/vips',{
+                        vips:  vips,
+                        url: config.externalUrl,
+                        channel: config.twitch.channels
+                    })
+                } catch (error) {
+                    next(error)
+                }
+            });
+
+            app.get('/mods', async (req, res, next) => {
+                try {
+                    const mods = await TwitchService.getMods()
+                    res.render('pages/mods',{
+                        mods:  mods,
                         url: config.externalUrl,
                         channel: config.twitch.channels
                     })

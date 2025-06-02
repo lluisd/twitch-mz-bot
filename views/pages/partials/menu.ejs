@@ -1,0 +1,32 @@
+<ul class="nav">
+    <li class="nav-item">
+        <a class="nav-link <%= current === 'stream' ? 'active' : '' %>" href="/stream">
+            <%- current === 'stream' ? '<strong>Fotos stream</strong>' : 'Fotos stream' %>
+        </a>
+    </li>
+    <!-- <li class="nav-item">
+    <a class="nav-link <%= current === 'reto' ? 'active' : '' %>" href="/reto">
+      <%- current === 'reto' ? '<strong>Reto temps de flors \'25</strong>' : "Reto temps de flors '25" %>
+    </a>
+  </li> -->
+    <li class="nav-item">
+        <a class="nav-link <%= current === 'bans' ? 'active' : '' %>" href="/bans">
+            <%- current === 'bans' ? '<strong>Bans</strong>' : 'Bans' %>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link <%= current === 'timeouts' ? 'active' : '' %>" href="/timeouts">
+            <%- current === 'timeouts' ? '<strong>Timeouts</strong>' : 'Timeouts' %>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link <%= current === 'vips' ? 'active' : '' %>" href="/vips">
+            <%- current === 'vips' ? '<strong>Vips</strong>' : 'Vips' %>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link <%= current === 'mods' ? 'active' : '' %>" href="/mods">
+            <%- current === 'mods' ? '<strong>Mods</strong>' : 'Mods' %>
+        </a>
+    </li>
+</ul>

@@ -171,6 +171,28 @@ class Ban {
        }
     }
 
+    async updateVipsList(target, bot) {
+        const vipsList = await TwitchService.updateVips().catch((e) => {
+            logger.error(e +' on updateVipsList')}
+        )
+        if (vipsList && vipsList.length > 0) {
+            const text = `Actualizados ${vipsList.length} vips`
+            logger.info(text)
+            await bot.say(target, text)
+        }
+    }
+
+    async updateModsList(target, bot) {
+        const modsList = await TwitchService.updateMods().catch((e) => {
+            logger.error(e +' on updateModsList')}
+        )
+        if (modsList && modsList.length > 0) {
+            const text = `Actualizados ${modsList.length} mods`
+            logger.info(text)
+            await bot.say(target, text)
+        }
+    }
+
     async updateBlocksList(target, bot) {
         const blocksList = await TwitchService.updateBlockedUsers().catch((e) => {
             logger.error(e +'updateBlockedUsers on updateBlocksList')}

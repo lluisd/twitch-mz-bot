@@ -51,6 +51,10 @@ const ChannelSchema = new Schema({
     whitelistUsers: {
         type: [Number],
         required: false,
+    },
+    immuneOfTheDay: {
+        type: Number,
+        required: false,
     }
 })
 

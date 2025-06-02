@@ -60,6 +60,9 @@ module.exports = {
         password: process.env.BASIC_AUTH_PASSWORD
     },
     customReward: {
-        vip: process.env.CUSTOM_REWARD_VIP
+        buyVip: process.env.CUSTOM_REWARD_BUY_VIP,
+        stealVip: process.env.CUSTOM_REWARD_STEAL_VIP,
+        revokeVip: process.env.CUSTOM_REWARD_REVOKE_VIP,
+        immune: process.env.CUSTOM_REWARD_IMMUNE,
     }
 }

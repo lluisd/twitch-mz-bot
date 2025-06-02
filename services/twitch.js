@@ -52,6 +52,36 @@ async function updateBannedUsers () {
     return bansList
 }
 
+async function updateVips () {
+    const api = await broadcasterApiClient.getApiClient()
+    const vips = await api.channels.getVipsPaginated(config.twitch.roomId)
+    let vipsList = []
+    for await (const vip of vips) {
+        const line = {roomId: config.twitch.roomId, userId: vip.id, userName: vip.displayName}
+        vipsList.push(line)
+    }
+    if (vipsList.length > 0) {
+        await dbManager.clearVips(config.twitch.roomId)
+        await dbManager.addVips(vipsList)
+    }
+    return vipsList
+}
+
+async function updateMods () {
+    const api = await broadcasterApiClient.getApiClient()
+    const mods = await api.moderation.getModeratorsPaginated(config.twitch.roomId)
+    let modsList = []
+    for await (const mod of mods) {
+        const line = {roomId: config.twitch.roomId, userId: mod.userId, userName: mod.userDisplayName}
+        modsList.push(line)
+    }
+    if (modsList.length > 0) {
+        await dbManager.clearVips(config.twitch.roomId)
+        await dbManager.addVips(modsList)
+    }
+    return modsList
+}
+
 async function isVip (userId) {
     const api = await broadcasterApiClient.getApiClient()
     return await api.channels.checkVipForUser(config.twitch.roomId, userId)
@@ -63,18 +93,19 @@ async function addVip (userId) {
     logger.info('User added as VIP: ' + userId)
 }
 
+async function addVipHandler (roomId, userId, userName) {
+    await dbManager.addVip(roomId, userId, userName)
+}
+
 async function removeVip (userId) {
     const api = await broadcasterApiClient.getApiClient()
     await api.channels.removeVip(config.twitch.roomId, userId);
     logger.info('User removed as VIP: ' + userId)
 }
 
-async function removeMod (userId) {
-    const api = await broadcasterApiClient.getApiClient()
-    await api.moderation.removeModerator(config.twitch.roomId, userId);
-    logger.info('User removed as Mod: ' + userId)
+async function removeVipHandler (roomId, userId) {
+    await dbManager.removeVip(roomId, userId)
 }
-
 async function ban (userId, duration = null) {
     const api = await broadcasterApiClient.getApiClient()
     await api.moderation.banUser(config.twitch.roomId, {user: userId, reason: '', duration: duration});
@@ -92,6 +123,21 @@ async function addMod (userId) {
     await api.moderation.addModerator(config.twitch.roomId, userId);
     logger.info('User added as Mod: ' + userId)
 }
+
+async function addModHandler (roomId, userId, userName) {
+    await dbManager.addMod(roomId, userId, userName)
+}
+
+async function removeMod (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    await api.moderation.removeModerator(config.twitch.roomId, userId);
+    logger.info('User removed as Mod: ' + userId)
+}
+
+async function removeModHandler (roomId, userId) {
+    await dbManager.removeMod(roomId, userId)
+}
+
 
 async function updateBlockedUsers () {
     const api = await broadcasterApiClient.getApiClient()
@@ -129,6 +175,14 @@ async function getBannedAndBlockedUsers () {
 
 async function getTimeouts () {
     return dbManager.getTimeouts(config.twitch.roomId)
+}
+
+async function getVips () {
+    return dbManager.getVips(config.twitch.roomId)
+}
+
+async function getMods () {
+    return dbManager.getMods(config.twitch.roomId)
 }
 
 async function addBan (roomId, userId, userName, moderatorName, reason, creationDate, expiryDate) {
@@ -307,6 +361,10 @@ async function setNotifyChannelFollowMessage (isActive) {
     return dbManager.updateChannel(config.twitch.channels, { notifyChannelFollowMessage: isActive })
 }
 
+async function setImmuneOfTheDay (userId) {
+    return dbManager.updateChannel(config.twitch.channels, { immuneOfTheDay: parseInt(userId) })
+}
+
 async function addUserIdToChannelWhitelist (userId) {
     return dbManager.addUserIdToChannelWhitelist(config.twitch.roomId, userId)
 }
@@ -359,7 +417,16 @@ module.exports = {
     addUserIdToChannelWhitelist,
     removeUserIdFromChannelWhitelist,
     isVip,
-    cancelRedeemption
+    cancelRedeemption,
+    updateVips,
+    updateMods,
+    addVipHandler,
+    removeVipHandler,
+    addModHandler,
+    removeModHandler,
+    getVips,
+    getMods,
+    setImmuneOfTheDay
 }
 
 
