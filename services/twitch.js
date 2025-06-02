@@ -76,8 +76,8 @@ async function updateMods () {
         modsList.push(line)
     }
     if (modsList.length > 0) {
-        await dbManager.clearVips(config.twitch.roomId)
-        await dbManager.addVips(modsList)
+        await dbManager.clearMods(config.twitch.roomId)
+        await dbManager.addMods(modsList)
     }
     return modsList
 }
