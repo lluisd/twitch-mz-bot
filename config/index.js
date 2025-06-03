@@ -64,5 +64,7 @@ module.exports = {
         stealVip: process.env.CUSTOM_REWARD_STEAL_VIP,
         revokeVip: process.env.CUSTOM_REWARD_REVOKE_VIP,
         immune: process.env.CUSTOM_REWARD_IMMUNE,
+        timeout: process.env.CUSTOM_REWARD_TIMEOUT,
+        buyMod: process.env.CUSTOM_REWARD_BUY_MOD
     }
 }

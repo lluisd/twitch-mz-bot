@@ -87,6 +87,11 @@ async function isVip (userId) {
     return await api.channels.checkVipForUser(config.twitch.roomId, userId)
 }
 
+async function isMod (userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.channels.checkUserMod(config.twitch.roomId, userId)
+}
+
 async function addVip (userId) {
     const api = await broadcasterApiClient.getApiClient()
     await api.channels.addVip(config.twitch.roomId, userId);
@@ -426,7 +431,8 @@ module.exports = {
     removeModHandler,
     getVips,
     getMods,
-    setImmuneOfTheDay
+    setImmuneOfTheDay,
+    isMod
 }
 
 
