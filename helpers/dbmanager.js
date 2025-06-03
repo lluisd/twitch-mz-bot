@@ -130,7 +130,7 @@ async function addBan (roomId, userId, userName, moderatorName, reason, creation
 }
 
 async function addVip (roomId, userId, userName) {
-    return Ban.findOneAndUpdate(
+    return Vip.findOneAndUpdate(
         {roomId: parseInt(roomId), userId: userId },
         {  userName: userName },
         {new: true, upsert: true}
@@ -138,7 +138,7 @@ async function addVip (roomId, userId, userName) {
 }
 
 async function addMod (roomId, userId, userName) {
-    return Ban.findOneAndUpdate(
+    return Mod.findOneAndUpdate(
         {roomId: parseInt(roomId), userId: userId },
         {  userName: userName },
         {new: true, upsert: true}
