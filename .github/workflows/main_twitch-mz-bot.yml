@@ -64,6 +64,7 @@ jobs:
           envKey_CUSTOM_REWARD_STEAL_VIP: 97f03170-8e68-42cf-985b-b19c6b7269e0
           envKey_CUSTOM_REWARD_REVOKE_VIP: 411d86cb-8980-441f-bd50-55da350be813
           envKey_CUSTOM_REWARD_IMMUNE: 12921a5e-9378-4a77-8aeb-9a9ff4d4c9f5
+          envKey_CUSTOM_REWARD_TIMEOUT: e0c37b17-fa39-4e53-aeea-6ea5be8d13d1
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
