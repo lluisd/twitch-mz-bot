@@ -222,6 +222,25 @@ mongoose.connect(config.database).then(() => {
                 }
             });
 
+            app.get('/immunes', async (req, res, next) => {
+                try {
+                    const channel = await TwitchService.getChannel()
+                    res.render('pages/immunes',{
+                        url: config.externalUrl,
+                        channel: config.twitch.channels,
+                        immunes: [
+                            await TwitchService.getUserById(channel.immuneSlot1),
+                            await TwitchService.getUserById(channel.immuneSlot2),
+                            await TwitchService.getUserById(channel.immuneSlot3),
+                            await TwitchService.getUserById(channel.immuneSlot4),
+                            await TwitchService.getUserById(channel.immuneSlot5)
+                        ]
+                    })
+                } catch (error) {
+                    next(error)
+                }
+            });
+
             app.use('/images', express.static('images'));
 
             app.get('/i/:id',  async(req, res , next) => {

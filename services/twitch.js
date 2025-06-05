@@ -19,9 +19,19 @@ async function setGame(name) {
     }
 }
 
-async function cancelRedeemption(rewardId, redemptionId) {
+async function cancelRedemption(rewardId, redemptionId) {
     const api = await broadcasterApiClient.getApiClient()
     return await api.channelPoints.updateRedemptionStatusByIds(config.twitch.roomId, rewardId, [redemptionId], 'CANCELED')
+}
+
+async function acceptRedemption(rewardId, redemptionId) {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.channelPoints.updateRedemptionStatusByIds(config.twitch.roomId, rewardId, [redemptionId], 'FULFILLED')
+}
+
+async function getUserById(userId) {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.users.getUserById(parseInt(userId()))
 }
 
 
@@ -34,6 +44,8 @@ async function getCurrentUsers() {
     }
     return usersList
 }
+
+
 
 async function updateBannedUsers () {
     const api = await broadcasterApiClient.getApiClient()
@@ -366,8 +378,24 @@ async function setNotifyChannelFollowMessage (isActive) {
     return dbManager.updateChannel(config.twitch.channels, { notifyChannelFollowMessage: isActive })
 }
 
-async function setImmuneOfTheDay (userId) {
-    return dbManager.updateChannel(config.twitch.channels, { immuneOfTheDay: parseInt(userId) })
+async function setImmuneSlot1 (userId) {
+    return dbManager.updateChannel(config.twitch.channels, { immuneSlot1: parseInt(userId) })
+}
+
+async function setImmuneSlot2 (userId) {
+    return dbManager.updateChannel(config.twitch.channels, { immuneSlot2: parseInt(userId) })
+}
+
+async function setImmuneSlot3 (userId) {
+    return dbManager.updateChannel(config.twitch.channels, { immuneSlot3: parseInt(userId) })
+}
+
+async function setImmuneSlot4 (userId) {
+    return dbManager.updateChannel(config.twitch.channels, { immuneSlot4: parseInt(userId) })
+}
+
+async function setImmuneSlot5 (userId) {
+    return dbManager.updateChannel(config.twitch.channels, { immuneSlot5: parseInt(userId) })
 }
 
 async function addUserIdToChannelWhitelist (userId) {
@@ -422,7 +450,8 @@ module.exports = {
     addUserIdToChannelWhitelist,
     removeUserIdFromChannelWhitelist,
     isVip,
-    cancelRedeemption,
+    cancelRedemption,
+    acceptRedemption,
     updateVips,
     updateMods,
     addVipHandler,
@@ -431,8 +460,13 @@ module.exports = {
     removeModHandler,
     getVips,
     getMods,
-    setImmuneOfTheDay,
-    isMod
+    setImmuneSlot1,
+    setImmuneSlot2,
+    setImmuneSlot3,
+    setImmuneSlot4,
+    setImmuneSlot5,
+    isMod,
+    getUserById
 }
 
 
