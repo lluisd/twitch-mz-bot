@@ -63,8 +63,11 @@ module.exports = {
         buyVip: process.env.CUSTOM_REWARD_BUY_VIP,
         stealVip: process.env.CUSTOM_REWARD_STEAL_VIP,
         revokeVip: process.env.CUSTOM_REWARD_REVOKE_VIP,
-        immune: process.env.CUSTOM_REWARD_IMMUNE,
-        timeout: process.env.CUSTOM_REWARD_TIMEOUT,
-        buyMod: process.env.CUSTOM_REWARD_BUY_MOD
+        immuneSlot1: process.env.CUSTOM_REWARD_IMMUNE_SLOT_1,
+        immuneSlot2: process.env.CUSTOM_REWARD_IMMUNE_SLOT_2,
+        immuneSlot3: process.env.CUSTOM_REWARD_IMMUNE_SLOT_3,
+        immuneSlot4: process.env.CUSTOM_REWARD_IMMUNE_SLOT_4,
+        immuneSlot5: process.env.CUSTOM_REWARD_IMMUNE_SLOT_5,
+        timeout: process.env.CUSTOM_REWARD_TIMEOUT
     }
 }
