@@ -89,7 +89,7 @@ async function isVip (userId) {
 
 async function isMod (userId) {
     const api = await broadcasterApiClient.getApiClient()
-    return await api.channels.checkUserMod(config.twitch.roomId, userId)
+    return await api.moderation.checkUserMod(config.twitch.roomId, userId)
 }
 
 async function addVip (userId) {
