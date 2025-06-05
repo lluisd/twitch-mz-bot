@@ -31,7 +31,7 @@ async function acceptRedemption(rewardId, redemptionId) {
 
 async function getUserById(userId) {
     const api = await broadcasterApiClient.getApiClient()
-    return await api.users.getUserById(parseInt(userId()))
+    return await api.users.getUserById(parseInt(userId))
 }
 
 
