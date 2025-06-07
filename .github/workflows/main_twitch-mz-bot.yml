@@ -69,7 +69,7 @@ jobs:
           envKey_CUSTOM_REWARD_IMMUNE_SLOT_3: "3282424a-7c94-457f-8156-e61740c8d250"
           envKey_CUSTOM_REWARD_IMMUNE_SLOT_4: "175c4c91-04ec-4279-a3ff-7530ce3071b5"
           envKey_CUSTOM_REWARD_IMMUNE_SLOT_5: "a6c97da4-214c-48b0-8ca8-a74d7a0fccb4"
-
+          envKey_CUSTOM_REWARD_TITLE: "9a59710b-9b25-4a0d-8df2-b391b6308815"
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
