@@ -73,6 +73,38 @@ class Stream {
         }
     }
 
+    async getVips(target, bot) {
+        const vips = await TwitchService.getVips()
+        if (vips && vips.length > 0) {
+            await bot.say(target, `Hay ${vips.length} vips. Detalles en ${config.externalUrl}/vips`)
+        } else {
+            await bot.say(target, 'No hay vips')
+        }
+    }
+
+    async getMods(target, bot) {
+        const mods = await TwitchService.getMods()
+        if (mods && mods.length > 0) {
+            await bot.say(target, `Hay ${mods.length} mods. Detalles en ${config.externalUrl}/mods`)
+        } else {
+            await bot.say(target, 'No hay mods')
+        }
+    }
+
+    async getImmunes(target, bot) {
+        const immunes = await TwitchService.getImmunes()
+
+        if (immunes && immunes.length > 0) {
+            const immunesDetails = await Promise.all(
+                immunes.map(id => TwitchService.getUserById(id))
+            );
+
+            await bot.say(target, `Actuales immunes 24h: ${immunesDetails.map(u => u.displayName ).join(', ')}. Detalles en ${config.externalUrl}/immunes`)
+        } else {
+            await bot.say(target, 'No hay immunes 24h')
+        }
+    }
+
     async setImmunity(value) {
         const valueNumber = parseInt(value)
         if (!isNaN(valueNumber)){
@@ -211,10 +243,7 @@ class Stream {
         if ((result.type === 'live' || result.type === 'stillLive') && result.lastTitle !== result.title ) {
             await LoggerService.logStreamTitle(result.user_id, result.title)
         }
-
     }
-
-
 }
 
 module.exports = Stream

@@ -24,8 +24,6 @@ class Ban {
         }
     }
 
-
-
     async ban(target, username, bot, duration) {
         const user = await TwitchService.getUser(username)
 
