@@ -71,6 +71,11 @@ const ChannelSchema = new Schema({
     immuneSlot5: {
         type: Number,
         required: false,
+    },
+    immunity: {
+        type: Boolean,
+        required: false,
+        default: true
     }
 })
 

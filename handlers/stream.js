@@ -73,6 +73,13 @@ class Stream {
         }
     }
 
+    async setImmunity(value) {
+        const valueNumber = parseInt(value)
+        if (!isNaN(valueNumber)){
+            await TwitchService.setImmunity(!!valueNumber).catch(() => { logger.error('setImmunity on setImmunity')})
+        }
+    }
+
     async getScreenshots(target, bot) {
         await bot.say(target, `Fotos del reto Temps de Flors ${config.externalUrl}/fotos`)
     }

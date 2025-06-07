@@ -378,6 +378,10 @@ async function setNotifyChannelFollowMessage (isActive) {
     return dbManager.updateChannel(config.twitch.channels, { notifyChannelFollowMessage: isActive })
 }
 
+async function setImmunity (isActive) {
+    return dbManager.updateChannel(config.twitch.channels, { immunity: isActive })
+}
+
 async function setImmuneSlot1 (userId) {
     return dbManager.updateChannel(config.twitch.channels, { immuneSlot1: parseInt(userId) })
 }
@@ -466,7 +470,8 @@ module.exports = {
     setImmuneSlot4,
     setImmuneSlot5,
     isMod,
-    getUserById
+    getUserById,
+    setImmunity
 }
 
 
