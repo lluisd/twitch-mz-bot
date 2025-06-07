@@ -99,7 +99,7 @@ class Stream {
                 immunes.map(id => TwitchService.getUserById(id))
             );
 
-            await bot.say(target, `Actuales immunes 24h: ${immunesDetails.map(u => u.displayName ).join(', ')}. Detalles en ${config.externalUrl}/immunes`)
+            await bot.say(target, `Actuales immunes 24h: ${immunesDetails.map(u => u.displayName ).join(', ').replace(/, ([^,]*)$/, ' y $1')}. Detalles en ${config.externalUrl}/immunes`)
         } else {
             await bot.say(target, 'No hay immunes 24h')
         }
