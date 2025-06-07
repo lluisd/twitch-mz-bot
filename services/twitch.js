@@ -202,6 +202,11 @@ async function getMods () {
     return dbManager.getMods(config.twitch.roomId)
 }
 
+async function getImmunes () {
+    const channel = await dbManager.getChannel(config.twitch.channels).lean()
+    return [channel.immuneSlot1, channel.immuneSlot2, channel.immuneSlot3, channel.immuneSlot4, channel.immuneSlot5]
+}
+
 async function addBan (roomId, userId, userName, moderatorName, reason, creationDate, expiryDate) {
     await dbManager.addBan(roomId, userId, userName, moderatorName, reason, creationDate, expiryDate);
 }
@@ -471,7 +476,8 @@ module.exports = {
     setImmuneSlot5,
     isMod,
     getUserById,
-    setImmunity
+    setImmunity,
+    getImmunes
 }
 
 
