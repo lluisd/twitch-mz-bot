@@ -15,6 +15,8 @@
     <tr>
         <th scope="col">#</th>
         <th scope="col">Usuario</th>
+        <th scope="col">Expira en...</th>
+        <th scope="col">Strikes</th>
     </tr>
     </thead>
     <tbody>
@@ -22,6 +24,8 @@
         <tr class="table-light">
             <th scope="row">Slot <%= immune.slot %></th>
             <td><%= immune.username %></td>
+            <td><%= immune.days + ' dias ' + immune.hours + ' horas ' + immune.minutes + ' minutos ' + immune.seconds + ' segundos'  %></td>
+            <td><%= immune.bans %> de 3</td>
         </tr>
     <% }); %>
     </tbody>

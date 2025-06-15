@@ -231,7 +231,18 @@ mongoose.connect(config.database).then(() => {
                         channel: config.twitch.channels,
                         immunes: await Promise.all(immunes.map( async (immune) => {
                             const user = await TwitchService.getUserById(immune.userId);
-                            return { username: user.displayName, slot: immune.slot}
+                            const now = moment().tz('Europe/Madrid')
+                            const expiryMoment = moment(immune.expiryDate)
+                            const duration = moment.duration(expiryMoment.diff(now))
+                            return {
+                                username: user.displayName,
+                                slot: immune.slot,
+                                bans: immune.bans,
+                                days: duration.days(),
+                                hours: duration.hours(),
+                                minutes: duration.minutes(),
+                                seconds: duration.seconds()
+                            }
                         }))
                     })
                 } catch (error) {
