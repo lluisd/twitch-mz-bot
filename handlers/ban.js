@@ -1,5 +1,6 @@
 const config = require("../config")
 const TwitchService = require('../services/twitch')
+const ImmuneService = require('../services/immune')
 const StrikeService = require('../services/strike')
 const moment = require('moment')
 require('mathjs')
@@ -225,6 +226,17 @@ class Ban {
                 await TwitchService.ban(user.id, 600)
                 await bot.say(target, `Strike ${strikesCount + 1}/3 para ${user.display_name}, al carrer 10 minutos comemierda!`)
                 await StrikeService.resetStrike(user.id)
+            }
+        }
+    }
+
+    async checkExpiredImmunes(target, twitchBot) {
+        const immunes = await ImmuneService.getImmunes()
+        for (const immune of immunes) {
+            if (immune.expiryDate && moment().isAfter(immune.expiryDate)) {
+                await ImmuneService.removeImmune(immune.userId)
+                const user = await TwitchService.getUserById(immune.userId)
+                await twitchBot.say(target, `${user.displayName} ya no es inmune. Slot ${immune.slot} libre.`)
             }
         }
     }

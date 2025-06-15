@@ -229,8 +229,9 @@ mongoose.connect(config.database).then(() => {
                     res.render('pages/immunes',{
                         url: config.externalUrl,
                         channel: config.twitch.channels,
-                        immunes: await Promise.all(immunes.map( (immune) => {
-                            return { user:  TwitchService.getUserById(immune.userId), slot: immune.slot}
+                        immunes: await Promise.all(immunes.map( async (immune) => {
+                            const user = await TwitchService.getUserById(immune.userId);
+                            return { username: user.displayName, slot: immune.slot}
                         }))
                     })
                 } catch (error) {
