@@ -22,15 +22,6 @@ async function addImmune (userId, slotNumber) {
     return await dbManager.setImmuneWithSlot(userId, slotNumber, moment().add(24, 'hours'))
 }
 
-async function checkExpiredImmunes() {
-    const immunes = await dbManager.getImmunes()
-    for (const immune of immunes) {
-        if (immune.expiryDate && moment().isAfter(immune.expiryDate)) {
-            await _deleteImmune(immune.userId, immune.slot)
-        }
-    }
-}
-
 async function _deleteImmune(userId, slot) {
     await dbManager.deleteImmune(userId)
     switch (slot) {
