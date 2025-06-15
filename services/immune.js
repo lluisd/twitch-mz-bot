@@ -48,6 +48,5 @@ module.exports = {
     getImmunes,
     increaseBan,
     removeImmune,
-    addImmune,
-    checkExpiredImmunes
+    addImmune
 }
