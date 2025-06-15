@@ -12,6 +12,7 @@ const EventSub = require('./lib/eventSub')
 const handlers = require('./handlers')
 const logger = require('./lib/logger')
 const basicAuth = require('./middleware/basicAuth')
+const ImmuneService = require('./services/immune')
 
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
@@ -224,17 +225,13 @@ mongoose.connect(config.database).then(() => {
 
             app.get('/immunes', async (req, res, next) => {
                 try {
-                    const channel = await TwitchService.getChannel()
+                    const immunes = await ImmuneService.getImmunes()
                     res.render('pages/immunes',{
                         url: config.externalUrl,
                         channel: config.twitch.channels,
-                        immunes: [
-                            await TwitchService.getUserById(channel.immuneSlot1),
-                            await TwitchService.getUserById(channel.immuneSlot2),
-                            await TwitchService.getUserById(channel.immuneSlot3),
-                            await TwitchService.getUserById(channel.immuneSlot4),
-                            await TwitchService.getUserById(channel.immuneSlot5)
-                        ]
+                        immunes: await Promise.all(immunes.map( (immune) => {
+                            return { user:  TwitchService.getUserById(immune.userId), slot: immune.slot}
+                        }))
                     })
                 } catch (error) {
                     next(error)

@@ -3,6 +3,7 @@ const Muncipio = require('../models/municipio')
 const Channel = require('../models/channel')
 const Birthday = require('../models/birthday')
 const Strike = require('../models/strike')
+const Immune = require('../models/immune')
 const Ban = require('../models/ban')
 const Vip = require('../models/vip')
 const Mod = require('../models/mod')
@@ -66,6 +67,27 @@ async function setStrike (userId) {
     ).lean()
 }
 
+async function setBanToImmune (userId) {
+    return Immune.findOneAndUpdate(
+        {userId: parseInt(userId)},
+        { $inc: { bans: 1 } },
+        { new: true}
+    ).lean()
+}
+
+async function setImmuneWithSlot (userId, slotNumber, expiryDate) {
+    return Immune.findOneAndUpdate(
+        {userId: parseInt(userId)},
+        { slot: slotNumber, bans: 0, expiryDate: expiryDate },
+        {new: true, upsert: true}
+    ).lean()
+}
+
+async function deleteImmune (userId) {
+    return Immune.deleteOne({userId: parseInt(userId)})
+}
+
+
 async function resetStrike (userId) {
     return Strike.findOneAndUpdate(
         {userId: parseInt(userId)},
@@ -76,6 +98,14 @@ async function resetStrike (userId) {
 
 async function getStrikes (userId) {
     return Strike.findOne({userId: userId}).lean()
+}
+
+async function getImmune (userId) {
+    return Immune.findOne({userId: userId}).lean()
+}
+
+async function getImmunes () {
+    return Immune.find({}).lean()
 }
 
 async function updateScreenshot (name, update) {
@@ -268,5 +298,10 @@ module.exports = {
     removeMod,
     removeVip,
     getVips,
-    getMods
+    getMods,
+    setBanToImmune,
+    setImmuneWithSlot,
+    deleteImmune,
+    getImmunes,
+    getImmune
 }
