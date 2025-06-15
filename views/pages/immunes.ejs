@@ -20,8 +20,8 @@
     <tbody>
     <%  immunes.forEach(function(immune, index) { %>
         <tr class="table-light">
-            <th scope="row">Slot <%= index+1 %></th>
-            <td><%= immune.displayName %></td>
+            <th scope="row">Slot <%= immune.slot %></th>
+            <td><%= immune.user %></td>
         </tr>
     <% }); %>
     </tbody>

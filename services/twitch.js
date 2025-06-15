@@ -29,6 +29,16 @@ async function acceptRedemption(rewardId, redemptionId) {
     return await api.channelPoints.updateRedemptionStatusByIds(config.twitch.roomId, rewardId, [redemptionId], 'FULFILLED')
 }
 
+async function enableCustomReward(rewardId) {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.channelPoints.updateCustomReward(config.twitch.roomId, rewardId, { isEnabled: true })
+}
+
+async function disableCustomReward(rewardId) {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.channelPoints.updateCustomReward(config.twitch.roomId, rewardId, { isEnabled: false })
+}
+
 async function getUserById(userId) {
     const api = await broadcasterApiClient.getApiClient()
     return await api.users.getUserById(parseInt(userId))
@@ -200,11 +210,6 @@ async function getVips () {
 
 async function getMods () {
     return dbManager.getMods(config.twitch.roomId)
-}
-
-async function getImmunes () {
-    const channel = await dbManager.getChannel(config.twitch.channels).lean()
-    return [channel.immuneSlot1, channel.immuneSlot2, channel.immuneSlot3, channel.immuneSlot4, channel.immuneSlot5]
 }
 
 async function addBan (roomId, userId, userName, moderatorName, reason, creationDate, expiryDate) {
@@ -387,26 +392,6 @@ async function setImmunity (isActive) {
     return dbManager.updateChannel(config.twitch.channels, { immunity: isActive })
 }
 
-async function setImmuneSlot1 (userId) {
-    return dbManager.updateChannel(config.twitch.channels, { immuneSlot1: parseInt(userId) })
-}
-
-async function setImmuneSlot2 (userId) {
-    return dbManager.updateChannel(config.twitch.channels, { immuneSlot2: parseInt(userId) })
-}
-
-async function setImmuneSlot3 (userId) {
-    return dbManager.updateChannel(config.twitch.channels, { immuneSlot3: parseInt(userId) })
-}
-
-async function setImmuneSlot4 (userId) {
-    return dbManager.updateChannel(config.twitch.channels, { immuneSlot4: parseInt(userId) })
-}
-
-async function setImmuneSlot5 (userId) {
-    return dbManager.updateChannel(config.twitch.channels, { immuneSlot5: parseInt(userId) })
-}
-
 async function addUserIdToChannelWhitelist (userId) {
     return dbManager.addUserIdToChannelWhitelist(config.twitch.roomId, userId)
 }
@@ -469,15 +454,11 @@ module.exports = {
     removeModHandler,
     getVips,
     getMods,
-    setImmuneSlot1,
-    setImmuneSlot2,
-    setImmuneSlot3,
-    setImmuneSlot4,
-    setImmuneSlot5,
     isMod,
     getUserById,
     setImmunity,
-    getImmunes
+    enableCustomReward,
+    disableCustomReward
 }
 
 

@@ -1,4 +1,5 @@
 const TwitchService = require('../services/twitch')
+const ImmuneService = require('../services/immune')
 const BrowserService = require('../services/browser')
 const BirthdayService = require('../services/birthday')
 const ScreenshotService = require('../services/screenshot')
@@ -92,11 +93,11 @@ class Stream {
     }
 
     async getImmunes(target, bot) {
-        const immunes = await TwitchService.getImmunes()
+        const immunes = await ImmuneService.getImmunes()
 
         if (immunes && immunes.length > 0) {
             const immunesDetails = await Promise.all(
-                immunes.map(id => TwitchService.getUserById(id))
+                immunes.map(immune => TwitchService.getUserById(immune.userId))
             );
 
             await bot.say(target, `Actuales immunes 24h: ${immunesDetails.map(u => u.displayName ).join(', ').replace(/, ([^,]*)$/, ' y $1')}. Detalles en ${config.externalUrl}/immunes`)
