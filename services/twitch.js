@@ -165,6 +165,10 @@ async function removeModHandler (roomId, userId) {
     await dbManager.removeMod(roomId, userId)
 }
 
+async function getBlockedUsers () {
+    const api = await broadcasterApiClient.getApiClient()
+    return api.users.getBlocksPaginated(config.twitch.roomId);
+}
 
 async function updateBlockedUsers () {
     const api = await broadcasterApiClient.getApiClient()
@@ -458,7 +462,8 @@ module.exports = {
     getUserById,
     setImmunity,
     enableCustomReward,
-    disableCustomReward
+    disableCustomReward,
+    getBlockedUsers
 }
 
 
