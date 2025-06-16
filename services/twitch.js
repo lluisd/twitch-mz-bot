@@ -167,7 +167,12 @@ async function removeModHandler (roomId, userId) {
 
 async function getBlockedUsers () {
     const api = await broadcasterApiClient.getApiClient()
-    return api.users.getBlocksPaginated(config.twitch.roomId);
+    const blockedUsers = await api.users.getBlocksPaginated(config.twitch.roomId)
+    let blockedUsersList = []
+    for await (const user of blockedUsers) {
+        blockedUsersList.push(user)
+    }
+    return blockedUsersList
 }
 
 async function updateBlockedUsers () {
