@@ -69,6 +69,7 @@ module.exports = {
         immuneSlot4: process.env.CUSTOM_REWARD_IMMUNE_SLOT_4,
         immuneSlot5: process.env.CUSTOM_REWARD_IMMUNE_SLOT_5,
         timeout: process.env.CUSTOM_REWARD_TIMEOUT,
-        setTitle: process.env.CUSTOM_REWARD_TITLE
+        setTitle: process.env.CUSTOM_REWARD_TITLE,
+        unban: process.env.CUSTOM_REWARD_UNBAN,
     }
 }
