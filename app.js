@@ -13,6 +13,7 @@ const handlers = require('./handlers')
 const logger = require('./lib/logger')
 const basicAuth = require('./middleware/basicAuth')
 const ImmuneService = require('./services/immune')
+const { transcribeSemaphore } = require("./semaphore.js")
 
 mongoose.connect(config.database).then(() => {
     const messenger = new Messenger()
@@ -37,6 +38,10 @@ mongoose.connect(config.database).then(() => {
             });
 
             app.get('/transcribe', basicAuth, async (req, res, next) => {
+                if (transcribeSemaphore.isLocked()) {
+                    return;
+                }
+                const [value, release] = await transcribeSemaphore.acquire()
                 try{
                     await HAService.hibernateTranscriberPC()
                     await handlers.openAI.uploadStreamToOpenai(`#${config.twitch.channels}`, twitchBot, telegramBot)
@@ -47,6 +52,8 @@ mongoose.connect(config.database).then(() => {
                     res.json(response);
                 } catch (error) {
                     next(error)
+                } finally {
+                    release()
                 }
             });
 
