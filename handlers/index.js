@@ -1,11 +1,11 @@
 const Generic = require('./generic')
-const Weather = require('./Weather')
-const Stream = require('./Stream')
-const Birthday = require('./Birthday')
-const TempsDeFlors = require('./TempsDeFlors')
-const Ban = require('./Ban')
-const Events = require('./Events')
-const OpenAI = require('./OpenAI');
+const Weather = require('./weather')
+const Stream = require('./stream')
+const Birthday = require('./birthday')
+const TempsDeFlors = require('./tempsDeFlors')
+const Ban = require('./ban')
+const Events = require('./events')
+const OpenAI = require('./openAI')
 
 module.exports = {
     generic: new Generic(),
