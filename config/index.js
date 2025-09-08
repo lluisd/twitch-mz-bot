@@ -32,7 +32,6 @@ module.exports = {
         TFSpots: process.env.FEATURE_TF_SPOTS === 'true',
     },
     openAI: {
-        endpoint: process.env.AZURE_OPENAI_ENDPOINT,
         endpoint_base: process.env.AZURE_OPENAI_ENDPOINT_BASE,
         key: process.env.AZURE_OPENAI_KEY,
         apiVersion: process.env.AZURE_OPENAI_API_VERSION,
