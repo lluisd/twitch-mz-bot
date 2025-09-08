@@ -21,4 +21,4 @@ const ChatLogSchema = new Schema({
     }
 })
 
-module.exports = ChatLogSchema
+module.exports = mongoose.model('chatLog', ChatLogSchema, 'chatLogs')

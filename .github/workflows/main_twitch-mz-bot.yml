@@ -4,11 +4,6 @@
 name: Build and deploy MZ to AZURE
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '**/README.md'
   workflow_dispatch:
 
 jobs:
@@ -42,7 +37,6 @@ jobs:
           envKey_BLACK_LIST_USERS: ${{ secrets.BLACK_LIST_USERS }}
           envKey_WHITE_LIST_USERS: ${{ secrets.WHITE_LIST_USERS }}
           envKey_FEATURE_TF_SPOTS: false
-          envkey_AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           envkey_AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
           envkey_AZURE_OPENAI_ENDPOINT_BASE: ${{ secrets.AZURE_OPENAI_ENDPOINT_BASE }}
           envkey_AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}

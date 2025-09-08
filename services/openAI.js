@@ -17,42 +17,6 @@ const getClient = () => {
 
 const assistantsClient = getClient();
 
-const options = {
-    model: "gpt-4o-mini", // replace with model deployment name
-    name: config.twitch.username,
-    instructions: "Eres un bot del canal de twitch del streamer llamado " + config.twitch.username + " que conoce todas las interacciones de los usuarios de su chat",
-    tools: [{"type":"file_search"}],
-    tool_resources: {"file_search":{"vector_store_ids":[config.openAI.vectorStoreId]}},
-    temperature: 1,
-    top_p: 1
-};
-
-
-async function askOpenAI(message) {
-    let result
-    let options = await _getHeaders()
-    options.method = 'POST'
-    const endpoint = config.openAI.endpoint
-
-    const body = {
-        model: 'gpt-4o-mini',
-        messages: [{ "role": "user", "content": "resume en pocas palabras: " + message}],
-        max_tokens: 70
-    }
-
-    options.body = JSON.stringify(body)
-
-    try {
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-        result = data?.choices[0]?.message?.content || null
-    } catch {
-        result = null
-    }
-
-    return result
-}
-
 let assistantThread = null
 
 
@@ -164,7 +128,6 @@ async function _getHeaders () {
 }
 
 module.exports = {
-    askOpenAI,
     askAssistant,
     uploadFileToVectorStore
 }

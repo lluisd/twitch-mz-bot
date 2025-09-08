@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "repository": "https://github.com/lluisd/twitch-mz-bot.git",
-  "author": "Lluis <>",
+  "author": "",
   "license": "MIT",
   "dependencies": {
     "@azure/storage-blob": "^12.25.0",

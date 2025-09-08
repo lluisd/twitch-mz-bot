@@ -13,6 +13,6 @@ const TitleLogSchema = new Schema({
     },
 })
 
-module.exports = TitleLogSchema
+module.exports = mongoose.model('titleLog', TitleLogSchema, 'titleLogs')
 
 

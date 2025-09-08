@@ -10,7 +10,8 @@ const Mod = require('../models/mod')
 const Block = require('../models/block')
 const Screenshot = require('../models/screenshot')
 const tempsDeFlors = require('../models/tempsDeFlors')
-const logConn = require('../db.openai')
+const ChatLog = require('../models/chatLog')
+const TitleLog = require('../models/titleLog')
 
 function getToken (userId) {
     return Token.findOne({userId: userId})
@@ -134,20 +135,17 @@ async function getTFSpots(roomId){
 }
 
 async function addChatLogLine (roomId, nick, text, date) {
-    const conn = await logConn.getConnection()
-    return conn.model('chatLog').insertMany({roomId: roomId, nick: nick, text: text, date: date})
+    return ChatLog.insertMany({roomId: roomId, nick: nick, text: text, date: date})
 }
 
 async function getChatLogLines (roomId, startOfDay, endOfDay) {
-    const conn = await logConn.getConnection()
-    return conn.model('chatLog')
+    return ChatLog
         .find({roomId: roomId, date: { $gte: startOfDay, $lt: endOfDay }})
         .select('nick text date -_id').lean()
 }
 
 async function addTitleLogLine (roomId, title, date) {
-    const conn = await logConn.getConnection()
-    return conn.model('titleLog').insertMany({roomId: roomId, title: title, date: date})
+    return TitleLog.insertMany({roomId: roomId, title: title, date: date})
 }
 
 async function addBan (roomId, userId, userName, moderatorName, reason, creationDate, expiryDate) {
