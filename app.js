@@ -38,6 +38,10 @@ mongoose.connect(config.database)
                 next();
             });
 
+            app.get('/', (req, res) => {
+                res.send('Hello ' + config.twitch.channels);
+            });
+
             app.get('/transcribe', basicAuth, async (req, res, next) => {
                 if (transcribeSemaphore.isLocked()) {
                     return;
@@ -340,7 +344,7 @@ mongoose.connect(config.database)
                 logger.info('Listening on port ' + listener.address().port)
               //  await eventSub.markAsReady()
                 //await eventSub.subscribeEvent(config.twitch.roomId)
-                app.get('/', (req, res) => res.redirect('/stream'))
+                //app.get('/', (req, res) => res.redirect('/stream'))
             })
         }).catch((err) => {
             logger.error('Error on bot initialization', err)
