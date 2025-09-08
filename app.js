@@ -15,9 +15,10 @@ const basicAuth = require('./middleware/basicAuth')
 const ImmuneService = require('./services/immune')
 const { transcribeSemaphore } = require("./semaphore.js")
 
-mongoose.connect(config.database).then(() => {
-    const messenger = new Messenger()
-    messenger.init()
+mongoose.connect(config.database)
+    //.then(() => {
+    //const messenger = new Messenger()
+   // messenger.init()
         .then(async ({twitchBot, telegramBot}) => {
             logger.info('Connected')
 
@@ -332,18 +333,18 @@ mongoose.connect(config.database).then(() => {
                 });
             })
 
-            const eventSub = new EventSub();
-            await eventSub.init(twitchBot, telegramBot)
-            eventSub.apply(app);
+           // const eventSub = new EventSub();
+            //await eventSub.init(twitchBot, telegramBot)
+            //eventSub.apply(app);
             const listener = app.listen(process.env.PORT, async ()=>  {
                 logger.info('Listening on port ' + listener.address().port)
-                await eventSub.markAsReady()
-                await eventSub.subscribeEvent(config.twitch.roomId)
+              //  await eventSub.markAsReady()
+                //await eventSub.subscribeEvent(config.twitch.roomId)
                 app.get('/', (req, res) => res.redirect('/stream'))
             })
         }).catch((err) => {
             logger.error('Error on bot initialization', err)
-        })
+       // })
 }).catch((err) => {
     logger.error('Error connecting to MongoDB', err)
 })
