@@ -15,7 +15,7 @@ const basicAuth = require('./middleware/basicAuth')
 const ImmuneService = require('./services/immune')
 const { transcribeSemaphore } = require("./semaphore.js")
 
-mongoose.connect(config.database).then(() => {
+mongoose.connect(config.database, { dbName: 'twitch' }).then(() => {
     const messenger = new Messenger()
     messenger.init()
         .then(async ({twitchBot, telegramBot}) => {
