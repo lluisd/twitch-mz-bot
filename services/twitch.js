@@ -261,21 +261,13 @@ async function getStream() {
 }
 
 async function getUnbanRequests () {
-    let result
-    let options = await _getHeaders()
-    const channel = await dbManager.getChannel(config.twitch.channels).lean()
-    const endpoint = `${endpointPrefix}/moderation/unban_requests?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}&status=pending`
-
-    try {
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-        result = data?.data ?? null
-
-    } catch {
-        result = null
+    const api = await broadcasterApiClient.getApiClient()
+    const unbanRequests = await api.moderation.getUnbanRequestsPaginated(config.twitch.roomId, 'pending');
+    let unbanRequestsList = []
+    for await (const unbanRequest of unbanRequests) {
+        unbanRequestsList.push(unbanRequest)
     }
-
-    return result
+    return unbanRequestsList
 }
 
 
