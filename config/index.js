@@ -55,6 +55,7 @@ module.exports = {
         endpoint: process.env.HA_ENDPOINT
     },
     loki: {
+        enabled: process.env.LOKI_ENABLED === 'true',
         basicAuth: process.env.LOKI_BASIC_AUTH,
         host: process.env.LOKI_HOST,
     },
