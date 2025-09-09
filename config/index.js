@@ -1,7 +1,11 @@
 module.exports = {
     externalUrl: process.env.EXTERNAL_URL,
-    database: process.env.MONGODB_URI,
+    database: {
+        uri: process.env.MONGODB_URI,
+        dbName: process.env.MONGODB_NAME
+    },
     twitch: {
+        enabled: process.env.TWITCH_ENABLED === 'true',
         channels: process.env.TWITCH_CHANNELS,
         clientId: process.env.TWITCH_CLIENT_ID,
         clientSecret: process.env.TWITCH_CLIENT_SECRET,
