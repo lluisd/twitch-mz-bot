@@ -23,7 +23,7 @@
     "nanoid": "^3.3.6",
     "node-cron": "^4.2.1",
     "node-telegram-bot-api": "^0.66.0",
-    "openai": "^5.20.0",
+    "openai": "^4.67.3",
     "puppeteer-core": "^22.6.4",
     "sharp": "^0.34.3",
     "tmi.js": "^1.8.5",
