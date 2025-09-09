@@ -43,10 +43,12 @@ mongoose.connect(config.database, { dbName: 'twitch' }).then(() => {
 
             app.get('/transcribe', basicAuth, async (req, res, next) => {
                 if (transcribeSemaphore.isLocked()) {
+                    logger.info('called transcribe while already running')
                     return;
                 }
                 const [value, release] = await transcribeSemaphore.acquire()
                 try{
+                    logger.info('Transcription started')
                     await HAService.hibernateTranscriberPC()
                     await handlers.openAI.uploadStreamToOpenai(`#${config.twitch.channels}`, twitchBot, telegramBot)
                     const response = {
