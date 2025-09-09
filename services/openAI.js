@@ -7,12 +7,11 @@ moment.locale('es')
 const logger = require('../lib/logger')
 
 const getClient = () => {
-    const assistantsClient = new AzureOpenAI({
+    return new AzureOpenAI({
         endpoint: config.openAI.endpoint_base,
         apiVersion: config.openAI.apiVersion,
         apiKey: config.openAI.key
     });
-    return assistantsClient;
 };
 
 const assistantsClient = getClient();
@@ -69,7 +68,6 @@ async function askAssistant(message, username) {
             }
         );
 
-
         //const assistantResponse = await assistantsClient.beta.assistants.create(options);
         const assistantResponse = await assistantsClient.beta.assistants.retrieve(config.openAI.assistantId)
         // Run the thread and poll it until it is in a terminal state
@@ -110,21 +108,8 @@ async function askAssistant(message, username) {
     return result
 }
 
-
-
 function cleanAssistantText(text) {
     return text.replaceAll(/【.*?】/g, "")
-}
-
-
-async function _getHeaders () {
-    return {
-        headers: {
-            'accept': 'application/json',
-            'api-key': config.openAI.key,
-            'Content-Type': 'application/json'
-        }
-    }
 }
 
 module.exports = {
