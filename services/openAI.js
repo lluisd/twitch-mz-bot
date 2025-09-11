@@ -38,7 +38,7 @@ async function uploadFileToVectorStore(json, formattedDate, origin) {
             await assistantsClient.files.del(file.id);
         }
 
-        await assistantsClient.beta.vectorStores.files.uploadAndPoll(config.openAI.vectorStoreId, newFile);
+        await assistantsClient.vectorStores.files.uploadAndPoll(config.openAI.vectorStoreId, newFile);
         return { success: true, filename: filename }
 
     } catch (error) {
