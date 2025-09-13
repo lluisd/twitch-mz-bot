@@ -19,6 +19,11 @@ async function setGame(name) {
     }
 }
 
+async function getCustomRewards() {
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.channelPoints.getCustomRewards(config.twitch.roomId, { onlyManageableRewards: true })
+}
+
 async function cancelRedemption(rewardId, redemptionId) {
     const api = await broadcasterApiClient.getApiClient()
     const [redemption] = await api.channelPoints.getRedemptionsByIds(
@@ -492,7 +497,8 @@ module.exports = {
     setImmunity,
     enableCustomReward,
     disableCustomReward,
-    getBlockedUsers
+    getBlockedUsers,
+    getCustomRewards
 }
 
 
