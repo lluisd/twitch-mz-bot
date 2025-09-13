@@ -21,11 +21,43 @@ async function setGame(name) {
 
 async function cancelRedemption(rewardId, redemptionId) {
     const api = await broadcasterApiClient.getApiClient()
+    const [redemption] = await api.channelPoints.getRedemptionsByIds(
+        config.twitch.roomId,
+        rewardId,
+        [redemptionId]
+    )
+
+    if (!redemption) {
+        logger.warn(`Redemption ${redemptionId} ya no existe o no está pendiente, no se puede cancelar`)
+        return
+    }
+
+    if (redemption.status !== 'UNFULFILLED') {
+        logger.warn(`Redemption ${redemptionId} no está pendiente, status=${redemption.status}`)
+        return
+    }
+
     return await api.channelPoints.updateRedemptionStatusByIds(config.twitch.roomId, rewardId, [redemptionId], 'CANCELED')
 }
 
 async function acceptRedemption(rewardId, redemptionId) {
     const api = await broadcasterApiClient.getApiClient()
+    const [redemption] = await api.channelPoints.getRedemptionsByIds(
+        config.twitch.roomId,
+        rewardId,
+        [redemptionId]
+    )
+
+    if (!redemption) {
+        logger.warn(`Redemption ${redemptionId} no existe, no se puede aceptar`)
+        return
+    }
+
+    if (redemption.status !== 'UNFULFILLED') {
+        logger.warn(`Redemption ${redemptionId} no está pendiente, status=${redemption.status}, no se puede aceptar`)
+        return
+    }
+
     return await api.channelPoints.updateRedemptionStatusByIds(config.twitch.roomId, rewardId, [redemptionId], 'FULFILLED')
 }
 
