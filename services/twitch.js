@@ -21,7 +21,7 @@ async function setGame(name) {
 
 async function getCustomRewards() {
     const api = await broadcasterApiClient.getApiClient()
-    return await api.channelPoints.getCustomRewards(config.twitch.roomId, { onlyManageableRewards: true })
+    return await api.channelPoints.getCustomRewards(config.twitch.roomId, true )
 }
 
 async function cancelRedemption(rewardId, redemptionId) {
