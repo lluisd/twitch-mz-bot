@@ -27,7 +27,7 @@ async function getCustomRewards() {
 async function cancelRedemption(rewardId, redemptionId, redemptionStatus) {
     const api = await broadcasterApiClient.getApiClient()
 
-    if (redemptionStatus !== 'UNFULFILLED') {
+    if (redemptionStatus.toUpperCase() !== 'UNFULFILLED') {
         logger.warn(`Redemption ${redemptionId} no está pendiente, status=${redemptionStatus}`)
         return
     }
@@ -38,7 +38,7 @@ async function cancelRedemption(rewardId, redemptionId, redemptionStatus) {
 async function acceptRedemption(rewardId, redemptionId, redemptionStatus) {
     const api = await broadcasterApiClient.getApiClient()
 
-    if (redemptionStatus !== 'UNFULFILLED') {
+    if (redemptionStatus.toUpperCase() !== 'UNFULFILLED') {
         logger.warn(`Redemption ${redemptionId} no está pendiente, status=${redemptionStatus}, no se puede aceptar`)
         return
     }
