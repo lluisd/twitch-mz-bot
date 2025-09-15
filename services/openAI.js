@@ -22,23 +22,32 @@ let assistantThread = null
 async function uploadFileToVectorStore(json, formattedDate, origin) {
     try {
         const filename = `${origin}_${formattedDate}.json`
-        const buffer = Buffer.from(json, 'utf-8');
+        const buffer = Buffer.from(json, 'utf-8')
         const newFile = new File([buffer], filename, {
             type: 'application/json',
-        });
+        })
 
         await TranscriptionsService.uploadBlob(filename, json)
 
-        const files = [];
-        for await (const file of assistantsClient.files.list()) {
-            files.push({id: file.id, name: file.filename });
-        }
-        const matchedFiles = files.filter((file) => file.name === filename);
-        for (const file of matchedFiles) {
-            await assistantsClient.files.del(file.id);
+        for await (const vsFile of assistantsClient.vectorStores.files.list(config.openAI.vectorStoreId)) {
+            try {
+                const file = await assistantsClient.files.retrieve(vsFile.id)
+                if (file.filename === filename) {
+                    await assistantsClient.vectorStores.files.del(config.openAI.vectorStoreId, vsFile.id)
+                }
+            } catch (err) {
+                // If file was already deleted globally, just remove the vector store reference
+                await assistantsClient.vectorStores.files.del(config.openAI.vectorStoreId, vsFile.id)
+            }
         }
 
-        await assistantsClient.vectorStores.files.uploadAndPoll(config.openAI.vectorStoreId, newFile);
+        for await (const file of assistantsClient.files.list()) {
+            if (file.filename === filename) {
+                await assistantsClient.files.del(file.id)
+            }
+        }
+
+        await assistantsClient.vectorStores.files.uploadAndPoll(config.openAI.vectorStoreId, newFile)
         return { success: true, filename: filename }
 
     } catch (error) {
