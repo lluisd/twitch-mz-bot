@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const {removeConsecutiveDuplicates, removeRepeatedBlocks} = require("./helpers/cleaner");
 
 const prefix = process.argv[2] || "chat";
 
@@ -52,46 +53,8 @@ Object.entries(grouped).forEach(([ym, fileList]) => {
 
     merged.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-
-    // 🔹 Paso 1: eliminar duplicados individuales consecutivos
-    let cleaned = [];
-    merged.forEach((current) => {
-        const prev = cleaned[cleaned.length - 1];
-        if (prev && prev.nick === current.nick && prev.text === current.text) {
-            console.log(`⚠️ Duplicado individual consecutivo detectado en ${ym}:`, {
-                nick: current.nick,
-                text: current.text,
-                date: current.date
-            });
-        } else {
-            cleaned.push(current);
-        }
-    });
-
-    // 🔹 Paso 2: eliminar bloques consecutivos repetidos con hashing
-    const MAX_BLOCK = 5; // máximo tamaño de bloque a revisar
-    let i = 0;
-    while (i < cleaned.length) {
-        let maxLen = Math.min(MAX_BLOCK, Math.floor((cleaned.length - i) / 2));
-        let found = false;
-
-        for (let len = maxLen; len >= 1; len--) {
-            const block1 = cleaned.slice(i, i + len);
-            const block2 = cleaned.slice(i + len, i + 2 * len);
-
-            if (hashBlock(block1) === hashBlock(block2)) {
-                console.log(`⚠️ Bloque repetido detectado en ${ym}:`);
-                console.log(block1.map(m => ({ nick: m.nick, text: m.text, date: m.date })));
-
-                // Eliminar la segunda aparición del bloque
-                cleaned.splice(i + len, len);
-                found = true;
-                break; // seguimos desde la misma posición i
-            }
-        }
-
-        i += found ? 0 : 1; // si eliminamos un bloque, no avanzamos
-    }
+    let cleaned = removeConsecutiveDuplicates(merged)
+    cleaned = removeRepeatedBlocks(cleaned)
 
     const MAX_SIZE = 5 * 1024 * 1024;
     let part = 1;
