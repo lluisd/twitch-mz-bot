@@ -24,7 +24,14 @@ class BroadcasterApiClient {
 
             await authProvider.addUserForToken(tokenData);
 
-            this.apiClient = new ApiClient({authProvider})
+            this.apiClient = new ApiClient({
+                authProvider,
+                logger: {
+                    minLevel: 'info',
+                    emoji: true,
+                    colors: true
+                }
+            });
         }
         return this.apiClient
     }
