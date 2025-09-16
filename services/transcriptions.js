@@ -4,6 +4,7 @@ const config = require('../config')
 const {Buffer} = require("buffer");
 const { Readable } = require('stream');
 const logger = require('../lib/logger')
+const {removeConsecutiveDuplicates, removeRepeatedBlocks} = require("../helpers/cleaner");
 
 async function deleteBlobs (blobNames) {
     const blobServiceClient = BlobServiceClient.fromConnectionString(config.blobStorage.connectionString);
@@ -79,7 +80,11 @@ async function getBlobs() {
             for (const time of sortedTimes) {
                 mergedObject= mergedObject.concat(jsons[date][time])
             }
-            mergedJsons[date] = JSON.stringify(mergedObject)
+
+            let cleaned = removeConsecutiveDuplicates(mergedObject)
+            cleaned = removeRepeatedBlocks(cleaned)
+
+            mergedJsons[date] = JSON.stringify(cleaned)
         }
     }
 
