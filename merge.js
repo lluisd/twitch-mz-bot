@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 const {removeConsecutiveDuplicates, removeRepeatedBlocks} = require("./helpers/cleaner");
 
 const prefix = process.argv[2] || "chat";
@@ -26,13 +25,6 @@ files.forEach(file => {
         grouped[ym].push(file);
     }
 });
-
-// Función para calcular hash de un bloque de mensajes
-function hashBlock(block) {
-    const str = block.map(m => `${m.nick}:${m.text}`).join('|');
-    return crypto.createHash('md5').update(str).digest('hex');
-}
-
 
 // Merge and save
 Object.entries(grouped).forEach(([ym, fileList]) => {
