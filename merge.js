@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const {removeConsecutiveDuplicates, removeRepeatedBlocks} = require("./helpers/cleaner");
 
 const prefix = process.argv[2] || "chat";
 
@@ -44,6 +45,9 @@ Object.entries(grouped).forEach(([ym, fileList]) => {
 
     merged.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+    let cleaned = removeConsecutiveDuplicates(merged)
+    cleaned = removeRepeatedBlocks(cleaned)
+
     const MAX_SIZE = 5 * 1024 * 1024;
     let part = 1;
     let chunk = [];
@@ -51,7 +55,7 @@ Object.entries(grouped).forEach(([ym, fileList]) => {
 
     const outputs = [];
 
-    merged.forEach(item => {
+    cleaned.forEach(item => {
         const itemStr = JSON.stringify(item, null, 2);
         const itemSize = Buffer.byteLength(itemStr, 'utf8') + 2;
 
