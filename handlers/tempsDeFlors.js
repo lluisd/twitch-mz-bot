@@ -17,18 +17,18 @@ class TempsDeFlors {
         }
     }
 
-    getMapLink (target, bot) {
-        bot.say(target, `Mapa de puntos https://tempsdeflors.girona.cat/docs/planol-tempsdeflors2024.pdf`)
+    async getMapLink (target, bot) {
+        await bot.say(target, `Mapa de puntos https://tempsdeflors.girona.cat/docs/planol-tempsdeflors2024.pdf`)
     }
 
-    getCommands (target, bot) {
-        bot.say(target, `${config.externalUrl}/comandos`)
+    async getCommands (target, bot) {
+        await bot.say(target, `${config.externalUrl}/comandos`)
     }
 
     async getNotification (bot, target) {
         const spots = await TempsDeFlorsService.getTFSpots(config.twitch.roomId)
         const count = spots.filter((s) => s.visited).length
-        bot.say(target, `¡Empezó el reto de temps de Flors! ${config.externalUrl}/reto (${count}/${spots.length} completado) Comandos: !puntos, !punto 2`)
+        await bot.say(target, `¡Empezó el reto de temps de Flors! ${config.externalUrl}/reto (${count}/${spots.length} completado) Comandos: !puntos, !punto 2`)
     }
 
     async getTotalSpot (target, bot, roomId) {
