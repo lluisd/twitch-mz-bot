@@ -9,9 +9,13 @@ ENV NODE_ENV production
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY package*.json ./
+
+RUN rm -f package-lock.json
 
 RUN npm install
+
+COPY . .
 
 USER node
 
