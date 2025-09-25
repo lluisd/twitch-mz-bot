@@ -171,15 +171,15 @@ class Stream {
 
     _getText (stream) {
         const end = moment()
-        const start = moment(stream.started_at)
+        const start = moment(stream.startDate)
         const diff = moment.preciseDiff(start, end, true)
         const horas = diff.hours > 0 ? `${diff.hours} horas ` : ''
         const duration = `${horas}${diff.minutes} minutos`
 
         const width = Math.floor(Math.random() * (1280 - 1000 + 1) + 1000)
         const height = Math.trunc(width / (16/9))
-        const image = `[\u200c](${stream.thumbnail_url.replace('-{width}x{height}', `-1280x720`)}?a=${Date.now()})`
-        const link = `[${twitchUrl}${stream.user_name}](${twitchUrl}${stream.user_name})`
+        const image = `[\u200c](${stream.thumbnailUrl.replace('-{width}x{height}', `-1280x720`)}?a=${Date.now()})`
+        const link = `[${twitchUrl}${stream.userName}](${twitchUrl}${stream.userName})`
         const title = `🔴 *¡EN DIRECTO!*`
         return `${image} ${title}  ${link} \n _${stream.title}_ (${duration})`
     }

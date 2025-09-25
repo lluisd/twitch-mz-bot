@@ -28,8 +28,8 @@ class BroadcasterApiClient {
                 authProvider,
                 logger: {
                     minLevel: 'info',
-                    emoji: true,
-                    colors: true
+                    emoji: false,
+                    colors: false
                 }
             });
         }
