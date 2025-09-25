@@ -22,10 +22,11 @@ class BotClient {
         this.authProvider.onRefresh(async (userId, newTokenData) => {
             await TokenService.updateToken(userId, newTokenData);
         });
-        await this.authProvider.addUserForToken(tokenData);
+        await this.authProvider.addUser(config.twitch.userId, tokenData, ['chat']);
     }
 
     async getChatClient () {
+        await this.ready
         if (this.chatClient === null) {
             this.chatClient = new ChatClient({
                 authProvider: this.authProvider,
@@ -33,8 +34,8 @@ class BotClient {
                 isAlwaysMod: true,
                 logger: {
                     minLevel: 'info',
-                    emoji: true,
-                    colors: true
+                    emoji: false,
+                    colors: false
                 },
                 rejoinChannelsOnReconnect: true,
                 ssl: true,
@@ -45,13 +46,14 @@ class BotClient {
     }
 
     async getApiClient () {
+        await this.ready
         if (this.apiClient === null) {
             this.apiClient = new ApiClient({
                 authProvider: this.authProvider,
                 logger: {
                     minLevel: 'info',
-                    emoji: true,
-                    colors: true
+                    emoji: false,
+                    colors: false
                 }
             })
         }
