@@ -219,12 +219,12 @@ class Ban {
             const strikesCount = strikes ? strikes.number : 0
             await StrikeService.setStrike(user.id)
             if (strikesCount < 1) {
-                await bot.say(target, `Strike ${strikesCount+ 1}/3 para ${user.display_name}, cuidadín, primer aviso!`)
+                await bot.say(target, `Strike ${strikesCount+ 1}/3 para ${user.displayName}, cuidadín, primer aviso!`)
             } else if (strikesCount < 2) {
-                await bot.say(target, `Strike ${strikesCount+ 1}/3 para ${user.display_name}, me estas calentando, segundo aviso!`)
+                await bot.say(target, `Strike ${strikesCount+ 1}/3 para ${user.displayName}, me estas calentando, segundo aviso!`)
             } else {
                 await TwitchService.ban(user.id, 600)
-                await bot.say(target, `Strike ${strikesCount + 1}/3 para ${user.display_name}, al carrer 10 minutos comemierda!`)
+                await bot.say(target, `Strike ${strikesCount + 1}/3 para ${user.displayName}, al carrer 10 minutos comemierda!`)
                 await StrikeService.resetStrike(user.id)
             }
         }
