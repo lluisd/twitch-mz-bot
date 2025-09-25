@@ -1,10 +1,7 @@
 const config = require('../config')
 const dbManager = require('../helpers/dbmanager')
 const broadcasterApiClient = require('../broadcasterApiClient')
-const moment = require('moment')
 const logger = require('../lib/logger')
-
-const endpointPrefix = 'https://api.twitch.tv/helix'
 
 async function setTitle(title) {
     const api = await broadcasterApiClient.getApiClient()
@@ -247,17 +244,12 @@ async function removeBan (roomId, userId) {
 }
 
 async function getStream() {
+    const api = await broadcasterApiClient.getApiClient()
     let result = { type: 'notLive'}
     let liveData = null
 
-    const options = await _getHeaders()
-    const endpoint = endpointPrefix + '/streams?user_login=' + config.twitch.channels
-
     try {
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-        liveData = data?.data?.[0] ?? null
-
+        liveData = await api.streams.getStreamByUserName(config.twitch.channels)
     } catch {
         result = { type: 'error'}
     }
@@ -287,54 +279,6 @@ async function getUnbanRequests () {
     return unbanRequestsList
 }
 
-
-async function banUser (user, duration) {
-    let result
-    let options = await _getHeaders()
-    options.method = 'POST'
-    const channel = await dbManager.getChannel(config.twitch.channels).lean()
-    const endpoint = `${endpointPrefix}/moderation/bans?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}`
-
-    const body = {
-        data : {
-            user_id: user,
-            ...duration && {duration:  duration},
-            reason: 'Bot'
-        }
-    }
-
-    options.body = JSON.stringify(body)
-    try {
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-        result = data?.data !== null ?? null
-
-    } catch {
-        result = null
-    }
-
-    return result
-}
-
-async function unBanUser (user) {
-    let result
-    let options = await _getHeaders()
-    options.method = 'DELETE'
-    const channel = await dbManager.getChannel(config.twitch.channels).lean()
-    const endpoint = `${endpointPrefix}/moderation/bans?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}&user_id=${user}`
-
-    try {
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-        result = data?.status === 204 ?? null
-
-    } catch (e) {
-        result = null
-    }
-
-    return result
-}
-
 async function unBlockUser (userId) {
     const api = await broadcasterApiClient.getApiClient()
     await api.users.deleteBlock(config.twitch.roomId, userId)
@@ -348,42 +292,17 @@ async function blockUser (userId) {
 }
 
 async function getUser (userName) {
-    let result
-    let options = await _getHeaders()
-    options.method = 'GET'
-    const endpoint = `${endpointPrefix}/users?login=${userName}`
-
-    try {
-        const response = await fetch(endpoint, options)
-        const data = await response.json()
-        result = data?.data?.[0] ?? null
-
-    } catch {
-        result = null
-    }
-
-    return result
-
+    const api = await broadcasterApiClient.getApiClient()
+    return await api.users.getUserByName(userName)
 }
 
 async function sendAnnouncement(text, color) {
-    const options = await _getHeaders()
-    options.method = 'POST'
-    const channel = await dbManager.getChannel(config.twitch.channels).lean()
-    const endpoint = `${endpointPrefix}/chat/announcements?broadcaster_id=${channel.roomId}&moderator_id=${config.twitch.userId}`
-
-    const body = {
+    const api = await broadcasterApiClient.getApiClient()
+    await api.chat.sendAnnouncement(config.twitch.roomId,{
         message: text,
         color: color
-    }
-
-    options.body = JSON.stringify(body)
-
-    try {
-        await fetch(endpoint, options)
-    } catch (e) {
-        logger.error('error sending announcement: ' + e)
-    }
+    })
+    logger.info('Announcement sent: ' + text)
 }
 
 async function getChannel () {
@@ -418,17 +337,6 @@ async function removeUserIdFromChannelWhitelist (userId) {
     return dbManager.removeUserIdFromChannelWhitelist(config.twitch.roomId, userId)
 }
 
-async function _getHeaders () {
-    const token = await dbManager.getToken(parseInt(config.twitch.userId)).lean()
-    return {
-        headers: {
-            'Client-Id': config.twitch.clientId,
-            'Authorization': 'Bearer ' + token.accessToken,
-            'Content-Type': 'application/json'
-        }
-    }
-}
-
 module.exports = {
     getStream,
     saveLastMessage,
@@ -436,8 +344,6 @@ module.exports = {
     saveLastUpdate,
     getUnbanRequests,
     setActiveSpot,
-    banUser,
-    unBanUser,
     getUser,
     sendAnnouncement,
     setTitle,
