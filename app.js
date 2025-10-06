@@ -13,7 +13,7 @@ const handlers = require('./handlers')
 const logger = require('./lib/logger')
 const basicAuth = require('./middleware/basicAuth')
 const ImmuneService = require('./services/immune')
-const { transcribeSemaphore } = require("./semaphore.js")
+const { transcribeSemaphore, mergeTranscriptionsSemaphore} = require("./semaphore.js")
 
 async function main () {
     try {
@@ -59,6 +59,40 @@ async function main () {
                 await handlers.openAI.uploadStreamToOpenai(`#${config.twitch.channels}`, twitchBot, telegramBot)
                 const response = {
                     message: 'transcription started',
+                    status: 'success'
+                };
+                res.json(response);
+            } catch (error) {
+                next(error)
+            } finally {
+                release()
+            }
+        });
+
+        app.get('/:prefix/:mode/mergeTranscriptions', basicAuth, async (req, res, next) => {
+            if (transcribeSemaphore.isLocked()) {
+                logger.info('called mergeTranscriptions while already running')
+                return;
+            }
+            const [value, release] = await mergeTranscriptionsSemaphore.acquire()
+            try {
+                const { prefix, mode } = req.params
+
+                const validPrefixes = ['chat', 'stream']
+                const validModes = ['files', 'vector']
+
+                if (!validPrefixes.includes(prefix)) {
+                    return res.status(400).json({ error: `Prefijo inválido: ${prefix}` });
+                }
+
+                if (!validModes.includes(mode)) {
+                    return res.status(400).json({ error: `Modo inválido: ${mode}` });
+                }
+
+                logger.info('Transcription started')
+                await handlers.openAI.mergePreviousMonthsUploadedVectorFilesByMonth(mode, prefix)
+                const response = {
+                    message: 'merge transcriptions started',
                     status: 'success'
                 };
                 res.json(response);
