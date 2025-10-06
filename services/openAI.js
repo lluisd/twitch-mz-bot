@@ -1,23 +1,13 @@
 const config = require('../config')
-const { AzureOpenAI } = require('openai');
 const moment = require("moment");
 const TranscriptionsService = require('../services/transcriptions')
 require('moment/locale/es')
 moment.locale('es')
 const logger = require('../lib/logger')
+const openAIApiClient = require('../openAIApiClient')
 
-const getClient = () => {
-    return new AzureOpenAI({
-        endpoint: config.openAI.endpoint_base,
-        apiVersion: config.openAI.apiVersion,
-        apiKey: config.openAI.key
-    });
-};
-
-const assistantsClient = getClient();
-
+const assistantsClient = openAIApiClient.getApiClient()
 let assistantThread = null
-
 
 async function uploadFileToVectorStore(json, formattedDate, origin) {
     try {
@@ -36,7 +26,6 @@ async function uploadFileToVectorStore(json, formattedDate, origin) {
                     await assistantsClient.vectorStores.files.del(config.openAI.vectorStoreId, vsFile.id)
                 }
             } catch (err) {
-                // If file was already deleted globally, just remove the vector store reference
                 await assistantsClient.vectorStores.files.del(config.openAI.vectorStoreId, vsFile.id)
             }
         }
