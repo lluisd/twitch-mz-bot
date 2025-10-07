@@ -242,7 +242,7 @@ class Stream {
 
     async _logStreamTitle(result) {
         if ((result.type === 'live' || result.type === 'stillLive') && result.lastTitle !== result.title ) {
-            await LoggerService.logStreamTitle(result.user_id, result.title)
+            await LoggerService.logStreamTitle(result.userId, result.title)
         }
     }
 }
