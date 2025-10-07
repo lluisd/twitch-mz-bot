@@ -2,6 +2,7 @@ const config = require('../config')
 const dbManager = require('../helpers/dbmanager')
 const broadcasterApiClient = require('../broadcasterApiClient')
 const logger = require('../lib/logger')
+const { getRawData } = require('@twurple/common')
 
 async function setTitle(title) {
     const api = await broadcasterApiClient.getApiClient()
@@ -246,27 +247,30 @@ async function removeBan (roomId, userId) {
 async function getStream() {
     const api = await broadcasterApiClient.getApiClient()
     let result = { type: 'notLive'}
-    let liveData = null
+    let streamData = null
 
     try {
-        liveData = await api.streams.getStreamByUserName(config.twitch.channels)
+        streamData = await api.streams.getStreamByUserName(config.twitch.channels)
     } catch {
         result = { type: 'error'}
     }
 
     const channel = await dbManager.getChannel(config.twitch.channels).lean()
-    if (liveData && !channel.live) {
-        await dbManager.updateChannel(config.twitch.channels, { live: true, streamId: liveData.id, title: liveData.title, lastUpdate: new Date() })
-        result = { ...liveData, lastTitle: channel.title}
-    } else if (!liveData && channel.live) {
+    if (streamData && !channel.live) {
+        await dbManager.updateChannel(config.twitch.channels, { live: true, streamId: streamData.id, title: streamData.title, lastUpdate: new Date() })
+        result = { lastTitle: channel.title}
+    } else if (!streamData && channel.live) {
         await dbManager.updateChannel(config.twitch.channels, { live: false, streamId: null, lastMessageId: null })
         result = { type: 'finished', messageId: channel.lastMessageId, streamId: channel.streamId}
-    } else if (liveData && channel.live) {
-        await dbManager.updateChannel(config.twitch.channels, { streamId: liveData.id, title: liveData.title })
-        result = { ...liveData, type: 'stillLive', messageId: channel.lastMessageId, lastTitle: channel.title}
+    } else if (streamData && channel.live) {
+        await dbManager.updateChannel(config.twitch.channels, { streamId: streamData.id, title: streamData.title })
+        result = { type: 'stillLive', messageId: channel.lastMessageId, lastTitle: channel.title}
     }
 
-    return { ...result, lastUpdate: channel.lastUpdate}
+    return {
+        stream: streamData,
+        data: {...result, lastUpdate: channel.lastUpdate}
+    }
 }
 
 async function getUnbanRequests () {
