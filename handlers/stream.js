@@ -141,30 +141,31 @@ class Stream {
     async catchStream (telegramBot, twitchBot, target) {
         const result = await TwitchService.getStream()
         await this._logStreamTitle(result)
-        if (result && result.type === 'live' ) {
+        if (result && result.data && result.data.type === 'live') {
             await this.sendTodayBirthday(twitchBot, target)
-            const text = this._getText(result)
+            const text = this._getText(result.stream)
             const options = { parse_mode: 'Markdown' }
             const msg = await telegramBot.sendMessage(config.telegram.chatId, text, options)
             await telegramBot.pinChatMessage(config.telegram.chatId, msg.message_id).catch((err) => { logger.error(`cannot pin chat: ${err}`)})
             await TwitchService.saveLastMessage(msg)
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { logger.error('startAndWarmUpBrowserIfNeeded on live')})
-        } else if (result && result.type === 'finished' && result.messageId) {
-            await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: result.messageId}).catch((err) => { logger.error(`cannot unpin chat: ${err}`)})
-            await telegramBot.deleteMessage(config.telegram.chatId, result.messageId).catch((err) => { logger.error(`cannot delete message: ${err}`)})
-            await this._sendStreamScreenshots(telegramBot, result.streamId)
+        } else if (result && result.data && result.data.type === 'finished' && result.data.messageId) {
+            await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: result.data.messageId}).catch((err) => { logger.error(`cannot unpin chat: ${err}`)})
+            await telegramBot.deleteMessage(config.telegram.chatId, result.data.messageId).catch((err) => { logger.error(`cannot delete message: ${err}`)})
+            await this._sendStreamScreenshots(telegramBot, result.data.streamId)
             await BrowserService.closeBrowser().catch(() => { logger.error('closeBrowser on finished')})
-        } else if (result && result.type === 'stillLive' && result.messageId && (result.lastTitle !== result.title || (result.lastUpdate && moment().diff(moment(result.lastUpdate)) > 300000))) {
+        } else if (result && result.data && result.stream && result.data.type === 'stillLive' && result.data.messageId &&
+            (result.data.lastTitle !== result.stream.title || (result.data.lastUpdate && moment().diff(moment(result.data.lastUpdate)) > 300000))) {
             const options = {
                 chat_id: config.telegram.chatId,
-                message_id: result.messageId,
+                message_id: result.data.messageId,
                 parse_mode: 'Markdown'
             }
-            logger.info('still alive' + this._getText(result))
+            logger.info('still alive' + this._getText(result.stream))
             await TwitchService.saveLastUpdate()
-            await telegramBot.editMessageText(this._getText(result), options).catch((err) => { logger.error(`cannot edit message: ${err}`)})
+            await telegramBot.editMessageText(this._getText(result.stream), options).catch((err) => { logger.error(`cannot edit message: ${err}`)})
             await BrowserService.startAndWarmUpBrowserIfNeeded().catch(() => { logger.error('startAndWarmUpBrowserIfNeeded on stillLive')})
-        } else if (result && result.type === 'notLive') {
+        } else if (result && result.data && result.data.type === 'notLive') {
             await BrowserService.closeBrowserIfNeeded().catch(() => { logger.error('closeBrowserIfNeeded on notLive')})
         }
     }
