@@ -38,8 +38,7 @@ async function main () {
 
         let num = 0
         app.use((req, res, next) => {
-            const publicIp = getClientPublicIp(req);
-            logger.debug(`${++num} ${req.method} ${req.url} from ip: ${publicIp}, forwarded for: ${req.headers['x-forwarded-for'] || null}, express ip: ${req.ip}, remote address: ${req.socket?.remoteAddress}`);
+            logger.debug(`${++num} ${req.method} ${req.url} from ip: ${req.headers['x-forwarded-for'] || null}`)
             next()
         })
 
@@ -396,30 +395,6 @@ async function main () {
         logger.error("Fatal startup error:", err)
         process.exit(1)
     }
-}
-
-function isPrivate(ip) {
-    return (
-        /^127\.|^10\.|^192\.168\.|^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(ip) ||
-        /^fc00:|^fe80:|^::1$/.test(ip)
-    );
-}
-
-function getClientPublicIp(req) {
-    const ip = req.ip;
-    if (ip && !isPrivate(ip)) return ip;
-
-    const xff = req.headers['x-forwarded-for'];
-    if (xff) {
-        const ips = xff.split(',').map(s => s.trim());
-        for (const candidate of ips) {
-            const cleanIp = candidate.split(':')[0];
-            if (!isPrivate(cleanIp)) return cleanIp;
-        }
-        return ips[0];
-    }
-
-    return req.connection?.remoteAddress || req.socket?.remoteAddress;
 }
 
 main()
