@@ -34,10 +34,11 @@ async function main () {
         const app = express()
         app.set('view engine', 'ejs')
         app.use(express.static('public'))
+        app.set('trust proxy', 1)
 
         let num = 0
         app.use((req, res, next) => {
-            logger.debug(`${++num} ${req.method} ${req.url} from ip: ${req.ip}`)
+            logger.debug(`${++num} ${req.method} ${req.url} from ip: ${req.headers['x-forwarded-for'] || null}`)
             next()
         })
 
