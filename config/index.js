@@ -52,7 +52,8 @@ module.exports = {
     },
     ha: {
         apiKey: process.env.HA_API_KEY,
-        endpoint: process.env.HA_ENDPOINT
+        endpoint: process.env.HA_ENDPOINT,
+        entityId: process.env.HA_ENTITY_ID
     },
     loki: {
         enabled: process.env.LOKI_ENABLED === 'true',

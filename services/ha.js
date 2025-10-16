@@ -7,7 +7,7 @@ async function hibernateTranscriberPC() {
     const endpoint = endpointPrefix + 'services/button/press'
 
     const body = {
-        "entity_id": "button.hp_z230_hibernate"
+        "entity_id": config.ha.entityId
     }
 
     const options = {
