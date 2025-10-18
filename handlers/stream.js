@@ -141,6 +141,7 @@ class Stream {
     async catchStream (telegramBot, twitchBot, target) {
         const result = await TwitchService.getStream()
         await this._logStreamTitle(result)
+        logger.debug('catch stream type: ' + result.data.type)
         if (result && result.data && result.data.type === 'live') {
             await this.sendTodayBirthday(twitchBot, target)
             const text = this._getText(result.stream)
