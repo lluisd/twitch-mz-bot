@@ -4,7 +4,7 @@ const endpointPrefix = `${config.ha.endpoint}/api/`
 
 async function hibernateTranscriberPC() {
     let result = null
-    const endpoint = endpointPrefix + 'services/button/press'
+    const endpoint = endpointPrefix + 'services/switch/turn_off'
 
     const body = {
         "entity_id": config.ha.entityId
