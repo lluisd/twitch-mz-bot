@@ -122,6 +122,7 @@ async function ask(query, username) {
             }
         })
 
+        logger.info(`filtros detectados: ${JSON.stringify(filters)}`)
 
         const filterNick = findFilterByKey(filters, 'nick')
         if (filterNick) {
@@ -132,6 +133,7 @@ async function ask(query, username) {
             if (possibleNicks.length > 0) {
                 query = query.replace(filterNick.match.value, possibleNicks[0].item.nick)
                 filterNick.match.value = possibleNicks[0].item.nick;  // mejor match
+                logger.info(`nick fuse: ${filterNick.match.value }`)
             }
         }
 
@@ -149,6 +151,8 @@ async function ask(query, username) {
             //score_threshold: 0.75,
             filter: cleanFilter
         })
+
+        logger.info(`results encontrados en Qdrant: ${results.length} ${JSON.stringify(results)}`)
 
         const context = results
             .map((r) => `Usuario ${r.payload.nick} dijo: "${r.payload.text}"`)
@@ -176,7 +180,7 @@ async function ask(query, username) {
     } catch (e) {
         logger.error("Error test openAIResponsesApi:", e.message)
     }
-
+    return result
 }
 
 function cleanAssistantText(text) {
