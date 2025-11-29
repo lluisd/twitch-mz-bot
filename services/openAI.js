@@ -1,6 +1,5 @@
 const config = require('../config')
-const moment = require("moment");
-const TranscriptionsService = require('../services/transcriptions')
+const moment = require("moment-timezone");
 require('moment/locale/es')
 moment.locale('es')
 const logger = require('../lib/logger')

@@ -253,6 +253,10 @@ async function removeUserIdFromChannelWhitelist(roomId, userId) {
     )
 }
 
+async function getAllNicks(roomId) {
+    return ChatLog.distinct('nick', { roomId: roomId });
+}
+
 module.exports = {
     getToken,
     updateToken,
@@ -301,5 +305,6 @@ module.exports = {
     setImmuneWithSlot,
     deleteImmune,
     getImmunes,
-    getImmune
+    getImmune,
+    getAllNicks
 }

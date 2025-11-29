@@ -14,6 +14,7 @@ const logger = require('./lib/logger')
 const basicAuth = require('./middleware/basicAuth')
 const ImmuneService = require('./services/immune')
 const { transcribeSemaphore, mergeTranscriptionsSemaphore} = require("./semaphore.js")
+const OpenAIResponsesApiService = require('./services/openAIResponsesApi')
 
 async function main () {
     try {
@@ -48,6 +49,48 @@ async function main () {
             app.get('/', (req, res) => res.send('Running'));
         }
 
+        app.get('/chats', basicAuth, async (req, res, next) => {
+            if (transcribeSemaphore.isLocked()) {
+                logger.info('called transcribe while already running')
+                return;
+            }
+            const [value, release] = await transcribeSemaphore.acquire()
+            try {
+                logger.info('Transcription started')
+                // await HAService.hibernateTranscriberPC()
+                await handlers.openAI.processChats(`#${config.twitch.channels}`, twitchBot, '2025-10-01', '2025-11-29')
+                const response = {
+                    message: 'transcription started',
+                    status: 'success'
+                };
+                res.json(response);
+            } catch (error) {
+                next(error)
+            } finally {
+                release()
+            }
+        });
+
+        app.post('/createCollection', basicAuth, async (req, res, next) => {
+            if (transcribeSemaphore.isLocked()) {
+                logger.info('called createCollection while already running')
+                return;
+            }
+            const [value, release] = await transcribeSemaphore.acquire()
+            try {
+                logger.info('createCollection called')
+                await handlers.openAI.initiateVector()
+                const response = {
+                    status: 'success'
+                };
+                res.json(response);
+            } catch (error) {
+                next(error)
+            } finally {
+                release()
+            }
+        });
+
         app.get('/transcribe', basicAuth, async (req, res, next) => {
             if (transcribeSemaphore.isLocked()) {
                 logger.info('called transcribe while already running')
@@ -56,8 +99,8 @@ async function main () {
             const [value, release] = await transcribeSemaphore.acquire()
             try {
                 logger.info('Transcription started')
-                await HAService.hibernateTranscriberPC()
-                await handlers.openAI.uploadStreamToOpenai(`#${config.twitch.channels}`, twitchBot, telegramBot)
+               // await HAService.hibernateTranscriberPC()
+                await handlers.openAI.uploadStreamToQdrant(`#${config.twitch.channels}`, twitchBot, telegramBot)
                 const response = {
                     message: 'transcription started',
                     status: 'success'
@@ -199,6 +242,14 @@ async function main () {
                 next(error)
             }
         });
+
+        app.get('/test', async (req, res, next) => {
+            try {
+                await OpenAIResponsesApiService.test();
+            } catch (error) {
+                next(error)
+            }
+        })
 
         app.get('/bans', async (req, res, next) => {
             try {

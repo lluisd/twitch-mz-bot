@@ -4,7 +4,10 @@ const config = require('../config')
 const {Buffer} = require("buffer");
 const { Readable } = require('stream');
 const logger = require('../lib/logger')
-const {removeConsecutiveDuplicates, removeRepeatedBlocks} = require("../helpers/cleaner");
+const {removeConsecutiveDuplicates, removeRepeatedBlocks, buildHybridChunks, addOverlap} = require("../helpers/cleaner");
+const path = require("path");
+const {readRecordsFromFiles, getRecords, deleteFile} = require("../helpers/files");
+const fs = require("fs");
 
 async function deleteBlobs (blobNames) {
     const blobServiceClient = BlobServiceClient.fromConnectionString(config.blobStorage.connectionString);
@@ -27,6 +30,83 @@ async function uploadBlob (filename, json){
     const readableStream = Readable.from([json])
     const uploadBlobResponse = await blockBlobClient.uploadStream(readableStream)
     logger.info(`Upload block blob ${filename} successfully`, uploadBlobResponse.requestId)
+}
+
+async function deleteFiles (fileNames) {
+    try {
+        const dir = path.join(__dirname,'..', 'azure')
+        for (const file of fileNames) {
+            deleteFile(dir, file);
+        }
+    } catch (err) {
+        logger.error(`Error deleting files:`, err.message)
+    }
+}
+
+async function getFiles() {
+    const streamFiles = path.join(__dirname, '..', 'azure')
+    const pattern = /whisper-live(\d{8})-(\d{6})\.json/;
+
+    let fileNames = []
+    let jsons = {}
+
+    try {
+        const files  = fs.readdirSync(streamFiles)
+        const matchedFiles = files .filter(file => pattern.test(file))
+
+        for (const file of matchedFiles) {
+            fileNames.push(file);
+            const match = file.match(pattern)
+            const date = match[1]; // '20241109'
+            const time = match[2]; // '143907'
+
+            const datetimeStr = file.split('whisper-live')[1].split('.')[0];
+            const dateTime = moment(datetimeStr, 'YYYYMMDD-HHmmss').toISOString();
+
+            const filePath = path.join(streamFiles, file)
+            const content = fs.readFileSync(filePath, "utf8");
+            const data = JSON.parse(content)
+
+            const segments = data.segments;
+            jsons[date] = jsons[date] || {};
+            jsons[date][time] = {
+                segments: segments,
+                dateTime: dateTime
+            };
+        }
+
+        let mergedJsons = {};
+
+        for (const date in jsons) {
+            if (jsons.hasOwnProperty(date)) {
+                const sortedTimes = Object.keys(jsons[date]).sort((a, b) => Number(a) - Number(b))
+                let mergedSegments = []
+                for (const time of sortedTimes) {
+                    const dateTime = moment(`${date}${time}`, 'YYYYMMDDHHmmss').toISOString()
+
+                    const chunks = buildHybridChunks(jsons[date][time].segments, jsons[date][time].dateTime)
+                    //const chunks = addOverlap(chunks, 0.15)
+
+                    const segments = chunks.map(segment => ({
+                        nick: config.twitch.channels,
+                        text: segment.text.trimStart(),
+                        date: segment.startTimeAbsolute
+                    }))
+
+                    mergedSegments = mergedSegments.concat(segments)
+                }
+
+                mergedJsons[date] = JSON.stringify(mergedSegments)
+            }
+        }
+
+        return { mergedJsons, fileNames }
+
+
+    } catch (err) {
+        logger.error(`Error reading files from ${streamFiles}:`, err.message)
+    }
+
 }
 
 async function getBlobs() {
@@ -109,5 +189,7 @@ async function streamToBuffer(readableStream) {
 module.exports = {
     getBlobs,
     deleteBlobs,
-    uploadBlob
+    uploadBlob,
+    getFiles,
+    deleteFiles
 }

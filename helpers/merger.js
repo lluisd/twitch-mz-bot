@@ -1,11 +1,13 @@
-const {removeConsecutiveDuplicates, removeRepeatedBlocks} = require("./cleaner")
+const {removeConsecutiveDuplicates, removeRepeatedBlocks, joinConsecutiveMessagesByNickWithPause} = require("./cleaner")
 
-async function mergeAndClean(records, maxSize = 5 * 1024 * 1024) {
+async function mergeAndClean(prefix, records, maxSize = 5 * 1024 * 1024) {
     const sorted = records.sort((a, b) => new Date(a.date) - new Date(b.date))
 
     let cleaned = removeConsecutiveDuplicates(sorted)
     cleaned = removeRepeatedBlocks(cleaned)
-
+    if (prefix === 'chat') {
+        cleaned = joinConsecutiveMessagesByNickWithPause(cleaned, 60);
+    }
     const outputs = []
     let chunk = []
     let currentSize = 2
@@ -27,4 +29,4 @@ async function mergeAndClean(records, maxSize = 5 * 1024 * 1024) {
     return outputs
 }
 
-module.exports = { mergeAndClean }
+module.exports = { mergeAndClean}

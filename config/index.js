@@ -34,6 +34,7 @@ module.exports = {
     whitelistUsers: process.env.WHITE_LIST_USERS?.split(',') ?? [],
     features: {
         TFSpots: process.env.FEATURE_TF_SPOTS === 'true',
+        useQdrant: true,
     },
     openAI: {
         endpoint_base: process.env.AZURE_OPENAI_ENDPOINT_BASE,
@@ -41,7 +42,19 @@ module.exports = {
         apiVersion: process.env.AZURE_OPENAI_API_VERSION,
         database: process.env.OPENAI_MONGODB_URI,
         vectorStoreId: process.env.AZURE_OPENAI_VECTOR_STORE_ID,
-        assistantId: process.env.AZURE_OPENAI_ASSISTANT_ID
+        assistantId: process.env.AZURE_OPENAI_ASSISTANT_ID,
+        deployment: process.env.AZURE_OPENAI_DEPLOYMENT,
+        model: process.env.AZURE_OPENAI_MODEL,
+        embedding: {
+            model: process.env.AZURE_OPENAI_EMBEDDING_MODEL,
+            deployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT,
+            apiVersion: process.env.AZURE_OPENAI_EMBEDDING_API_VERSION,
+        }
+    },
+    qdrant: {
+        url: process.env.QDRANT_URL,
+        collection: process.env.QDRANT_COLLECTION,
+        embeddingSize: process.env.QDRANT_EMBEDDING_SIZE
     },
     whisper: {
         endpoint: process.env.WHISPER_ENDPOINT,
