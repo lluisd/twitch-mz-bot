@@ -172,10 +172,10 @@ async function ask(query, username) {
             ],
         });
 
-        logger.info("💬 Respuesta:", completion.choices[0].message.content);
-
         result = completion.choices[0].message.content;
         result = cleanAssistantText(result)
+
+        logger.info(`respeusta final openAIResponsesApi: ${result}`)
 
     } catch (e) {
         logger.error("Error test openAIResponsesApi:", e.message)
