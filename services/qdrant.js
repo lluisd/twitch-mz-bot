@@ -66,7 +66,7 @@ async function _processBatches(origin, data, batchSize, textsToEmbed) {
            }
 
            totalProcessed += points.length;
-           logger.info(`→ Uploaded ${totalProcessed}/${textsToEmbed.length} items to Qdrant.`)
+           logger.info(`→ Uploaded ${pointsToInsert.length} items to Qdrant of ${totalProcessed}/${textsToEmbed.length} process`)
 
            await new Promise(r => setTimeout(r, 200));
        }
@@ -76,6 +76,33 @@ async function _processBatches(origin, data, batchSize, textsToEmbed) {
    }
 
 }
+
+async function exists(date, type) {
+    const start = new Date(date + "T00:00:00Z").toISOString()
+    const end   = new Date(date + "T23:59:59Z").toISOString()
+
+    const result = await qdrantClient.scroll(config.qdrant.collection, {
+        limit: 1,
+        filter: {
+            must: [
+                {
+                    key: "type",
+                    match: { value: type }
+                },
+                {
+                    key: "date",
+                    range: {
+                        gte: start,
+                        lte: end
+                    }
+                }
+            ]
+        }
+    })
+
+    return result.points.length > 0;
+}
+
 
 async function filterNonExistingPoints(points) {
     const ids = points.map(p => p.id)
@@ -87,8 +114,7 @@ async function filterNonExistingPoints(points) {
     })
 
     const existingIds = new Set(existing.map(p => p.id))
-    const nonExistingPoints = points.filter(p => !existingIds.has(p.id))
-    return nonExistingPoints;
+    return points.filter(p => !existingIds.has(p.id));
 }
 
 async function createCollection() {
@@ -155,5 +181,6 @@ function _generateDeterministicUuid(nick, text, date, type) {
 
 module.exports = {
     uploadJsonToQdrant,
-    createCollection
+    createCollection,
+    exists
 }

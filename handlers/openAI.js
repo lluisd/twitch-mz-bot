@@ -95,12 +95,20 @@ class OpenAI {
         logger.info('Initializing vector')
     }
 
-    async uploadStreamToQdrant (target, twitchBot, telegramBot) {
+    async uploadStreamToQdrant (target, force, twitchBot, telegramBot) {
         const { mergedJsons, blobNames } = await TranscriptionsService.getFiles()
         let error = false
         for (const date in mergedJsons) {
             if (mergedJsons.hasOwnProperty(date)) {
                 const formattedDate = moment(date, 'YYYYMMDD').format('YYYY-MM-DD')
+                let exists = false
+                if (!force) {
+                    exists = await QdrantService.exists(formattedDate, 'stream')
+                }
+                if (exists) {
+                    logger.info(`Stream for ${formattedDate} already exists in Qdrant, skipping...`)
+                    continue
+                }
                 const result = await QdrantService.uploadJsonToQdrant(mergedJsons[date], formattedDate, 'stream')
                 if (result.success) {
                     const message = `📼 IA actualizada con el stream de ${formattedDate}`

@@ -99,8 +99,9 @@ async function main () {
             const [value, release] = await transcribeSemaphore.acquire()
             try {
                 logger.info('Transcription started')
+                const force = req.query.force === 'true'
                // await HAService.hibernateTranscriberPC()
-                await handlers.openAI.uploadStreamToQdrant(`#${config.twitch.channels}`, twitchBot, telegramBot)
+                await handlers.openAI.uploadStreamToQdrant(`#${config.twitch.channels}`, force, twitchBot, telegramBot)
                 const response = {
                     message: 'transcription started',
                     status: 'success'
