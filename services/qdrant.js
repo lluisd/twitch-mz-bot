@@ -78,30 +78,44 @@ async function _processBatches(origin, data, batchSize, textsToEmbed) {
 }
 
 async function exists(date, type) {
-    const start = new Date(date + "T00:00:00Z").toISOString()
-    const end   = new Date(date + "T23:59:59Z").toISOString()
+    try {
+        await new Promise(r => setTimeout(r, 200))
+        const start = moment.tz(date, 'YYYY-MM-DD', 'Europe/Madrid')
+            .startOf('day')
+            .utc()
+            .toISOString()
+        const end = moment.tz(date, 'YYYY-MM-DD', 'Europe/Madrid')
+            .endOf('day')
+            .utc()
+            .toISOString()
 
-    const result = await qdrantClient.scroll(config.qdrant.collection, {
-        limit: 1,
-        filter: {
-            must: [
-                {
-                    key: "type",
-                    match: { value: type }
-                },
-                {
-                    key: "date",
-                    range: {
-                        gte: start,
-                        lte: end
+        const { count } = await qdrantClient.count(config.qdrant.collection, {
+            exact: true,
+            filter: {
+                must: [
+                    {
+                        key: "type",
+                        match: {value: type}
+                    },
+                    {
+                        key: "date",
+                        range: {
+                            gte: start,
+                            lte: end
+                        }
                     }
-                }
-            ]
-        }
-    })
+                ]
+            }
+        })
 
-    return result.points.length > 0;
+        return count > 0
+    } catch (e) {
+        logger.error(`Error in exists() for ${date} - ${type}: ${e.message}`)
+    }
 }
+
+
+
 
 
 async function filterNonExistingPoints(points) {

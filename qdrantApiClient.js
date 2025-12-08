@@ -10,7 +10,7 @@ class QdrantApiClient {
         if (this.apiClient === null) {
             this.apiClient = new QdrantClient({
                 url: config.qdrant.url,
-                timeout: 200000,
+                timeout: 200000
             })
         }
         return this.apiClient

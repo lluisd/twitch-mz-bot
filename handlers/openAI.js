@@ -28,7 +28,7 @@ class OpenAI {
         }
     }
 
-    async processChats(target, twitchBot, startDateStr, endDateStr) {
+    async processChats(target, force, twitchBot, startDateStr, endDateStr) {
         const start = moment.tz(startDateStr, 'YYYY-MM-DD', 'Europe/Madrid')
         const end = moment.tz(endDateStr, 'YYYY-MM-DD', 'Europe/Madrid')
 
@@ -41,9 +41,8 @@ class OpenAI {
             return
         }
 
-        const startOfRange = start.startOf('day').toDate()
-        const endOfRange = end.endOf('day').toDate()
-
+        const startOfRange = start.startOf('day').utc().toDate()
+        const endOfRange = end.endOf('day').utc().toDate()
 
         let response = await LoggerService.getLogChatMessagesBetweenDays(
             config.twitch.roomId,
@@ -54,39 +53,56 @@ class OpenAI {
         if (response.length === 0) return;
 
         response = await LoggerService.joinConsecutiveMessagesByNickWithPause(response, 30);
+        if (!force) {
+            const cache = {}
+            const filtered = []
+            for (const message of response) {
+                const formattedDate = moment(message.date).tz('Europe/Madrid').format('YYYY-MM-DD')
 
-        const json = JSON.stringify(response);
+                if (!(formattedDate in cache)) {
+                    cache[formattedDate] = await QdrantService.exists(formattedDate, 'chat')
+                    logger.debug(`Cacheada respuesta de ${formattedDate} con ${cache[formattedDate]}`)
+                }
 
-        const rangeLabel = `${start.format('YYYY-MM-DD')}_to_${end.format('YYYY-MM-DD')}`;
-        const result = await QdrantService.uploadJsonToQdrant(json, rangeLabel, 'chat');
+                if (!cache[formattedDate]) {
+                    filtered.push(message)
+                }
+            }
+            response = filtered
+        }
+
+        const json = JSON.stringify(response)
+
+        const rangeLabel = `${start.tz('Europe/Madrid').format('YYYY-MM-DD')}_to_${end.tz('Europe/Madrid').format('YYYY-MM-DD')}`
+        const result = await QdrantService.uploadJsonToQdrant(json, rangeLabel, 'chat')
         if (result.success) {
-            logger.info(`Chat uploaded to OpenAI ${result.filename}`);
+            logger.info(`Chat uploaded to OpenAI ${result.filename}`)
         } else {
-            logger.error(`Error uploading chat for range ${rangeLabel}`);
+            logger.error(`Error uploading chat for range ${rangeLabel}`)
         }
     }
 
     async createAndUploadToChat (target, twitchBot, isToday = false) {
         const today = moment().tz('Europe/Madrid')
         const date = isToday ? today : today.subtract(1, 'days')
-        const startOfDay = date.startOf('day').toDate();
-        const endOfDay = date.endOf('day').toDate();
+        const startOfDay = date.startOf('day').utc().toDate();
+        const endOfDay = date.endOf('day').utc().toDate();
 
         let response = await LoggerService.getLogChatMessagesBetweenDays(config.twitch.roomId, startOfDay, endOfDay)
         if (response.length === 0 ) return
         response = await LoggerService.joinConsecutiveMessagesByNickWithPause(response, 30)
         const json = JSON.stringify(response)
 
-        const formattedDate = date.format('YYYY-MM-DD');
+        const formattedDate = date.tz('Europe/Madrid').format('YYYY-MM-DD')
 
         const result = await QdrantService.uploadJsonToQdrant(json, formattedDate, 'chat')
-        const result2 = await OpenAIService.uploadFileToVectorStore(json, formattedDate, 'chat')
+        //const result2 = await OpenAIService.uploadFileToVectorStore(json, formattedDate, 'chat')
 
         if (result.success) {
             await twitchBot.say(target, `IA actualizada con el chat de ${formattedDate}`)
-            logger.info('Chat uploaded to openai ' + result.filename)
+            logger.info('Chat uploaded to qdrant ' + result.filename)
         } else {
-            logger.error('Error uploading chat to openai of date ' + formattedDate)
+            logger.error('Error uploading chat to qdrant of date ' + formattedDate)
         }
     }
 
@@ -100,7 +116,7 @@ class OpenAI {
         let error = false
         for (const date in mergedJsons) {
             if (mergedJsons.hasOwnProperty(date)) {
-                const formattedDate = moment(date, 'YYYYMMDD').format('YYYY-MM-DD')
+                const formattedDate = moment(date, 'YYYYMMDD').tz('Europe/Madrid').format('YYYY-MM-DD')
                 let exists = false
                 if (!force) {
                     exists = await QdrantService.exists(formattedDate, 'stream')
@@ -133,7 +149,7 @@ class OpenAI {
         let error = false
         for (const date in mergedJsons) {
             if (mergedJsons.hasOwnProperty(date)) {
-                const formattedDate = moment(date, 'YYYYMMDD').format('YYYY-MM-DD');
+                const formattedDate = moment(date, 'YYYYMMDD').tz('Europe/Madrid').format('YYYY-MM-DD');
                 const result = await OpenAIService.uploadFileToVectorStore(mergedJsons[date], formattedDate, 'stream')
                 if (result.success) {
                     const message = `📼 IA actualizada con el stream de ${formattedDate}`;

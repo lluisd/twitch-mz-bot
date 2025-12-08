@@ -33,6 +33,7 @@ async function main () {
         logger.info('Connected')
 
         const app = express()
+        app.use(express.json())
         app.set('view engine', 'ejs')
         app.use(express.static('public'))
         app.set('trust proxy', 1)
@@ -49,16 +50,31 @@ async function main () {
             app.get('/', (req, res) => res.send('Running'));
         }
 
-        app.get('/chats', basicAuth, async (req, res, next) => {
+        app.post('/chats', basicAuth, async (req, res, next) => {
+            const { startDate, endDate, force } = req.body
+
+            if (!startDate || !endDate) {
+                return res.status(400).json({
+                    error: 'Los campos startDate y endDate son obligatorios'
+                });
+            }
+
             if (transcribeSemaphore.isLocked()) {
                 logger.info('called transcribe while already running')
                 return;
             }
             const [value, release] = await transcribeSemaphore.acquire()
             try {
+                const forceBool = force === true || force === 'true'
+                if (!startDate || !endDate) {
+                    return res.status(400).json({
+                        error: 'Faltan parámetros obligatorios: startDate y endDate'
+                    });
+                }
+
                 logger.info('Transcription started')
                 // await HAService.hibernateTranscriberPC()
-                await handlers.openAI.processChats(`#${config.twitch.channels}`, twitchBot, '2025-10-01', '2025-11-29')
+                await handlers.openAI.processChats(`#${config.twitch.channels}`, forceBool, twitchBot ,startDate, endDate)
                 const response = {
                     message: 'transcription started',
                     status: 'success'
@@ -91,7 +107,7 @@ async function main () {
             }
         });
 
-        app.get('/transcribe', basicAuth, async (req, res, next) => {
+        app.post('/transcribe', basicAuth, async (req, res, next) => {
             if (transcribeSemaphore.isLocked()) {
                 logger.info('called transcribe while already running')
                 return;
@@ -99,9 +115,10 @@ async function main () {
             const [value, release] = await transcribeSemaphore.acquire()
             try {
                 logger.info('Transcription started')
-                const force = req.query.force === 'true'
+                const { force } = req.body
+                const forceBool = force === true || force === 'true'
                // await HAService.hibernateTranscriberPC()
-                await handlers.openAI.uploadStreamToQdrant(`#${config.twitch.channels}`, force, twitchBot, telegramBot)
+                await handlers.openAI.uploadStreamToQdrant(`#${config.twitch.channels}`, forceBool, twitchBot, telegramBot)
                 const response = {
                     message: 'transcription started',
                     status: 'success'
