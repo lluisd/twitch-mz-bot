@@ -6,7 +6,7 @@ async function start () {
     let result
     let options = await _getHeaders()
     options.method = 'POST'
-    const endpoint = config.whisper.endpoint + '/start/' + config.twitch.channels
+    const endpoint = config.whisper.endpoint + '/start/' + config.whisper.platform + '/' + config.twitch.channels
 
     try {
         const response = await fetch(endpoint, options)

@@ -57,6 +57,7 @@ module.exports = {
     },
     whisper: {
         endpoint: process.env.WHISPER_ENDPOINT,
+        platform: process.env.WHISPER_PLATFORM
     },
     blobStorage: {
         connectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,

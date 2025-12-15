@@ -15,7 +15,6 @@ const basicAuth = require('./middleware/basicAuth')
 const ImmuneService = require('./services/immune')
 const { transcribeSemaphore, mergeTranscriptionsSemaphore} = require("./semaphore.js")
 const OpenAIResponsesApiService = require('./services/openAIResponsesApi')
-
 async function main () {
     try {
         await mongoose.connect(config.database.uri, {
@@ -444,6 +443,18 @@ async function main () {
         app.use((err, req, res, next) => {
             logger.error(err.stack)
             res.status(500).json({message: "Server error."});
+        })
+
+        app.post('/kickWebhook', async (req, res, next) => {
+            try {
+                const data = req.body
+                logger.info('Kick Webhook received:', data)
+
+                await handlers.kick.liveStreamStatusUpdated(data)
+                res.status(200).send('OK')
+            } catch (error) {
+                next(error)
+            }
         })
 
         let eventSub = null
