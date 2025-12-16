@@ -182,7 +182,7 @@ class Stream {
         const height = Math.trunc(width / (16/9))
         const image = `[\u200c](${stream.thumbnailUrl.replace('-{width}x{height}', `-1280x720`)}?a=${Date.now()})`
         const link = `[${twitchUrl}${stream.userName}](${twitchUrl}${stream.userName})`
-        const title = `🔴 *¡EN DIRECTO!*`
+        const title = `🟣 *¡EN DIRECTO!*`
         return `${image} ${title}  ${link} \n _${stream.title}_ (${duration})`
     }
 

@@ -15,6 +15,9 @@ module.exports = {
         eventSubSecret: process.env.TWITCH_EVENTSUB_SECRET,
         hostname: process.env.TWITCH_HOSTNAME,
     },
+    kick: {
+        channel: process.env.KICK_CHANNEL
+    },
     aemet: {
         apiKey: process.env.AEMET_API_KEY
     },

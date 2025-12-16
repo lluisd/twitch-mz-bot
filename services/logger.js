@@ -1,9 +1,9 @@
 const dbManager = require('../helpers/dbmanager')
 const moment = require('moment')
 
-async function logChatMessage(roomId, username, text) {
+async function logChatMessage(roomId, username, text, platform) {
     let result = null
-    result = await dbManager.addChatLogLine(roomId, username, text, moment())
+    result = await dbManager.addChatLogLine(roomId, username, text, moment(), platform)
     return result
 }
 

@@ -447,10 +447,13 @@ async function main () {
 
         app.post('/kickWebhook', async (req, res, next) => {
             try {
-                const data = req.body
-                logger.info('Kick Webhook received:', data)
+                const eventType = req.headers["kick-event-type"]
+                const eventVersion = req.headers["kick-event-version"]
 
-                await handlers.kick.liveStreamStatusUpdated(data)
+                const payload = req.body
+                logger.info(`kick Webhook received: type=${eventType} version=${eventVersion} with payload:`, payload)
+
+                await handlers.kick.webhookHandler(eventType, payload, telegramBot)
                 res.status(200).send('OK')
             } catch (error) {
                 next(error)

@@ -18,6 +18,11 @@ const ChatLogSchema = new Schema({
     date: {
         type: Date,
         required: true
+    },
+    platform: {
+        type: String,
+        required: false,
+        default: 'twitch'
     }
 })
 

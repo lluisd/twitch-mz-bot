@@ -6,7 +6,8 @@ async function start () {
     let result
     let options = await _getHeaders()
     options.method = 'POST'
-    const endpoint = config.whisper.endpoint + '/start/' + config.whisper.platform + '/' + config.twitch.channels
+    const channel = config.whisper.platform === 'kick' ? config.kick.channel : config.twitch.channels
+    const endpoint = config.whisper.endpoint + '/start/' + config.whisper.platform + '/' + channel
 
     try {
         const response = await fetch(endpoint, options)

@@ -134,13 +134,13 @@ async function getTFSpots(roomId){
     return tempsDeFlors.find({roomId: parseInt(roomId)}).sort('number').lean()
 }
 
-async function addChatLogLine (roomId, nick, text, date) {
-    return ChatLog.insertMany({roomId: roomId, nick: nick, text: text, date: date})
+async function addChatLogLine (roomId, nick, text, date, platform) {
+    return ChatLog.insertMany({roomId: roomId, nick: nick, text: text, date: date, platform: platform}, {})
 }
 
 async function getChatLogLines (roomId, startOfDay, endOfDay) {
     return ChatLog
-        .find({roomId: roomId, date: { $gte: startOfDay, $lt: endOfDay }})
+        .find({roomId: roomId, platform: 'twitch', date: { $gte: startOfDay, $lt: endOfDay }})
         .select('nick text date -_id').lean()
 }
 
@@ -254,7 +254,7 @@ async function removeUserIdFromChannelWhitelist(roomId, userId) {
 }
 
 async function getAllNicks(roomId) {
-    return ChatLog.distinct('nick', { roomId: roomId });
+    return ChatLog.distinct('nick', { roomId: roomId, platform: 'twitch' });
 }
 
 module.exports = {
