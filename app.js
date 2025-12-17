@@ -24,10 +24,8 @@ async function main () {
         let twitchBot = null
         let telegramBot = null
 
-        if (config.twitch.enabled) {
-            const messenger = new Messenger();
-            ({ twitchBot, telegramBot } = await messenger.init());
-        }
+        const messenger = new Messenger();
+        ({ twitchBot, telegramBot } = await messenger.init());
 
         logger.info('Connected')
 
@@ -451,7 +449,6 @@ async function main () {
                 const eventVersion = req.headers["kick-event-version"]
 
                 const payload = req.body
-                logger.info(`kick Webhook received: type=${eventType} version=${eventVersion} with payload:`, payload)
 
                 await handlers.kick.webhookHandler(eventType, payload, telegramBot)
                 res.status(200).send('OK')

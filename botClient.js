@@ -27,7 +27,7 @@ class BotClient {
 
     async getChatClient () {
         await this.ready
-        if (this.chatClient === null) {
+        if (this.chatClient === null && config.twitch.enabled) {
             this.chatClient = new ChatClient({
                 authProvider: this.authProvider,
                 channels: [ config.twitch.channels ],

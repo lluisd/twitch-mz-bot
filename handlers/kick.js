@@ -49,7 +49,7 @@ class Kick {
             } else {
                 logger.debug(`Stream ${username} in Kick has ended!`)
                 const channel = await TwitchService.getChannel()
-                if (channel) {
+                if (channel && channel.lastMessageId) {
                     await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: channel.lastMessageId}).catch((err) => { logger.error(`cannot unpin kick stream live on telegram message: ${err}`)})
                     await telegramBot.deleteMessage(config.telegram.chatId, channel.lastMessageId).catch((err) => { logger.error(`cannot delete message: ${err}`)})
                 }
@@ -66,7 +66,7 @@ class Kick {
         const image = `[\u200c](${stream.broadcaster.profile_picture})`
         const link = `[${kickUrl}${stream.broadcaster.username}](${kickUrl}${stream.broadcaster.username})`
         const title = `🟢 *¡EN DIRECTO!*`
-        return `${image} ${title}  ${link} \n _${stream.title}_ (${duration})`
+        return `${image} ${title}  ${link} \n _${stream.title}_`
     }
 }
 
