@@ -6,7 +6,6 @@ const TwitchService = require("../services/twitch")
 const Logger = require("../services/logger")
 const moment = require('moment')
 require('moment-precise-range-plugin')
-const dbManager = require("../helpers/dbmanager")
 const kickUrl = 'https://kick.com/'
 
 class Kick {
@@ -72,7 +71,6 @@ class Kick {
                 logger.debug(`Stream ${username} in Kick has ended!`)
                 const channel = await TwitchService.getChannel()
                 if (channel && channel.lastMessageId) {
-                    await dbManager.updateChannel(config.twitch.channels, { live: false, streamId: null, lastMessageId: null })
                     await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: channel.lastMessageId}).catch((err) => { logger.error(`cannot unpin kick stream live on telegram message: ${err}`)})
                     await telegramBot.deleteMessage(config.telegram.chatId, channel.lastMessageId).catch((err) => { logger.error(`cannot delete message: ${err}`)})
                 }
