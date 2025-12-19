@@ -112,7 +112,7 @@ class Kick {
         const image = `[\u200c](${stream.thumbnail}?a=${Date.now()})`
         const link = `[${kickUrl}${stream.slug}](${kickUrl}${stream.slug})`
         const title = `🟣 *¡EN DIRECTO!*`
-        return `${image} ${title}  ${link} \n _${stream.stream_title}_ (${duration})`
+        return `${image} ${title}  ${link} \n _${stream.stream_title}_ (${duration}) ${stream.viewer_count} espectadores`
     }
 }
 
