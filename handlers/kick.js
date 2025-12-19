@@ -31,9 +31,10 @@ class Kick {
 
     async webhookHandler(eventType, payload, telegramBot) {
         try {
+            if (!config.kick.enabled) return
             switch (eventType) {
                 case 'livestream.status.updated':
-                    await this.liveStreamStatusUpdated(payload, telegramBot)
+                    await this._liveStreamStatusUpdated(payload, telegramBot)
                     break
                 case 'chat.message.sent':
                     await this.chatMessageSent(payload)
@@ -46,13 +47,13 @@ class Kick {
         }
     }
 
-    async chatMessageSent(message) {
+    async _chatMessageSent(message) {
         logger.info(`Kick - message from ${message.sender.channel_slug} in #${message.broadcaster.channel_slug}: ${message.content}`)
         if (config.kick.channel === message.sender.channel_slug) return
         await Logger.logChatMessage(config.twitch.roomId, message.sender.channel_slug, message.content, 'kick')
     }
 
-    async liveStreamStatusUpdated(stream, telegramBot) {
+    async _liveStreamStatusUpdated(stream, telegramBot) {
         if (!config.twitch.enabled && !stream || typeof stream.is_live !== 'boolean') {
             logger.warn('Invalid kick stream payload received:', stream)
             return

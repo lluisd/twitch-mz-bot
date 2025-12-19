@@ -1,4 +1,4 @@
-const config = require("../config")
+const config = require('../config')
 const moment = require('moment')
 
 let accessToken = null
@@ -32,7 +32,7 @@ async function _requestNewToken() {
     }
 }
 
-export async function getKickToken() {
+async function getKickToken() {
     if (accessToken && expiresAt && moment().isBefore(expiresAt)) {
         return accessToken
     }
@@ -63,7 +63,12 @@ export async function getKickToken() {
     return refreshing
 }
 
-export function invalidateKickToken() {
+function invalidateKickToken() {
     accessToken = null
     expiresAt = null
+}
+
+module.exports = {
+    invalidateKickToken,
+    getKickToken
 }
