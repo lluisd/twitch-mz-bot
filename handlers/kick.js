@@ -10,23 +10,29 @@ const kickUrl = 'https://kick.com/'
 
 class Kick {
     async catchStream (telegramBot) {
-        const liveStream = await KickService.getLiveStream()
+        try {
+            const liveStream = await KickService.getLiveStream()
 
-        if (liveStream?.data.length > 0) {
-            const stream = liveStream?.data?.[0]
-            const channel = await TwitchService.getChannel()
-            if (channel && channel.lastMessageId) {
-                logger.debug(`Stream ${config.kick.channel} in Kick continues live`)
-                const options = {
-                    chat_id: config.telegram.chatId,
-                    message_id: channel.lastMessageId,
-                    parse_mode: 'Markdown'
+            if (liveStream?.data.length > 0) {
+                const stream = liveStream?.data?.[0]
+                const channel = await TwitchService.getChannel()
+                if (channel && channel.lastMessageId) {
+                    logger.debug(`Stream ${config.kick.channel} in Kick continues live`)
+                    await WhisperService.start()
+                    const options = {
+                        chat_id: config.telegram.chatId,
+                        message_id: channel.lastMessageId,
+                        parse_mode: 'Markdown'
+                    }
+                    await telegramBot.editMessageText(this._getTextFromLiveStream(stream), options)
+                        .catch((err) => { logger.error(`cannot edit message: ${err}`)})
+
                 }
-                await telegramBot.editMessageText(this._getTextFromLiveStream(stream), options)
-                    .catch((err) => { logger.error(`cannot edit message: ${err}`)})
-                await WhisperService.start()
             }
+        } catch (e) {
+            logger.error("catch kick stream error:", error)
         }
+
     }
 
     async webhookHandler(eventType, payload, telegramBot) {
@@ -37,7 +43,7 @@ class Kick {
                     await this._liveStreamStatusUpdated(payload, telegramBot)
                     break
                 case 'chat.message.sent':
-                    await this.chatMessageSent(payload)
+                    await this._chatMessageSent(payload)
                     break
                 default:
                     logger.warn(`Unhandled Kick event type: ${eventType}`)
@@ -99,7 +105,7 @@ class Kick {
         const duration = `${horas}${diff.minutes} minutos`
 
         const image = `[\u200c](${stream.thumbnail}?a=${Date.now()})`
-        const link = `[${kickUrl}${stream.slug}](${twitchUrl}${stream.slug})`
+        const link = `[${kickUrl}${stream.slug}](${kickUrl}${stream.slug})`
         const title = `🟣 *¡EN DIRECTO!*`
         return `${image} ${title}  ${link} \n _${stream.stream_title}_ (${duration})`
     }
