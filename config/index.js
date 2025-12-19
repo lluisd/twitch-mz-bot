@@ -16,7 +16,11 @@ module.exports = {
         hostname: process.env.TWITCH_HOSTNAME,
     },
     kick: {
-        channel: process.env.KICK_CHANNEL
+        enabled: process.env.KICK_ENABLED === 'true',
+        channel: process.env.KICK_CHANNEL,
+        clientId: process.env.KICK_CLIENT_ID,
+        clientSecret: process.env.KICK_CLIENT_SECRET,
+        user_id: process.env.KICK_USER_ID
     },
     aemet: {
         apiKey: process.env.AEMET_API_KEY
