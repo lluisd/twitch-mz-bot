@@ -7,6 +7,7 @@ const Logger = require("../services/logger")
 const moment = require('moment')
 require('moment-precise-range-plugin')
 const kickUrl = 'https://kick.com/'
+const hasStarted = false
 
 class Kick {
     async catchStream (telegramBot) {
@@ -18,7 +19,11 @@ class Kick {
                 const channel = await TwitchService.getChannel()
                 if (channel && channel.lastMessageId) {
                     logger.debug(`Stream ${config.kick.channel} in Kick continues live`)
-                    await WhisperService.start()
+                    if (!channel.live) {
+                        await TwitchService.setChannelLive(true)
+                        await WhisperService.start()
+                    }
+
                     const options = {
                         chat_id: config.telegram.chatId,
                         message_id: channel.lastMessageId,
@@ -26,7 +31,6 @@ class Kick {
                     }
                     await telegramBot.editMessageText(this._getTextFromLiveStream(stream), options)
                         .catch((err) => { logger.error(`cannot edit message: ${err}`)})
-
                 }
             }
         } catch (e) {
@@ -81,6 +85,7 @@ class Kick {
                     await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: channel.lastMessageId}).catch((err) => { logger.error(`cannot unpin kick stream live on telegram message: ${err}`)})
                     await telegramBot.deleteMessage(config.telegram.chatId, channel.lastMessageId).catch((err) => { logger.error(`cannot delete message: ${err}`)})
                 }
+                await TwitchService.setChannelLive(false)
                 await TwitchService.saveLastMessage({ message_id: null})
                 await WhisperService.stop()
             }

@@ -329,6 +329,10 @@ async function setNotifyChannelFollowMessage (isActive) {
     return dbManager.updateChannel(config.twitch.channels, { notifyChannelFollowMessage: isActive })
 }
 
+async function setChannelLive (isLive) {
+    await dbManager.updateChannel(config.twitch.channels, { live: isLive })
+}
+
 async function setImmunity (isActive) {
     return dbManager.updateChannel(config.twitch.channels, { immunity: isActive })
 }
@@ -388,7 +392,8 @@ module.exports = {
     enableCustomReward,
     disableCustomReward,
     getBlockedUsers,
-    getCustomRewards
+    getCustomRewards,
+    setChannelLive
 }
 
 
