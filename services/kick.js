@@ -1,6 +1,8 @@
 const logger = require('../lib/logger')
 const config = require("../config");
 const { getKickToken, invalidateKickToken } = require('./kickToken')
+const broadcasterKickApiClient = require('../BroadcasterKickApiClient')
+
 
 const endpointPrefix = 'https://api.kick.com/public/v1/'
 
@@ -31,6 +33,14 @@ async function getLiveStream() {
     }
 }
 
+async function chat(message) {
+    try {
+        await broadcasterKickApiClient.postChatMessage(message)
+    } catch (err) {
+        logger.error('[Kick] Error on send chat:', err)
+    }
+}
+
 async function _getHeaders () {
     const token = await getKickToken()
     return {
@@ -43,5 +53,6 @@ async function _getHeaders () {
 }
 
 module.exports = {
-    getLiveStream
+    getLiveStream,
+    chat
 }

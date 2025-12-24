@@ -7,7 +7,6 @@ const Logger = require("../services/logger")
 const moment = require('moment')
 require('moment-precise-range-plugin')
 const kickUrl = 'https://kick.com/'
-const hasStarted = false
 
 class Kick {
     async catchStream (telegramBot) {
@@ -36,7 +35,6 @@ class Kick {
         } catch (e) {
             logger.error("catch kick stream error:", error)
         }
-
     }
 
     async webhookHandler(eventType, payload, telegramBot) {
@@ -61,6 +59,10 @@ class Kick {
         logger.info(`Kick - message from ${message.sender.channel_slug} in #${message.broadcaster.channel_slug}: ${message.content}`)
         if (config.kick.channel === message.sender.channel_slug) return
         await Logger.logChatMessage(config.twitch.roomId, message.sender.channel_slug, message.content, 'kick')
+    }
+
+    async chat(message) {
+        await KickService.chat(message)
     }
 
     async _liveStreamStatusUpdated(stream, telegramBot) {

@@ -31,7 +31,12 @@ const TokenSchema = new Schema({
     // The scope the access token is valid for, i.e. what the token enables you to do.
     scope: [{
         type: String,
-    }]
+    }],
+    provider: {
+        type: String,
+        require: false,
+        default: 'twitch'
+    }
 })
 
 module.exports = mongoose.model('token', TokenSchema, 'tokens')
