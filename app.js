@@ -483,6 +483,8 @@ async function main () {
                 await eventSub.subscribeEvent(config.twitch.roomId)
             }
         })
+
+        await handlers.kick.chat('probando dos')
     } catch (err) {
         logger.error("Fatal startup error:", err)
         process.exit(1)
