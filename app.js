@@ -114,7 +114,7 @@ async function main () {
                 logger.info('Transcription started')
                 const { force } = req.body
                 const forceBool = force === true || force === 'true'
-               // await HAService.hibernateTranscriberPC()
+                await HAService.turnOffTranscriberPC()
                 await handlers.openAI.uploadStreamToQdrant(`#${config.twitch.channels}`, forceBool, twitchBot, telegramBot)
                 const response = {
                     message: 'transcription started',

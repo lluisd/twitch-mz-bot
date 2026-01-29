@@ -2,7 +2,7 @@ const config = require('../config')
 
 const endpointPrefix = `${config.ha.endpoint}/api/`
 
-async function hibernateTranscriberPC() {
+async function turnOffTranscriberPC() {
     let result = null
     const endpoint = endpointPrefix + 'services/switch/turn_off'
 
@@ -30,5 +30,5 @@ async function hibernateTranscriberPC() {
 }
 
 module.exports = {
-    hibernateTranscriberPC
+    turnOffTranscriberPC
 }

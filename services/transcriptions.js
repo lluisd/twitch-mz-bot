@@ -45,8 +45,7 @@ async function deleteFiles (fileNames) {
 
 async function getFiles() {
     const streamFiles = path.join(__dirname, '..', 'azure')
-    const pattern = /whisper-live(\d{8})-(\d{6})\.json/;
-
+    const pattern = /whisper-live(?:-(twitch|kick))?(\d{8})-(\d{6})\.json/
     let fileNames = []
     let jsons = {}
 
@@ -57,10 +56,11 @@ async function getFiles() {
         for (const file of matchedFiles) {
             fileNames.push(file)
             const match = file.match(pattern)
-            const date = match[1] // '20241109'
-            const time = match[2] // '143907'
+            const platform = match[1] // 'twitch' or 'kick' or undefined
+            const date = match[2] // '20241109'
+            const time = match[3] // '143907'
 
-            const datetimeStr = file.split('whisper-live')[1].split('.')[0]
+            const datetimeStr = `${date}-${time}`
             const dateTime = moment(datetimeStr, 'YYYYMMDD-HHmmss', 'Europe/Madrid').toISOString()
 
             const filePath = path.join(streamFiles, file)
