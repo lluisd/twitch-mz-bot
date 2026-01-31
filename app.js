@@ -30,7 +30,6 @@ async function main () {
         logger.info('Connected')
 
         const app = express()
-        app.use(express.json())
         app.set('view engine', 'ejs')
         app.use(express.static('public'))
         app.set('trust proxy', 1)
@@ -47,7 +46,7 @@ async function main () {
             app.get('/', (req, res) => res.send('Running'));
         }
 
-        app.post('/chats', basicAuth, async (req, res, next) => {
+        app.post('/chats', express.json(), basicAuth, async (req, res, next) => {
             const { startDate, endDate, force } = req.body
 
             if (!startDate || !endDate) {
@@ -104,7 +103,7 @@ async function main () {
             }
         });
 
-        app.post('/transcribe', basicAuth, async (req, res, next) => {
+        app.post('/transcribe', express.json(), basicAuth, async (req, res, next) => {
             if (transcribeSemaphore.isLocked()) {
                 logger.info('called transcribe while already running')
                 return;
@@ -443,7 +442,7 @@ async function main () {
             res.status(500).json({message: "Server error."});
         })
 
-        app.post('/kickWebhook', async (req, res, next) => {
+        app.post('/kickWebhook', express.json(), async (req, res, next) => {
             try {
                 const eventType = req.headers["kick-event-type"]
                 const eventVersion = req.headers["kick-event-version"]
