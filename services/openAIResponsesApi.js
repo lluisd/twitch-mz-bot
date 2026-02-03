@@ -83,9 +83,12 @@ function cleanQdrantFilter(filter) {
 
 async function ask(query, username) {
     let result
+    const excludedIndexes = new Set(['type']);
+
     try {
         const indexes = {type: { data_type: 'keyword' }, date: {data_type:"datetime"}, nick: {data_type:"keyword"} };
         const formattedIndexes = Object.entries(indexes)
+            .filter(([indexName]) => !excludedIndexes.has(indexName))
             .map(([indexName, index]) => `- ${indexName} - ${index.data_type}`)
             .join("\n");
 
@@ -106,15 +109,13 @@ async function ask(query, username) {
             model: config.openAI.model,
             messages: [
                 {
-                    role: "user",
-                    content: SYSTEM_PROMPT.trim(),  // .trim() similar a .strip() en Python
+                    role: "system",
+                    content: SYSTEM_PROMPT.trim(),
                 },
                 {
-                    role: "assistant",
-                    content: "Okay, I will follow all the rules.",
-                },
-
-                { role: "user", content: content }
+                    role: "user",
+                    content: content
+                }
             ],
             response_model: {
                 schema: FilterSchema,
@@ -122,7 +123,7 @@ async function ask(query, username) {
             }
         })
 
-        logger.info(`filtros detectados: ${JSON.stringify(filters)}`)
+        logger.info(`Filtros detectados: ${JSON.stringify(filters)}`)
 
         const filterNick = findFilterByKey(filters, 'nick')
         if (filterNick) {
@@ -155,7 +156,13 @@ async function ask(query, username) {
         logger.info(`results encontrados en Qdrant: ${results.length} ${JSON.stringify(results)}`)
 
         const context = results
-            .map((r) => `Usuario ${r.payload.nick} dijo: "${r.payload.text}"`)
+            .map((r) => {
+                if (r.payload.type === 'stream') {
+                    return `El streamer dijo: "${r.payload.text}"`
+                }
+
+                return `Un usuario dijo: "${r.payload.text}"`
+            })
             .join("\n")
 
         const completion = await chatClient.chat.completions.create({
@@ -167,7 +174,7 @@ async function ask(query, username) {
                 },
                 {
                     role: "user",
-                    content: `Responde en no más de 200 caracteres la pregunta: ${query} que ha hecho el usuario del chat ${username}\n\nContexto relevante del RAG:\n${context}`,
+                    content: `Responde en no más de 200 caracteres la pregunta: ${query}\n\nContexto relevante del RAG:\n${context}`,
                 },
             ],
         });
