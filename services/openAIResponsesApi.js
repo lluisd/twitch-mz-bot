@@ -17,16 +17,13 @@ const embeddingClient = openAIApiClient.getEmbeddingClient()
 const chatClient = openAIApiClient.getApiClient()
 
 function findFilterByKey(filter, targetKey) {
-    // función recursiva interna
     function searchConditions(conditions = []) {
         for (const condition of conditions) {
 
-            // Caso 1: FieldCondition
             if (condition.key === targetKey) {
                 return condition;
             }
 
-            // Caso 2: NestedCondition
             if (condition.nested) {
                 const nestedResult = searchConditions(
                     condition.nested.filter.must ||
@@ -41,7 +38,6 @@ function findFilterByKey(filter, targetKey) {
         return null;
     }
 
-    // Buscar en must, should, y must_not
     return (
         searchConditions(filter.must) ||
         searchConditions(filter.should) ||
@@ -83,12 +79,10 @@ function cleanQdrantFilter(filter) {
 
 async function ask(query, username) {
     let result
-    const excludedIndexes = new Set(['type']);
 
     try {
         const indexes = {type: { data_type: 'keyword' }, date: {data_type:"datetime"}, nick: {data_type:"keyword"} };
         const formattedIndexes = Object.entries(indexes)
-            .filter(([indexName]) => !excludedIndexes.has(indexName))
             .map(([indexName, index]) => `- ${indexName} - ${index.data_type}`)
             .join("\n");
 
@@ -102,9 +96,7 @@ async function ask(query, username) {
             5. Intenta adivinar si preguntan por algun usuario para usarlo en el filtro de "nick".
             6. Los filtros con fecha como "date" deben estar en formato ISO 8601 con zona horaria UTC.
             7. Ahora mismo es ${moment().tz('Europe/Madrid').format('MMMM Do YYYY, h:mm:ss a')}.
-`;
-
-
+`
         const filters = await client.chat.completions.create({
             model: config.openAI.model,
             messages: [
@@ -122,11 +114,11 @@ async function ask(query, username) {
                 name: "Filter",
             }
         })
-
         logger.info(`Filtros detectados: ${JSON.stringify(filters)}`)
 
+        const filterType = findFilterByKey(filters, 'type')
         const filterNick = findFilterByKey(filters, 'nick')
-        if (filterNick) {
+        if (filterType === 'chat' && filterNick) {
             const nicks =  await dbManager.getAllNicks(config.twitch.roomId)
             const nicksObjects = nicks.map(nick => ({ nick }));
             const fuse = new Fuse(nicksObjects, options);
@@ -174,7 +166,7 @@ async function ask(query, username) {
                 },
                 {
                     role: "user",
-                    content: `Responde en no más de 200 caracteres la pregunta: ${query}\n\nContexto relevante del RAG:\n${context}`,
+                    content: `Responde en no más de 200 caracteres la pregunta: ${query}\n\nContexto relevante:\n${context}`,
                 },
             ],
         });
@@ -182,7 +174,7 @@ async function ask(query, username) {
         result = completion.choices[0].message.content;
         result = cleanAssistantText(result)
 
-        logger.info(`respeusta final openAIResponsesApi: ${result}`)
+        logger.info(`respuesta final openAIResponsesApi: ${result}`)
 
     } catch (e) {
         logger.error("Error test openAIResponsesApi:", e.message)
