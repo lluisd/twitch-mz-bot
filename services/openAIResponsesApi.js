@@ -188,8 +188,7 @@ async function ask(query, username) {
                 },
                 ...recentHistory,
             ],
-            instructions: `Responde en máximo 200 caracteres. 
-                Menciona al usuario usando su nick. 
+            instructions: `Responde en máximo 200 caracteres.
                 No inventes información.`
         });
 
