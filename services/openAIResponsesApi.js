@@ -53,15 +53,11 @@ const client = Instructor({
 
 const options = {
     keys: ['nick'],
-    includeScore: true,    // devuelve la puntuación de similitud
-    threshold: 0.4,        // 0 = coincidencia exacta, 1 = muy flexible
-    ignoreLocation: true   // ignorar la posición de la coincidencia
+    threshold: 0.2,       // más bajo = coincidencias más estrictas
+    distance: 100,
+    ignoreLocation: true
 };
 
-
-async function test() {
-
-}
 
 function cleanQdrantFilter(filter) {
     const allowedKeys = ["must", "should", "must_not"];
@@ -76,8 +72,13 @@ function cleanQdrantFilter(filter) {
     return cleaned;
 }
 
+let history = []
 
 async function ask(query, username) {
+    const userMessage = { role: "user", content: `[${username}] ${query}` };
+    history.push(userMessage);
+    const recentHistory = history.slice(-10);
+
     let result
 
     try {
@@ -119,18 +120,31 @@ async function ask(query, username) {
         const filterType = findFilterByKey(filters, 'type')
         const filterNick = findFilterByKey(filters, 'nick')
         if (filterType === 'chat' && filterNick) {
-            const nicks =  await dbManager.getAllNicks(config.twitch.roomId)
-            const nicksObjects = nicks.map(nick => ({ nick }));
-            const fuse = new Fuse(nicksObjects, options);
-            const possibleNicks = fuse.search(filterNick.match.value);
-            if (possibleNicks.length > 0) {
-                query = query.replace(filterNick.match.value, possibleNicks[0].item.nick)
-                filterNick.match.value = possibleNicks[0].item.nick;  // mejor match
-                logger.info(`nick fuse: ${filterNick.match.value }`)
+            const nicks = await dbManager.getAllNicks(config.twitch.roomId);
+            const nicksObjects = nicks.map(nick => ({ nick: nick.toLowerCase() }));
+            const nickQuery = filterNick.match.value.toLowerCase();
+
+            let exactMatch = nicksObjects.find(n => n.nick === nickQuery);
+            if (exactMatch) {
+                filterNick.match.value = exactMatch.nick;
+            } else {
+                const fuse = new Fuse(nicksObjects, { keys: ['nick'], threshold: 0.2, distance: 100, ignoreLocation: true });
+                const possibleNicks = fuse.search(nickQuery);
+                if (possibleNicks.length > 0) {
+                    filterNick.match.value = possibleNicks[0].item.nick;
+                }
+            }
+
+            // reemplazo en la query solo si hay match confiable
+            if (filterNick.match.value) {
+                query = query.replace(filterNick.match.value, filterNick.match.value);
+                logger.info(`nick fuse: ${filterNick.match.value}`);
             }
         }
 
-        const systemPrompt =  `Eres el asistente del canal de twitch llamado ${config.twitch.channels}, conoces todas las transcripciones del stream por él mismo y todos los mensajes de su chat.`;
+        const systemPrompt =  `Eres el asistente del canal de twitch llamado ${config.twitch.channels},
+         conoces todas las transcripciones del stream por él mismo y todos los mensajes de su chat.
+         Usa la memoria recuperada solo si es relevante.`;
 
         const embedQuery = await embeddingClient.embeddings.create({
             input: [query],
@@ -157,23 +171,29 @@ async function ask(query, username) {
             })
             .join("\n")
 
-        const completion = await chatClient.chat.completions.create({
+        const response = await chatClient.responses.create({
             model: config.openAI.model,
-            messages: [
+            input: [
                 {
                     role: "system",
                     content: systemPrompt,
                 },
                 {
-                    role: "user",
-                    content: `Responde en no más de 200 caracteres la pregunta: ${query}\n\nContexto relevante:\n${context}`,
+                    role: "system",
+                    content: `Memoria recuperada: ${context || "No hay memoria relevante."}`
                 },
+                ...recentHistory,
             ],
+            instructions: [
+                "Responde en máximo 200 caracteres.",
+                "Menciona al usuario usando su nick.",
+                "No inventes información."
+            ]
         });
 
-        result = completion.choices[0].message.content;
+        result = response.output_text;
         result = cleanAssistantText(result)
-
+        history.push({ role: "assistant", content: result })
         logger.info(`respuesta final openAIResponsesApi: ${result}`)
 
     } catch (e) {
@@ -187,6 +207,5 @@ function cleanAssistantText(text) {
 }
 
 module.exports = {
-    ask,
-    test
+    ask
 }
