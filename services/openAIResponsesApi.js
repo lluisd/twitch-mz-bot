@@ -80,10 +80,12 @@ async function ask(query, username) {
     const recentHistory = history.slice(-10);
 
     let result
+    const propertiesToShow = ['type', 'date']
 
     try {
         const indexes = {type: { data_type: 'keyword' }, date: {data_type:"datetime"}, nick: {data_type:"keyword"} };
         const formattedIndexes = Object.entries(indexes)
+            .filter(([key]) => propertiesToShow.includes(key))
             .map(([indexName, index]) => `- ${indexName} - ${index.data_type}`)
             .join("\n");
 
@@ -116,10 +118,12 @@ async function ask(query, username) {
             }
         })
         logger.info(`Filtros detectados: ${JSON.stringify(filters)}`)
+        filters.must = filters.must.filter(item => item.key !== "nick");
+
 
         const filterType = findFilterByKey(filters, 'type')
         const filterNick = findFilterByKey(filters, 'nick')
-        if (filterType === 'chat' && filterNick) {
+        if (filterType.match.value === 'chat' && false) {
             const nicks = await dbManager.getAllNicks(config.twitch.roomId);
             const nicksObjects = nicks.map(nick => ({ nick: nick.toLowerCase() }));
             const nickQuery = filterNick.match.value.toLowerCase();
@@ -184,11 +188,9 @@ async function ask(query, username) {
                 },
                 ...recentHistory,
             ],
-            instructions: [
-                "Responde en máximo 200 caracteres.",
-                "Menciona al usuario usando su nick.",
-                "No inventes información."
-            ]
+            instructions: `Responde en máximo 200 caracteres. 
+                Menciona al usuario usando su nick. 
+                No inventes información.`
         });
 
         result = response.output_text;
