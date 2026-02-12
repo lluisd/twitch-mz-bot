@@ -75,15 +75,15 @@ function cleanQdrantFilter(filter) {
 let history = []
 
 async function ask(query, username) {
-    const userMessage = { role: "user", content: `[${username}] ${query}` };
-    history.push(userMessage);
-    const recentHistory = history.slice(-10);
+    const userMessage = { role: "user", content: `${query}` }
+    history.push(userMessage)
+    const recentHistory = history.slice(-10)
 
     let result
-    const propertiesToShow = ['type', 'date']
+    const propertiesToShow = ['type', 'date', 'nick']
 
     try {
-        const indexes = {type: { data_type: 'keyword' }, date: {data_type:"datetime"}, nick: {data_type:"keyword"} };
+        const indexes = {type: { data_type: 'keyword' }, date: {data_type:"datetime"}, nick: {data_type:"keyword"} }
         const formattedIndexes = Object.entries(indexes)
             .filter(([key]) => propertiesToShow.includes(key))
             .map(([indexName, index]) => `- ${indexName} - ${index.data_type}`)
@@ -118,32 +118,40 @@ async function ask(query, username) {
             }
         })
         logger.info(`Filtros detectados: ${JSON.stringify(filters)}`)
-        filters.must = filters.must.filter(item => item.key !== "nick");
-
 
         const filterType = findFilterByKey(filters, 'type')
         const filterNick = findFilterByKey(filters, 'nick')
-        if (filterType.match.value === 'chat' && false) {
-            const nicks = await dbManager.getAllNicks(config.twitch.roomId);
-            const nicksObjects = nicks.map(nick => ({ nick: nick.toLowerCase() }));
-            const nickQuery = filterNick.match.value.toLowerCase();
+        if (filterType.match.value === 'chat' && filterNick) {
+            const nicksWithCount = await dbManager.getAllNicks(config.twitch.roomId)
+            const nicksObjects = nicksWithCount.map(n => ({
+                nick: n._id.toLowerCase(),
+                count: n.count
+            }))
+            const nickQuery = filterNick.match.value.toLowerCase()
 
-            let exactMatch = nicksObjects.find(n => n.nick === nickQuery);
+            let exactMatch = nicksObjects.find(n => n.nick === nickQuery)
             if (exactMatch) {
-                filterNick.match.value = exactMatch.nick;
+                filterNick.match.value = exactMatch.nick
             } else {
                 const fuse = new Fuse(nicksObjects, { keys: ['nick'], threshold: 0.2, distance: 100, ignoreLocation: true });
-                const possibleNicks = fuse.search(nickQuery);
+                const possibleNicks = fuse.search(nickQuery)
                 if (possibleNicks.length > 0) {
-                    filterNick.match.value = possibleNicks[0].item.nick;
+                    const bestMatch = possibleNicks
+                        .map(r => ({ ...r.item, fuseScore: r.score }))
+                        .sort((a, b) => {
+                            return (a.fuseScore - b.fuseScore) || (b.count - a.count);
+                        })[0]
+
+                    filterNick.match.value = bestMatch.nick
                 }
             }
 
-            // reemplazo en la query solo si hay match confiable
             if (filterNick.match.value) {
-                query = query.replace(filterNick.match.value, filterNick.match.value);
-                logger.info(`nick fuse: ${filterNick.match.value}`);
+                query = query.replace(filterNick.match.value, filterNick.match.value)
+                logger.info(`nick fuse: ${filterNick.match.value}`)
             }
+        } else if (filterType.match.value === 'stream' && filterNick) {
+            filters.must = filters.must.filter(item => item.key !== "nick")
         }
 
         const systemPrompt =  `Eres el asistente del canal de twitch llamado ${config.twitch.channels},

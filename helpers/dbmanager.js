@@ -254,7 +254,11 @@ async function removeUserIdFromChannelWhitelist(roomId, userId) {
 }
 
 async function getAllNicks(roomId) {
-    return ChatLog.distinct('nick', { roomId: roomId, platform: 'twitch' });
+    return ChatLog.aggregate([
+        { $match: { roomId: parseInt(roomId), platform: 'twitch' } },
+        { $group: { _id: "$nick", count: { $sum: 1 } } },
+        { $sort: { count: -1 } }
+    ]);
 }
 
 module.exports = {
