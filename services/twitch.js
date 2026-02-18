@@ -224,6 +224,10 @@ async function getBannedAndBlockedUsers () {
     })
 }
 
+async function getBlocks () {
+    return dbManager.getBlocks(config.twitch.roomId)
+}
+
 async function getTimeouts () {
     return dbManager.getTimeouts(config.twitch.roomId)
 }
@@ -393,7 +397,8 @@ module.exports = {
     disableCustomReward,
     getBlockedUsers,
     getCustomRewards,
-    setChannelLive
+    setChannelLive,
+    getBlocks
 }
 
 

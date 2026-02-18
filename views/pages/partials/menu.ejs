@@ -20,6 +20,11 @@
         </a>
     </li>
     <li class="nav-item">
+        <a class="nav-link <%= current === 'blocks' ? 'active' : '' %>" href="/blocks">
+            <%- current === 'blocks' ? '<strong>Bloqueados</strong>' : 'Bloqueados' %>
+        </a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link <%= current === 'vips' ? 'active' : '' %>" href="/vips">
             <%- current === 'vips' ? '<strong>Vips</strong>' : 'Vips' %>
         </a>

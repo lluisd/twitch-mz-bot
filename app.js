@@ -265,6 +265,19 @@ async function main () {
             }
         })
 
+        app.get('/blocks', async (req, res, next) => {
+            try {
+                const blocks = await TwitchService.getBlocks()
+                res.render('pages/blocks', {
+                    blocks: blocks,
+                    url: config.externalUrl,
+                    channel: config.twitch.channels
+                });
+            } catch (error) {
+                next(error)
+            }
+        });
+
         app.get('/bans', async (req, res, next) => {
             try {
                 const bans = await TwitchService.getBannedAndBlockedUsers(moment().subtract(10, 'years').startOf('year').toDate())
