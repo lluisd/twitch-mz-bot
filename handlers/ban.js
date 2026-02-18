@@ -212,6 +212,16 @@ class Ban {
         }
     }
 
+    async getBlocks(target, bot) {
+        const blocks = await TwitchService.getBlocks()
+        if (blocks) {
+            const count = blocks.length
+            let text = blocks.length > 0 ? `Hay ${count} bloqueos.` : 'Ho hay bloqueos.'
+            text = text + ` Detalles en ${config.externalUrl}/blocks`
+            await bot.say(target, text)
+        }
+    }
+
     async setStrike(target, username, bot) {
         const user = await TwitchService.getUser(username)
         if (user) {
