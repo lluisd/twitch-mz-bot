@@ -20,7 +20,8 @@ module.exports = {
         channel: process.env.KICK_CHANNEL,
         clientId: process.env.KICK_CLIENT_ID,
         clientSecret: process.env.KICK_CLIENT_SECRET,
-        user_id: process.env.KICK_USER_ID
+        user_id: process.env.KICK_USER_ID,
+        username: process.env.KICK_USER_NAME,
     },
     aemet: {
         apiKey: process.env.AEMET_API_KEY
