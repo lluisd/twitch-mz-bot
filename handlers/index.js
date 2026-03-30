@@ -5,7 +5,7 @@ const Birthday = require('./birthday')
 const TempsDeFlors = require('./tempsDeFlors')
 const Ban = require('./ban')
 const Events = require('./events')
-const OpenAI = require('./openAI')
+const openAI = require('./openAI')
 const Kick = require('./kick')
 
 module.exports = {
@@ -16,6 +16,6 @@ module.exports = {
     tempsDeFlors: new TempsDeFlors(),
     ban: new Ban(),
     events: new Events(),
-    openAI: new OpenAI(),
+    openAI: openAI,
     kick: new Kick()
 }

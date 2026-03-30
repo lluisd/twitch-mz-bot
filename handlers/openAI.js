@@ -246,4 +246,4 @@ class OpenAI {
     }
 }
 
-module.exports = OpenAI
+module.exports = new OpenAI()

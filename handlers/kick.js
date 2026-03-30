@@ -6,9 +6,9 @@ const TwitchService = require("../services/twitch")
 const Logger = require("../services/logger")
 const moment = require('moment')
 require('moment-precise-range-plugin')
-const handlers = require("./index");
 const InputParser = require('../lib/inputParser')
 const inputParser = new InputParser()
+const openAIHandler = require('./openAI')
 const kickUrl = 'https://kick.com/'
 
 class Kick {
@@ -79,13 +79,13 @@ class Kick {
             }
 
             if (textSplit.length > 1 && inputParser.isAskingOpenAI(textSplit[0]) && this._isNotCooldown('openai', 15)) {
-                return await handlers.openAI.askOpenAI(null, textSplit.slice(1).join(' '), username, kickBot)
+                return await openAIHandler.askOpenAI(null, textSplit.slice(1).join(' '), username, kickBot)
             }
 
             if (textSplit.length > 1 && inputParser.isAskingBotOpenAI(text) && this._isNotCooldown('openai', 15)) {
                 const regex = new RegExp(`@?${config.kick.username}`, 'gi')
                 const textWithoutMention = text.replace(regex, '').trim()
-                return await handlers.openAI.askOpenAI(null, textWithoutMention, username, kickBot)
+                return await openAIHandler.askOpenAI(null, textWithoutMention, username, kickBot)
             }
 
         } catch (error) {
