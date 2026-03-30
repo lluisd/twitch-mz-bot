@@ -484,7 +484,7 @@ async function main () {
             }
         })
 
-        await handlers.kick.chat('probando dos')
+        //await handlers.kick.chat('test')
     } catch (err) {
         logger.error("Fatal startup error:", err)
         process.exit(1)

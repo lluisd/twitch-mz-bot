@@ -6,9 +6,18 @@ const TwitchService = require("../services/twitch")
 const Logger = require("../services/logger")
 const moment = require('moment')
 require('moment-precise-range-plugin')
+const handlers = require("./index");
+const InputParser = require('../lib/inputParser')
+const inputParser = new InputParser()
 const kickUrl = 'https://kick.com/'
 
 class Kick {
+    constructor() {
+        this.cooldown = {
+            openai: false
+        }
+    }
+
     async catchStream (telegramBot) {
         try {
             const liveStream = await KickService.getLiveStream()
@@ -59,6 +68,30 @@ class Kick {
         logger.info(`Kick - message from ${message.sender.channel_slug} in #${message.broadcaster.channel_slug}: ${message.content}`)
         if (config.kick.channel === message.sender.channel_slug) return
         await Logger.logChatMessage(config.twitch.roomId, message.sender.channel_slug, message.content, 'kick')
+
+        try {
+            const text = message.content.trim()
+            const textSplit = text.split(' ')
+            const username = message.sender.channel_slug
+
+            const kickBot = {
+                say: async (target, msg) => await KickService.chat(msg)
+            }
+
+            if (textSplit.length > 1 && inputParser.isAskingOpenAI(textSplit[0]) && this._isNotCooldown('openai', 15)) {
+                return await handlers.openAI.askOpenAI(null, textSplit.slice(1).join(' '), username, kickBot)
+            }
+
+            if (textSplit.length > 1 && inputParser.isAskingBotOpenAI(text) && this._isNotCooldown('openai', 15)) {
+                const regex = new RegExp(`@?${config.kick.username}`, 'gi')
+                const textWithoutMention = text.replace(regex, '').trim()
+                return await handlers.openAI.askOpenAI(null, textWithoutMention, username, kickBot)
+            }
+
+        } catch (error) {
+            logger.error(`Error in Kick _chatMessageSent: ${error.message}`)
+            logger.error(error.stack)
+        }
     }
 
     async chat(message) {
@@ -115,6 +148,18 @@ class Kick {
         const link = `[${kickUrl}${stream.slug}](${kickUrl}${stream.slug})`
         const title = `🟢 *¡EN DIRECTO!*`
         return `${image} ${title}  ${link} \n _${stream.stream_title}_ (${duration}) ${stream.viewer_count} espectadores`
+    }
+
+
+    _isNotCooldown(property, seconds = 3) {
+        if (!this.cooldown[property]) {
+            this.cooldown[property] = true
+            setTimeout(() => {
+                this.cooldown[property] = false
+            }, seconds * 1000)
+            return true
+        }
+        return false
     }
 }
 

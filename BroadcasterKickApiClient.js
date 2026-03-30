@@ -36,7 +36,7 @@ class BroadcasterKickApiClient {
         try {
             const apiClient = await this.getApiClient()
             const body = {
-                broadcaster_user_id: config.kick.user_id, // o channel_id si es así
+                broadcaster_user_id: parseInt(config.kick.user_id),
                 content: message,
                 type: "bot"
             };
