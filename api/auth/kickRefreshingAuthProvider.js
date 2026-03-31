@@ -2,6 +2,7 @@ const config = require('../../config')
 const moment = require("moment")
 require('moment/locale/es')
 moment.locale('es')
+const logger = require('../../lib/logger')
 
 class KickRefreshingAuthProvider {
     constructor() {
@@ -11,7 +12,7 @@ class KickRefreshingAuthProvider {
         this.accessToken = null
         this.refreshToken = null
         this.expiresIn = null
-        this.obtainmentTimestamp = null; // en ms
+        this.obtainmentTimestamp = null
 
         this.refreshCallback = null
         this.refreshingPromise = null
@@ -26,6 +27,8 @@ class KickRefreshingAuthProvider {
         this.refreshToken = tokenData.refreshToken
         this.expiresIn = tokenData.expiresIn
         this.obtainmentTimestamp = tokenData.obtainmentTimestamp
+
+        logger.info(`Loading token ${tokenData.accessToken} with refresh token ${tokenData.refreshToken}`)
     }
 
     isExpired() {
@@ -74,6 +77,8 @@ class KickRefreshingAuthProvider {
         this.refreshToken = data.refresh_token ?? this.refreshToken
         this.expiresIn = data.expires_in
         this.obtainmentTimestamp = moment().valueOf()
+
+        logger.info(`Refreshing token ${data.access_token} with refresh token ${data.access_token}`)
 
         if (this.refreshCallback) {
             await this.refreshCallback({
