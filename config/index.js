@@ -62,8 +62,8 @@ module.exports = {
         url: process.env.QDRANT_URL,
         collection: process.env.QDRANT_COLLECTION,
         embeddingSize: process.env.QDRANT_EMBEDDING_SIZE,
-        threshold: process.env.QDRANT_THRESHOLD,
-        limit: process.env.QDRANT_LIMIT
+        threshold: parseFloat(process.env.QDRANT_THRESHOLD) || 0.5,
+        limit: parseInt(process.env.QDRANT_LIMIT) || 8
     },
     whisper: {
         endpoint: process.env.WHISPER_ENDPOINT,
