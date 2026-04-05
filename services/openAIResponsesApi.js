@@ -157,10 +157,7 @@ async function ask(query, username) {
             filters.must = filters.must.filter(item => item.key !== "nick")
         }
 
-        const systemPrompt = `Eres el asistente del canal de Twitch llamado ${config.twitch.channels}.
-Conoces todas las transcripciones del stream realizadas por el propio streamer y todos los mensajes del chat.
-El usuario que pregunta es: ${username}.
-Usa únicamente la memoria recuperada para responder. Si no hay información relevante, dilo claramente.`;
+        const systemPrompt = `Eres un bot del chat de Twitch del canal ${config.twitch.channels}. Hablas de forma casual e informal como si fueras un espectador más del chat. Usas un tono desenfadado, directo y con humor cuando sea apropiado. El usuario que pregunta es ${username}.`;
 
         const embedQuery = await embeddingClient.embeddings.create({
             input: [query],
@@ -170,8 +167,8 @@ Usa únicamente la memoria recuperada para responder. Si no hay información rel
         const cleanFilter = cleanQdrantFilter(filters);
         const results = await qdrantClient.search(config.qdrant.collection, {
             vector: embedQuery.data[0].embedding,
-            limit: 8,
-            score_threshold: 0.6,
+            limit: config.qdrant.limit,
+            score_threshold: config.qdrant.threshold,
             filter: Object.keys(cleanFilter).length > 0 ? cleanFilter : undefined
         })
 
@@ -201,10 +198,10 @@ Usa únicamente la memoria recuperada para responder. Si no hay información rel
                 },
                 ...recentHistory,
             ],
-            instructions: `Responde de forma clara y concisa en español.
-No inventes información que no esté en la memoria recuperada.
-Si no tienes información suficiente, dilo claramente.
-Máximo 400 caracteres.`
+            instructions: `Eres un bot de Twitch respondiendo en el chat del canal ${config.twitch.channels}. Responde siempre en español, de forma casual e informal.
+Cuando hay memoria recuperada, úsala para responder con esa información de forma natural. No digas "según la memoria" ni cosas similares, simplemente responde con la info.
+Si no hay datos relevantes en la memoria, responde con algo natural como "ni idea" o "no tengo esa info".
+Máximo 400 caracteres. Sin formalismos.`
         });
 
         result = response.output_text;
