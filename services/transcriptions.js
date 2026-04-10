@@ -45,7 +45,7 @@ async function deleteFiles (fileNames) {
 
 async function getFiles() {
     const streamFiles = path.join(__dirname, '..', 'azure')
-    const pattern = /whisper-live(?:-(twitch|kick))?(\d{8})-(\d{6})\.json/
+    const pattern = /whisper-live(?:-(twitch|kick)-)?(\d{8})-(\d{6})\.json/
     let fileNames = []
     let jsons = {}
 
