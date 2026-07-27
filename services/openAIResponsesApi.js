@@ -1,68 +1,51 @@
 const config = require('../config/index');
 const moment = require("moment");
-const Instructor = require("@instructor-ai/instructor").default
 
 require('moment/locale/es')
 moment.locale('es')
 const logger = require('../lib/logger')
 const openAIApiClient = require('../openAIApiClient')
 const qdrantApiClient = require("../qdrantApiClient");
-const { FilterSchema } = require("./qdrant.filter.schema");
 const dbManager = require("../helpers/dbmanager");
 const Fuse = require('fuse.js');
+
+// JSON Schema nativo (structured outputs) usado para extraer la intención
+// de búsqueda: el modelo solo clasifica, no construye el DSL de Qdrant.
+const QUERY_INTENT_JSON_SCHEMA = {
+    type: "object",
+    properties: {
+        type: { type: ["string", "null"], enum: ["chat", "stream", null] },
+        nick: { type: ["string", "null"] },
+        date_from: { type: ["string", "null"] },
+        date_to: { type: ["string", "null"] }
+    },
+    required: ["type", "nick", "date_from", "date_to"],
+    additionalProperties: false
+}
+
+// Construye el filtro de Qdrant a partir de la intención plana extraída por el LLM.
+function buildQdrantFilter(intent) {
+    const must = []
+
+    if (intent.type) {
+        must.push({ key: 'type', match: { value: intent.type } })
+    }
+    if (intent.nick) {
+        must.push({ key: 'nick', match: { value: intent.nick } })
+    }
+    if (intent.date_from || intent.date_to) {
+        const range = {}
+        if (intent.date_from) range.gte = intent.date_from
+        if (intent.date_to) range.lte = intent.date_to
+        must.push({ key: 'date', range })
+    }
+
+    return must.length > 0 ? { must } : undefined
+}
 
 const qdrantClient = qdrantApiClient.getApiClient()
 const embeddingClient = openAIApiClient.getEmbeddingClient()
 const chatClient = openAIApiClient.getApiClient()
-
-function findFilterByKey(filter, targetKey) {
-    function searchConditions(conditions = []) {
-        for (const condition of conditions) {
-
-            if (condition.key === targetKey) {
-                return condition;
-            }
-
-            if (condition.nested) {
-                const nestedResult = searchConditions(
-                    condition.nested.filter.must ||
-                    condition.nested.filter.should ||
-                    condition.nested.filter.must_not
-                );
-
-                if (nestedResult) return nestedResult;
-            }
-        }
-
-        return null;
-    }
-
-    return (
-        searchConditions(filter.must) ||
-        searchConditions(filter.should) ||
-        searchConditions(filter.must_not) ||
-        null
-    );
-}
-
-const client = Instructor({
-    client: chatClient,
-    mode: "TOOLS"
-})
-
-
-function cleanQdrantFilter(filter) {
-    const allowedKeys = ["must", "should", "must_not"];
-    const cleaned = {};
-
-    for (const key of allowedKeys) {
-        if (filter[key]) {
-            cleaned[key] = filter[key];
-        }
-    }
-
-    return cleaned;
-}
 
 // Per-user conversation history (keyed by username)
 const historyByUser = {}
@@ -96,51 +79,49 @@ async function ask(query, username) {
             .map(([indexName, index]) => `- ${indexName} - ${index.data_type}`)
             .join("\n");
 
-        const content = `<query>${query}</query><indexes>\n${formattedIndexes}`
+        const content = `<query>${query}</query><indexes>\n${formattedIndexes}</indexes>`
         const SYSTEM_PROMPT = `
-            Estás extrayendo filtros de una consulta de texto. Por favor, sigue las siguientes reglas:
-            1. La consulta se proporciona en forma de texto encerrado entre etiquetas <query>.
-            2. Los índices disponibles se encuentran al final del texto en forma de una lista encerrada entre etiquetas <indexes>.
-            3. No puedes usar ningún campo que no esté disponible en los índices.
-            4. Genera un filtro solo si estás seguro de que la intención del usuario coincide con el nombre del campo, a excepción de "type" que tendrá el valor "chat" cuando se preguntó algo sobre los usuarios del chat o "stream" cuando haga referencia al streamer.
-            5. Intenta adivinar si preguntan por algún usuario para usarlo en el filtro de "nick".
-            6. Los filtros con fecha como "date" deben estar en formato ISO 8601 con zona horaria UTC.
-            7. Ahora mismo es ${moment().tz('Europe/Madrid').format('MMMM Do YYYY, h:mm:ss a')}.
-            8. Si no hay filtros claros, devuelve un objeto vacío.
+            Estás extrayendo la intención de búsqueda de una consulta de texto. Sigue estas reglas:
+            1. La consulta está encerrada entre etiquetas <query>. Los índices disponibles están al final entre <indexes>.
+            2. "type" es "stream" cuando la pregunta trata sobre el streamer: cosas que dijo, hizo, piensa, o datos/atributos suyos (su mascota, su edad, sus gustos, etc). Es "chat" cuando trata sobre usuarios del chat. Usa null si no aplica. Ejemplos:
+               - "¿cómo se llama el perro del streamer?" -> type=stream
+               - "¿qué dijo Fulanito ayer en el chat?" -> type=chat, nick=Fulanito
+               - "resumen de lo que pasó el 3 de marzo" -> type=null
+            3. "nick" es el usuario del chat al que se refiere la pregunta (adivina si hace falta). Usa null si no aplica.
+            4. "date_from"/"date_to" en formato ISO 8601 con zona horaria UTC. Usa null si no aplica.
+            5. Ahora mismo es ${moment().tz('Europe/Madrid').format('MMMM Do YYYY, h:mm:ss a')}.
+            6. Si no estás seguro de un campo, usa null en vez de adivinar.
 `
-        const filters = await client.chat.completions.create({
+        const analysisResponse = await chatClient.responses.create({
             model: config.openAI.model,
-            messages: [
-                {
-                    role: "system",
-                    content: SYSTEM_PROMPT.trim(),
-                },
-                {
-                    role: "user",
-                    content: content
-                }
+            input: [
+                { role: "system", content: SYSTEM_PROMPT.trim() },
+                { role: "user", content: content }
             ],
-            response_model: {
-                schema: FilterSchema,
-                name: "Filter",
+            text: {
+                format: {
+                    type: "json_schema",
+                    name: "query_intent",
+                    strict: true,
+                    schema: QUERY_INTENT_JSON_SCHEMA
+                }
             }
         })
-        logger.info(`Filtros detectados: ${JSON.stringify(filters)}`)
 
-        const filterType = findFilterByKey(filters, 'type')
-        const filterNick = findFilterByKey(filters, 'nick')
+        const intent = JSON.parse(analysisResponse.output_text)
+        logger.info(`Intención de búsqueda detectada: ${JSON.stringify(intent)}`)
 
-        if (filterType && filterType.match.value === 'chat' && filterNick) {
+        if (intent.type === 'chat' && intent.nick) {
             const nicksWithCount = await dbManager.getAllNicks(config.twitch.roomId)
             const nicksObjects = nicksWithCount.map(n => ({
                 nick: n._id.toLowerCase(),
                 count: n.count
             }))
-            const nickQuery = filterNick.match.value.toLowerCase()
+            const nickQuery = intent.nick.toLowerCase()
 
             const exactMatch = nicksObjects.find(n => n.nick === nickQuery)
             if (exactMatch) {
-                filterNick.match.value = exactMatch.nick
+                intent.nick = exactMatch.nick
             } else {
                 const fuse = new Fuse(nicksObjects, { keys: ['nick'], threshold: 0.2, distance: 100, ignoreLocation: true });
                 const possibleNicks = fuse.search(nickQuery)
@@ -149,12 +130,15 @@ async function ask(query, username) {
                         .map(r => ({ ...r.item, fuseScore: r.score }))
                         .sort((a, b) => (a.fuseScore - b.fuseScore) || (b.count - a.count))[0]
 
-                    filterNick.match.value = bestMatch.nick
+                    intent.nick = bestMatch.nick
+                } else {
+                    intent.nick = null
                 }
             }
-            logger.info(`nick resuelto: ${filterNick.match.value}`)
-        } else if (filterType && filterType.match.value === 'stream' && filterNick && filters.must) {
-            filters.must = filters.must.filter(item => item.key !== "nick")
+            logger.info(`nick resuelto: ${intent.nick}`)
+        } else if (intent.type === 'stream') {
+            // Las transcripciones del stream no llevan nick de chat asociado.
+            intent.nick = null
         }
 
         const systemPrompt = `Eres un bot del chat de Twitch del canal ${config.twitch.channels}. Hablas de forma casual e informal como si fueras un espectador más del chat. Usas un tono desenfadado, directo y con humor cuando sea apropiado. El usuario que pregunta es ${username}.`;
@@ -164,12 +148,12 @@ async function ask(query, username) {
             model: config.openAI.embedding.model,
         })
 
-        const cleanFilter = cleanQdrantFilter(filters);
+        const qdrantFilter = buildQdrantFilter(intent)
         const results = await qdrantClient.search(config.qdrant.collection, {
             vector: embedQuery.data[0].embedding,
             limit: config.qdrant.limit,
-            score_threshold: config.qdrant.threshold,
-            filter: Object.keys(cleanFilter).length > 0 ? cleanFilter : undefined
+            //score_threshold: config.qdrant.threshold,
+            filter: qdrantFilter
         })
 
         logger.info(`results encontrados en Qdrant: ${results.length} ${JSON.stringify(results)}`)
