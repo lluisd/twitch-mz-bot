@@ -9,8 +9,13 @@ const qdrantApiClient = require("../qdrantApiClient");
 const dbManager = require("../helpers/dbmanager");
 const Fuse = require('fuse.js');
 
-// JSON Schema nativo (structured outputs) usado para extraer la intención
-// de búsqueda: el modelo solo clasifica, no construye el DSL de Qdrant.
+const qdrantClient = qdrantApiClient.getApiClient()
+const embeddingClient = openAIApiClient.getEmbeddingClient()
+const chatClient = openAIApiClient.getApiClient()
+
+// Per-user conversation history (keyed by username)
+const historyByUser = {}
+const MAX_HISTORY = 10
 const QUERY_INTENT_JSON_SCHEMA = {
     type: "object",
     properties: {
@@ -22,34 +27,6 @@ const QUERY_INTENT_JSON_SCHEMA = {
     required: ["type", "nick", "date_from", "date_to"],
     additionalProperties: false
 }
-
-// Construye el filtro de Qdrant a partir de la intención plana extraída por el LLM.
-function buildQdrantFilter(intent) {
-    const must = []
-
-    if (intent.type) {
-        must.push({ key: 'type', match: { value: intent.type } })
-    }
-    if (intent.nick) {
-        must.push({ key: 'nick', match: { value: intent.nick } })
-    }
-    if (intent.date_from || intent.date_to) {
-        const range = {}
-        if (intent.date_from) range.gte = intent.date_from
-        if (intent.date_to) range.lte = intent.date_to
-        must.push({ key: 'date', range })
-    }
-
-    return must.length > 0 ? { must } : undefined
-}
-
-const qdrantClient = qdrantApiClient.getApiClient()
-const embeddingClient = openAIApiClient.getEmbeddingClient()
-const chatClient = openAIApiClient.getApiClient()
-
-// Per-user conversation history (keyed by username)
-const historyByUser = {}
-const MAX_HISTORY = 10
 
 function getUserHistory(username) {
     if (!historyByUser[username]) {
@@ -152,7 +129,7 @@ async function ask(query, username) {
         const results = await qdrantClient.search(config.qdrant.collection, {
             vector: embedQuery.data[0].embedding,
             limit: config.qdrant.limit,
-            //score_threshold: config.qdrant.threshold,
+            score_threshold: config.qdrant.threshold,
             filter: qdrantFilter
         })
 
@@ -203,6 +180,25 @@ Máximo 400 caracteres. Sin formalismos.`
 
 function cleanAssistantText(text) {
     return text.replaceAll(/【.*?】/g, "")
+}
+
+function buildQdrantFilter(intent) {
+    const must = []
+
+    if (intent.type) {
+        must.push({ key: 'type', match: { value: intent.type } })
+    }
+    if (intent.nick) {
+        must.push({ key: 'nick', match: { value: intent.nick } })
+    }
+    if (intent.date_from || intent.date_to) {
+        const range = {}
+        if (intent.date_from) range.gte = intent.date_from
+        if (intent.date_to) range.lte = intent.date_to
+        must.push({ key: 'date', range })
+    }
+
+    return must.length > 0 ? { must } : undefined
 }
 
 module.exports = {
