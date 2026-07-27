@@ -117,15 +117,17 @@ class OpenAI {
         for (const date in mergedJsons) {
             if (mergedJsons.hasOwnProperty(date)) {
                 const formattedDate = moment(date, 'YYYYMMDD').tz('Europe/Madrid').format('YYYY-MM-DD')
+                const session = JSON.parse(mergedJsons[date])[0]?.session
+
                 let exists = false
                 if (!force) {
-                    exists = await QdrantService.exists(formattedDate, 'stream')
+                    exists = await QdrantService.existsSession(session, 'stream')
                 }
                 if (exists) {
                     logger.info(`Stream for ${formattedDate} already exists in Qdrant, skipping...`)
                     continue
                 }
-                const result = await QdrantService.uploadJsonToQdrant(mergedJsons[date], formattedDate, 'stream')
+                const result = await QdrantService.uploadJsonToQdrant(mergedJsons[date], formattedDate, 'stream', force)
                 if (result.success) {
                     const message = `📼 IA actualizada con el stream de ${formattedDate}`
                     //await twitchBot.say(target, message)

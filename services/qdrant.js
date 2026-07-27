@@ -6,11 +6,12 @@ const logger = require('../lib/logger')
 const qdrantApiClient = require('../qdrantApiClient')
 const openAIApiClient = require('../openAIApiClient')
 const crypto = require('crypto')
+const { buildSparseVector } = require('../helpers/sparseVector')
 
 const qdrantClient = qdrantApiClient.getApiClient()
 const embeddingClient = openAIApiClient.getEmbeddingClient()
 
-async function uploadJsonToQdrant(json, formattedDate, origin) {
+async function uploadJsonToQdrant(json, formattedDate, origin, force = false) {
     try {
         const filename = `${origin}_${formattedDate}.json`
         const data = JSON.parse(json)
@@ -23,7 +24,7 @@ async function uploadJsonToQdrant(json, formattedDate, origin) {
         //     input: firstBatch
         // })
 
-        await _processBatches(origin, data, batchSize, textsToEmbed)
+        await _processBatches(origin, data, batchSize, textsToEmbed, force)
 
         return { success: true, filename: filename }
 
@@ -32,7 +33,7 @@ async function uploadJsonToQdrant(json, formattedDate, origin) {
     }
 }
 
-async function _processBatches(origin, data, batchSize, textsToEmbed) {
+async function _processBatches(origin, data, batchSize, textsToEmbed, force = false) {
    try{
        let totalProcessed = 0
        let vectorSize = null
@@ -51,22 +52,26 @@ async function _processBatches(origin, data, batchSize, textsToEmbed) {
 
            const points = embedding.data.map((item, j) => ({
                id: _generateDeterministicUuid(batchData[j].nick, batchData[j].text, batchData[j].date.replace(/\.\d+Z$/, "Z"), origin),
-               vector: item.embedding,
+               vector: {
+                   "text-dense": item.embedding,
+                   "text-sparse": buildSparseVector(batchData[j].text)
+               },
                payload: {
                    nick: batchData[j].nick,
                    text: batchData[j].text,
                    date: batchData[j].date.replace(/\.\d+Z$/, "Z"),
-                   type: origin
+                   type: origin,
+                   ...(batchData[j].session ? { session: batchData[j].session } : {})
                }
            }));
 
-           const pointsToInsert = await filterNonExistingPoints(points)
-           if (pointsToInsert.length > 0) {
-               await qdrantClient.upsert(config.qdrant.collection, {wait: true, points})
+           const pointsToUpsert = force ? points : await filterNonExistingPoints(points)
+           if (pointsToUpsert.length > 0) {
+               await qdrantClient.upsert(config.qdrant.collection, { wait: true, points: points })
            }
 
            totalProcessed += points.length;
-           logger.info(`→ Uploaded ${pointsToInsert.length} items to Qdrant of ${totalProcessed}/${textsToEmbed.length} process`)
+           logger.info(`→ Uploaded ${pointsToUpsert.length} items to Qdrant of ${totalProcessed}/${textsToEmbed.length} process`)
 
            await new Promise(r => setTimeout(r, 200));
        }
@@ -75,6 +80,24 @@ async function _processBatches(origin, data, batchSize, textsToEmbed) {
        logger.error("Error processing batches: " + e.message)
    }
 
+}
+
+async function existsSession(session, type) {
+    try {
+        const { count } = await qdrantClient.count(config.qdrant.collection, {
+            exact: true,
+            filter: {
+                must: [
+                    { key: "type", match: { value: type } },
+                    { key: "session", match: { value: session } }
+                ]
+            }
+        })
+
+        return count > 0
+    } catch (e) {
+        logger.error(`Error in existsSession() for ${session} - ${type}: ${e.message}`)
+    }
 }
 
 async function exists(date, type) {
@@ -141,12 +164,12 @@ async function createCollection() {
 
         await qdrantClient.createCollection(config.qdrant.collection, {
             vectors: {
-                size: 1536,
-                distance: "Cosine",
+                "text-dense": { size: 1536, distance: "Cosine" }
             },
-            optimizers_config: {
-                default_segment_number: 4,
-            }
+            sparse_vectors: {
+                "text-sparse": { modifier: "idf" }
+            },
+            optimizers_config: { default_segment_number: 4 }
         });
         logger.info(`Collection ${config.qdrant.collection}, created.`);
 
@@ -167,6 +190,13 @@ async function createCollection() {
             field_schema: 'keyword',
             wait: true,
         });
+
+        await qdrantClient.createPayloadIndex(config.qdrant.collection, {
+            field_name: 'session',
+            field_schema: 'keyword',
+            wait: true,
+        });
+
     } catch (error) {
         logger.error(`Error creating collection ${config.qdrant.collection}, created.`);
     }
@@ -196,5 +226,6 @@ function _generateDeterministicUuid(nick, text, date, type) {
 module.exports = {
     uploadJsonToQdrant,
     createCollection,
-    exists
+    exists,
+    existsSession
 }

@@ -8,6 +8,7 @@ const openAIApiClient = require('../openAIApiClient')
 const qdrantApiClient = require("../qdrantApiClient");
 const dbManager = require("../helpers/dbmanager");
 const Fuse = require('fuse.js');
+const { buildSparseVector } = require('../helpers/sparseVector')
 
 const qdrantClient = qdrantApiClient.getApiClient()
 const embeddingClient = openAIApiClient.getEmbeddingClient()
@@ -126,11 +127,18 @@ async function ask(query, username) {
         })
 
         const qdrantFilter = buildQdrantFilter(intent)
-        const results = await qdrantClient.search(config.qdrant.collection, {
-            vector: embedQuery.data[0].embedding,
+        const sparseQuery = buildSparseVector(query)
+        const prefetchLimit = config.qdrant.limit * 3
+
+        const { points: results } = await qdrantClient.query(config.qdrant.collection, {
+            prefetch: [
+                { query: embedQuery.data[0].embedding, using: "text-dense", limit: prefetchLimit, filter: qdrantFilter },
+                { query: sparseQuery, using: "text-sparse", limit: prefetchLimit, filter: qdrantFilter }
+            ],
+            query: { fusion: "rrf" },
             limit: config.qdrant.limit,
-            score_threshold: config.qdrant.threshold,
-            filter: qdrantFilter
+            filter: qdrantFilter,
+            with_payload: true
         })
 
         logger.info(`results encontrados en Qdrant: ${results.length} ${JSON.stringify(results)}`)
@@ -159,10 +167,17 @@ async function ask(query, username) {
                 },
                 ...recentHistory,
             ],
-            instructions: `Eres un bot de Twitch respondiendo en el chat del canal ${config.twitch.channels}. Responde siempre en español, de forma casual e informal.
-Cuando hay memoria recuperada, úsala para responder con esa información de forma natural. No digas "según la memoria" ni cosas similares, simplemente responde con la info.
-Si no hay datos relevantes en la memoria, responde con algo natural como "ni idea" o "no tengo esa info".
-Máximo 400 caracteres. Sin formalismos.`
+            instructions: `Eres un bot del chat de Twitch del canal ${config.twitch.channels}.
+
+Habla SIEMPRE en español, con un tono casual, natural y breve, como si fueras un espectador habitual del chat. No seas excesivamente educado ni uses lenguaje de asistente.
+
+Si se proporciona memoria relevante, intégrala de forma natural en la respuesta. Nunca menciones que proviene de una memoria, contexto o base de datos.
+
+Si la memoria no contiene la respuesta o no es relevante, dilo con naturalidad ("ni idea", "no me suena", "no tengo ese dato", etc.). No inventes información.
+
+Responde únicamente al último mensaje del chat, salvo que el contexto indique claramente lo contrario.
+
+Máximo 400 caracteres. No uses listas, explicaciones largas ni emojis salvo que encajen de forma natural.`
         });
 
         result = response.output_text;

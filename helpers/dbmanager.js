@@ -140,7 +140,7 @@ async function addChatLogLine (roomId, nick, text, date, platform) {
 
 async function getChatLogLines (roomId, startOfDay, endOfDay) {
     return ChatLog
-        .find({roomId: roomId, platform: 'twitch', date: { $gte: startOfDay, $lt: endOfDay }})
+        .find({roomId: roomId, date: { $gte: startOfDay, $lt: endOfDay }}) //platform: 'twitch'
         .select('nick text date -_id').lean()
 }
 
@@ -255,7 +255,7 @@ async function removeUserIdFromChannelWhitelist(roomId, userId) {
 
 async function getAllNicks(roomId) {
     return ChatLog.aggregate([
-        { $match: { roomId: parseInt(roomId), platform: 'twitch' } },
+        { $match: { roomId: parseInt(roomId)} }, //platform: 'twitch'
         { $group: { _id: "$nick", count: { $sum: 1 } } },
         { $sort: { count: -1 } }
     ]);

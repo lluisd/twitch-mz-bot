@@ -9,3 +9,4 @@ public/images/*
 .cache/
 files/*
 merged/*
+azure/*

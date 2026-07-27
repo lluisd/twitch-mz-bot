@@ -59,6 +59,7 @@ async function getFiles() {
             const platform = match[1] // 'twitch' or 'kick' or undefined
             const date = match[2] // '20241109'
             const time = match[3] // '143907'
+            const session = file.replace(/\.json$/, '') // 'whisper-live-kick-20260604-213400'
 
             const datetimeStr = `${date}-${time}`
             const dateTime = moment(datetimeStr, 'YYYYMMDD-HHmmss', 'Europe/Madrid').toISOString()
@@ -71,7 +72,8 @@ async function getFiles() {
             jsons[date] = jsons[date] || {}
             jsons[date][time] = {
                 segments: segments,
-                dateTime: dateTime
+                dateTime: dateTime,
+                session: session
             };
         }
 
@@ -82,13 +84,15 @@ async function getFiles() {
                 const sortedTimes = Object.keys(jsons[date]).sort((a, b) => Number(a) - Number(b))
                 let mergedSegments = []
                 for (const time of sortedTimes) {
+                    const session = jsons[date][time].session
                     const chunks = buildHybridChunks(jsons[date][time].segments, jsons[date][time].dateTime)
                     //const chunks = addOverlap(chunks, 0.15)
 
                     const segments = chunks.map(segment => ({
                         nick: config.twitch.channels,
                         text: segment.text.trimStart(),
-                        date: segment.startTimeAbsolute
+                        date: segment.startTimeAbsolute,
+                        session: session
                     }))
 
                     mergedSegments = mergedSegments.concat(segments)
