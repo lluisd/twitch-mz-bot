@@ -15,6 +15,8 @@ const basicAuth = require('./middleware/basicAuth')
 const ImmuneService = require('./services/immune')
 const { transcribeSemaphore, mergeTranscriptionsSemaphore} = require("./semaphore.js")
 const OpenAIResponsesApiService = require('./services/openAIResponsesApi')
+const { verifyKickSignature } = require('./helpers/kickWebhook')
+
 async function main () {
     try {
         await mongoose.connect(config.database.uri, {
@@ -259,7 +261,7 @@ async function main () {
 
         app.get('/test', async (req, res, next) => {
             try {
-                await OpenAIResponsesApiService.test();
+                //await OpenAIResponsesApiService.ask("");
             } catch (error) {
                 next(error)
             }
@@ -455,14 +457,21 @@ async function main () {
             res.status(500).json({message: "Server error."});
         })
 
-        app.post('/kickWebhook', express.json(), async (req, res, next) => {
+        app.post('/kickWebhook', express.json({
+            verify: (req, res, buf) => { req.rawBody = buf.toString() }
+        }), async (req, res, next) => {
             try {
-                const eventType = req.headers["kick-event-type"]
-                const eventVersion = req.headers["kick-event-version"]
+                const messageId = req.headers['kick-event-message-id']
+                const timestamp = req.headers['kick-event-message-timestamp']
+                const signature = req.headers['kick-event-signature']
+                const eventType = req.headers['kick-event-type']
 
-                const payload = req.body
+                if (!verifyKickSignature(messageId, timestamp, req.rawBody, signature)) {
+                    logger.warn('[Kick] Webhook signature inválida, request rechazada')
+                    return res.status(401).send('Invalid signature')
+                }
 
-                await handlers.kick.webhookHandler(eventType, payload, telegramBot)
+                await handlers.kick.webhookHandler(eventType, req.body, telegramBot)
                 res.status(200).send('OK')
             } catch (error) {
                 next(error)

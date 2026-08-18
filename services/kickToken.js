@@ -48,7 +48,6 @@ async function getKickToken() {
             accessToken = data.access_token
             expiresAt = moment()
                 .add(data.expires_in, 'seconds')
-                .subtract(2, 'days')
 
             return accessToken
         } catch (err) {

@@ -78,7 +78,7 @@ class KickRefreshingAuthProvider {
         this.expiresIn = data.expires_in
         this.obtainmentTimestamp = moment().valueOf()
 
-        logger.info(`Refreshing token ${data.access_token} with refresh token ${data.access_token}`)
+        logger.info(`Refreshing token ${data.access_token} with refresh token ${data.refresh_token}`)
 
         if (this.refreshCallback) {
             await this.refreshCallback({

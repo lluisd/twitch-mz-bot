@@ -48,7 +48,10 @@ class Kick {
 
     async webhookHandler(eventType, payload, telegramBot) {
         try {
-            if (!config.kick.enabled) return
+            if (!config.kick.enabled) {
+                logger.debug('Kick webhook received but Kick is disabled in config.')
+                return
+            }
             switch (eventType) {
                 case 'livestream.status.updated':
                     await this._liveStreamStatusUpdated(payload, telegramBot)

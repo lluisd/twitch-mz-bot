@@ -4,7 +4,7 @@ const { getKickToken, invalidateKickToken } = require('./kickToken')
 const broadcasterKickApiClient = require('../BroadcasterKickApiClient')
 
 
-const endpointPrefix = 'https://api.kick.com/public/v1/'
+const endpointPrefix = 'https://api.kick.com/public/v2/'
 
 async function getLiveStream() {
     try {
