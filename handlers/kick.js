@@ -59,12 +59,24 @@ class Kick {
                 case 'chat.message.sent':
                     await this._chatMessageSent(payload)
                     break
+                case 'channel.reward.redemption.updated':
+                    await this.rewardRedemptionHandler(payload)
+                    break
                 default:
                     logger.warn(`Unhandled Kick event type: ${eventType}`)
             }
         } catch (error) {
             logger.error('Kick webhook error:', error)
         }
+    }
+
+    async rewardRedemptionHandler(payload) {
+        const redeemer = payload?.redeemer?.username ?? 'unknown'
+        const rewardTitle = payload?.reward?.title ?? 'unknown reward'
+        const message = `${redeemer} ha canjeado ${rewardTitle}`
+
+        logger.info(`Kick - reward redemption updated: ${message}`)
+        await KickService.chat(message)
     }
 
     async _chatMessageSent(message) {
@@ -167,5 +179,4 @@ class Kick {
 }
 
 module.exports = Kick
-
 
