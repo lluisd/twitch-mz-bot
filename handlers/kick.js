@@ -57,7 +57,7 @@ class Kick {
                     await this._liveStreamStatusUpdated(payload, telegramBot)
                     break
                 case 'chat.message.sent':
-                    // await this._chatMessageSent(payload)
+                    await this._chatMessageSent(payload)
                     break
                 case 'channel.reward.redemption.updated':
                     // await this.rewardRedemptionHandler(payload)
@@ -84,29 +84,29 @@ class Kick {
         if (config.kick.channel === message.sender.channel_slug) return
         await Logger.logChatMessage(config.twitch.roomId, message.sender.channel_slug, message.content, 'kick')
 
-        try {
-            const text = message.content.trim()
-            const textSplit = text.split(' ')
-            const username = message.sender.channel_slug
-
-            const kickBot = {
-                say: async (target, msg) => await KickService.chat(msg)
-            }
-
-            if (textSplit.length > 1 && inputParser.isAskingOpenAI(textSplit[0]) && this._isNotCooldown('openai', 15)) {
-                return await openAIHandler.askOpenAI(null, textSplit.slice(1).join(' '), username, kickBot)
-            }
-
-            if (textSplit.length > 1 && inputParser.isAskingBotOpenAI(text) && this._isNotCooldown('openai', 15)) {
-                const regex = new RegExp(`@?${config.kick.username}`, 'gi')
-                const textWithoutMention = text.replace(regex, '').trim()
-                return await openAIHandler.askOpenAI(null, textWithoutMention, username, kickBot)
-            }
-
-        } catch (error) {
-            logger.error(`Error in Kick _chatMessageSent: ${error.message}`)
-            logger.error(error.stack)
-        }
+        // try {
+        //     const text = message.content.trim()
+        //     const textSplit = text.split(' ')
+        //     const username = message.sender.channel_slug
+        //
+        //     const kickBot = {
+        //         say: async (target, msg) => await KickService.chat(msg)
+        //     }
+        //
+        //     if (textSplit.length > 1 && inputParser.isAskingOpenAI(textSplit[0]) && this._isNotCooldown('openai', 15)) {
+        //         return await openAIHandler.askOpenAI(null, textSplit.slice(1).join(' '), username, kickBot)
+        //     }
+        //
+        //     if (textSplit.length > 1 && inputParser.isAskingBotOpenAI(text) && this._isNotCooldown('openai', 15)) {
+        //         const regex = new RegExp(`@?${config.kick.username}`, 'gi')
+        //         const textWithoutMention = text.replace(regex, '').trim()
+        //         return await openAIHandler.askOpenAI(null, textWithoutMention, username, kickBot)
+        //     }
+        //
+        // } catch (error) {
+        //     logger.error(`Error in Kick _chatMessageSent: ${error.message}`)
+        //     logger.error(error.stack)
+        // }
     }
 
     async chat(message) {
