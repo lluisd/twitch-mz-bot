@@ -4,14 +4,14 @@ const { getKickToken, invalidateKickToken } = require('./kickToken')
 const broadcasterKickApiClient = require('../BroadcasterKickApiClient')
 
 
-const endpointPrefix = 'https://api.kick.com/public/v2/'
+const endpointPrefix = 'https://api.kick.com/public/v1/'
 
 async function getLiveStream() {
     try {
         let options = await _getHeaders()
         options.method = 'GET'
-        const url = new URL(endpointPrefix + 'livestreams')
-        url.searchParams.append('broadcaster_user_id', config.kick.user_id)
+        const url = new URL(endpointPrefix + 'users/livestreams')
+        url.searchParams.append('user_id', config.kick.user_id)
 
         const response = await fetch(url, options)
 

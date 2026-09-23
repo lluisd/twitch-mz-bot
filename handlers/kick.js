@@ -57,10 +57,10 @@ class Kick {
                     await this._liveStreamStatusUpdated(payload, telegramBot)
                     break
                 case 'chat.message.sent':
-                    await this._chatMessageSent(payload)
+                    // await this._chatMessageSent(payload)
                     break
                 case 'channel.reward.redemption.updated':
-                    await this.rewardRedemptionHandler(payload)
+                    // await this.rewardRedemptionHandler(payload)
                     break
                 default:
                     logger.warn(`Unhandled Kick event type: ${eventType}`)
@@ -134,6 +134,8 @@ class Kick {
                 if (channel && channel.lastMessageId) {
                     await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: channel.lastMessageId}).catch((err) => { logger.error(`cannot unpin kick stream live on telegram message: ${err}`)})
                     await telegramBot.deleteMessage(config.telegram.chatId, channel.lastMessageId).catch((err) => { logger.error(`cannot delete message: ${err}`)})
+                } else {
+                    logger.error(`No lastMessageId found for Kick stream: channel ${channel} and lastMessageId ${channel?.lastMessageId}`)
                 }
                 await TwitchService.setChannelLive(false)
                 await TwitchService.saveLastMessage({ message_id: null})
