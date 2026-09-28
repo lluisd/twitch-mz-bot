@@ -13,6 +13,8 @@ async function getLiveStream() {
         const url = new URL(endpointPrefix + 'users/livestreams')
         url.searchParams.append('user_id', config.kick.user_id)
 
+        logger.log(`[Kick] Fetching live stream for user_id ${config.kick.user_id}... with url: ${url.toString()}`)
+
         const response = await fetch(url, options)
 
         if (response.status === 401) {
@@ -25,6 +27,7 @@ async function getLiveStream() {
             throw new Error(`Kick API error ${response.status}: ${text}`)
         }
 
+        logger.log(`[Kick] Live stream fetched successfully for user_id ${config.kick.user_id} with response: ${await response.clone().text()}`)
         return await response.json()
 
     } catch (err) {
