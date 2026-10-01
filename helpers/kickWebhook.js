@@ -1,24 +1,71 @@
 const crypto = require('crypto')
 
-const KICK_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq/+l1WnlRrGSolDMA+A8
-6rAhMbQGmQ2SapVcGM3zq8ANXjnhDWocMqfWcTd95btDydITa10kDvHzw9WQOqp2
-MZI7ZyrfzJuz5nhTPCiJwTwnEtWft7nV14BYRDHvlfqPUaZ+1KR4OCaO/wWIk/rQ
-L/TjY0M70gse8rlBkbo2a8rKhu69RQTRsoaf4DVhDPEeSeI5jVrRDGAMGL3cGuyY
-6CLKGdjVEM78g3JfYOvDU/RvfqD7L89TZ3iN94jrmWdGz34JNlEI5hqK8dd7C5EF
-BEbZ5jgB8s8ReQV8H+MkuffjdAj3ajDDX3DOJMIut1lBrUVD1AaSrGCKHooWoL2e
-twIDAQAB
------END PUBLIC KEY-----`
+const KICK_PUBLIC_KEY_URL = 'https://api.kick.com/public/v1/public-key'
+let cachedPublicKey
+let publicKeyFetch
 
-function verifyKickSignature(messageId, timestamp, rawBody, signature) {
+async function fetchKickPublicKey() {
+    const response = await fetch(KICK_PUBLIC_KEY_URL)
+    if (!response.ok) {
+        throw new Error(`Kick public key request failed: ${response.status}`)
+    }
+
+    const payload = await response.json()
+    const publicKey = payload?.data?.public_key
+    if (typeof publicKey !== 'string') {
+        throw new Error('Kick public key response did not include a public key')
+    }
+
+    const parsedKey = crypto.createPublicKey(publicKey)
+    if (parsedKey.asymmetricKeyType !== 'rsa') {
+        throw new Error('Kick public key is not an RSA key')
+    }
+
+    return publicKey
+}
+
+async function getKickPublicKey(refresh = false) {
+    if (cachedPublicKey && !refresh) {
+        return cachedPublicKey
+    }
+
+    if (!publicKeyFetch) {
+        publicKeyFetch = fetchKickPublicKey()
+            .then(publicKey => {
+                cachedPublicKey = publicKey
+                return publicKey
+            })
+            .finally(() => {
+                publicKeyFetch = undefined
+            })
+    }
+
+    return publicKeyFetch
+}
+
+function signatureMatches(message, signature, publicKey) {
     try {
-        const message = `${messageId}.${timestamp}.${rawBody}`
         const verify = crypto.createVerify('SHA256')
         verify.update(message)
-        return verify.verify(KICK_PUBLIC_KEY, signature, 'base64')
+        return verify.verify(publicKey, signature, 'base64')
     } catch {
         return false
     }
+}
+
+async function verifyKickSignature(messageId, timestamp, rawBody, signature) {
+    if ([messageId, timestamp, rawBody, signature].some(value => typeof value !== 'string')) {
+        return false
+    }
+
+    const message = `${messageId}.${timestamp}.${rawBody}`
+    const publicKey = await getKickPublicKey()
+    if (signatureMatches(message, signature, publicKey)) {
+        return true
+    }
+
+    const refreshedPublicKey = await getKickPublicKey(true)
+    return signatureMatches(message, signature, refreshedPublicKey)
 }
 
 module.exports = { verifyKickSignature }

@@ -466,7 +466,7 @@ async function main () {
                 const signature = req.headers['kick-event-signature']
                 const eventType = req.headers['kick-event-type']
 
-                if (!verifyKickSignature(messageId, timestamp, req.rawBody, signature)) {
+                if (!await verifyKickSignature(messageId, timestamp, req.rawBody, signature)) {
                     logger.warn('[Kick] Webhook signature inválida, request rechazada')
                     return res.status(401).send('Invalid signature')
                 }
@@ -501,7 +501,6 @@ async function main () {
 }
 
 main()
-
 
 
 
