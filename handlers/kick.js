@@ -29,7 +29,6 @@ class Kick {
                     logger.debug(`Stream ${config.kick.channel} in Kick continues live`)
                     if (!channel.live) {
                         await TwitchService.setChannelLive(true)
-                        await WhisperService.start()
                     }
 
                     const options = {
@@ -37,12 +36,19 @@ class Kick {
                         message_id: channel.lastMessageId,
                         parse_mode: 'Markdown'
                     }
-                    await telegramBot.editMessageText(this._getTextFromLiveStream(stream), options)
-                        .catch((err) => { logger.error(`cannot edit message: ${err}`)})
+
+                    await telegramBot
+                        .editMessageText(
+                            this._getTextFromLiveStream(stream),
+                            options
+                        )
+                        .catch((err) => {
+                            logger.error(`cannot edit message: ${err}`)
+                        })
                 }
             }
         } catch (e) {
-            logger.error("catch kick stream error:", error)
+            logger.error(`catch kick stream error: ${e.message}`)
         }
     }
 
@@ -124,12 +130,14 @@ class Kick {
 
             if (stream.is_live) {
                 logger.debug(`Stream ${username} in Kick has started!`)
+                await WhisperService.start()
                 const text = this._getTextFromWebhook(stream)
                 const msg = await telegramBot.sendMessage(config.telegram.chatId, text, options)
                 await telegramBot.pinChatMessage(config.telegram.chatId, msg.message_id).catch((err) => { logger.error(`cannot pin kick stream live on telegram message: ${err}`)})
                 await TwitchService.saveLastMessage(msg)
             } else {
                 logger.debug(`Stream ${username} in Kick has ended!`)
+                await WhisperService.stop()
                 const channel = await TwitchService.getChannel()
                 if (channel && channel.lastMessageId) {
                     await telegramBot.unpinChatMessage(config.telegram.chatId, {message_id: channel.lastMessageId}).catch((err) => { logger.error(`cannot unpin kick stream live on telegram message: ${err}`)})
@@ -139,7 +147,6 @@ class Kick {
                 }
                 await TwitchService.setChannelLive(false)
                 await TwitchService.saveLastMessage({ message_id: null})
-                await WhisperService.stop()
             }
 
         } catch (error) {
@@ -158,13 +165,23 @@ class Kick {
         const end = moment()
         const start = moment(stream.started_at)
         const diff = moment.preciseDiff(start, end, true)
+
         const horas = diff.hours > 0 ? `${diff.hours} horas ` : ''
         const duration = `${horas}${diff.minutes} minutos`
 
-        const image = `[\u200c](${stream.thumbnail}?a=${Date.now()})`
-        const link = `[${kickUrl}${stream.channel.slug}](${kickUrl}${stream.channel.slug})`
-        const title = `🟢 *¡EN DIRECTO!*`
-        return `${image} ${title}  ${link} \n _${stream.title}_ (${duration}) ${stream.viewer_count} espectadores`
+        const separator = stream.thumbnail.includes('?') ? '&' : '?'
+        const thumbnail = `${stream.thumbnail}${separator}a=${Date.now()}`
+        const image = `[\u200c](${thumbnail})`
+
+
+        const channelUrl = `${kickUrl}${stream.channel.slug}`
+        const link = `[${channelUrl}](${channelUrl})`
+
+        const title = '🟢 *¡EN DIRECTO!*'
+
+        const streamTitle = this._escapeMarkdown(stream.title)
+
+        return `${image} ${title}  ${link} \n _${streamTitle}_ (${duration}) ${stream.viewer_count} espectadores`
     }
 
 
@@ -177,6 +194,11 @@ class Kick {
             return true
         }
         return false
+    }
+
+    _escapeMarkdown(text) {
+        return String(text)
+            .replace(/([_*[\]])/g, '\\$1')
     }
 }
 
