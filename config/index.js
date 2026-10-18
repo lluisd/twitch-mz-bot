@@ -26,6 +26,12 @@ module.exports = {
     aemet: {
         apiKey: process.env.AEMET_API_KEY
     },
+    listmonk: {
+        url: process.env.LISTMONK_URL,
+        apiUser: process.env.LISTMONK_API_USER,
+        apiToken: process.env.LISTMONK_API_TOKEN,
+        publicUrl: process.env.LISTMONK_PUBLIC_URL || 'https://manza.news'
+    },
     telegram: {
         apiKey: process.env.TELEGRAM_TOKEN,
         chatId: process.env.TELEGRAM_CHAT_ID

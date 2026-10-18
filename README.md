@@ -19,6 +19,14 @@ Authentication `Basic Auth`, JSON body:
 
 Responses: `200` sent, `400` invalid `totalSubs`, `401/403` bad credentials, `503` Kick disabled.
 
+## Newsletter command (Kick)
+
+- `!newsletter` → link to the newsletter (`LISTMONK_PUBLIC_URL`, default `https://manza.news`).
+- `!newsletter N` → archive link of the N-th published campaign (oldest first), e.g. `https://manza.news/archive/{archive_slug}`.
+  Only campaigns with status `finished` and archive enabled are counted.
+
+Environment variables: `LISTMONK_URL` (Listmonk base URL for the API), `LISTMONK_API_USER`, `LISTMONK_API_TOKEN`, `LISTMONK_PUBLIC_URL`.
+
 ## environment variables
 
 ```javascript

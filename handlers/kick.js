@@ -2,6 +2,7 @@ const logger = require('../lib/logger')
 const WhisperService = require("../services/whisper")
 const config = require("../config")
 const KickService = require("../services/kick")
+const ListmonkService = require("../services/listmonk")
 const TwitchService = require("../services/twitch")
 const Logger = require("../services/logger")
 const moment = require('moment')
@@ -90,6 +91,11 @@ class Kick {
         if (config.kick.channel === message.sender.channel_slug) return
         await Logger.logChatMessage(config.twitch.roomId, message.sender.channel_slug, message.content, 'kick')
 
+        const content = message.content?.trim() ?? ''
+        if (inputParser.isAskingForNewsletter(content) && this._isNotCooldown('newsletter', 15)) {
+            await KickService.chat(await this._getNewsletterReply(content.split(/\s+/)[1]))
+        }
+
         // try {
         //     const text = message.content.trim()
         //     const textSplit = text.split(' ')
@@ -117,6 +123,27 @@ class Kick {
 
     async chat(message) {
         await KickService.chat(message)
+    }
+
+    async _getNewsletterReply(arg) {
+        const baseReply = `📰 Newsletter: ${ListmonkService.getPublicUrl()}`
+        if (arg === undefined) return baseReply
+
+        let campaigns
+        try {
+            campaigns = await ListmonkService.getArchivedCampaigns()
+        } catch (error) {
+            logger.error(`Newsletter - Listmonk error: ${error.message}`)
+            return baseReply
+        }
+
+        const position = /^\d+$/.test(arg) ? Number(arg) : NaN
+        if (!Number.isInteger(position) || position < 1 || position > campaigns.length) {
+            return `Solo hay ${campaigns.length} newsletters publicadas`
+        }
+
+        const campaign = campaigns[position - 1]
+        return `📰 #${position} ${campaign.subject}: ${ListmonkService.getArchiveUrl(campaign)}`
     }
 
     async newsletterSubscriber({ name, totalSubs }) {
