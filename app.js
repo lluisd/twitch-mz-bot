@@ -450,6 +450,24 @@ async function main () {
             }
         })
 
+        app.post('/newsletterWebhook', express.json(), basicAuth, async (req, res, next) => {
+            try {
+                const { name, totalSubs } = req.body ?? {}
+                const total = Number(totalSubs)
+                if (!Number.isInteger(total) || total < 1) {
+                    return res.status(400).json({ error: 'totalSubs must be a positive integer' })
+                }
+
+                const sent = await handlers.kick.newsletterSubscriber({ name, totalSubs: total })
+                if (!sent) {
+                    return res.status(503).json({ error: 'Kick is disabled' })
+                }
+                res.json({ status: 'success' })
+            } catch (error) {
+                next(error)
+            }
+        })
+
         app.use('/images', express.static('images'));
 
         app.use((err, req, res, next) => {
@@ -501,7 +519,3 @@ async function main () {
 }
 
 main()
-
-
-
-

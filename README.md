@@ -4,6 +4,21 @@ A twitch chatbot to get specific information about weather predictions, take scr
 
 Bot status: https://mz-status.311312.xyz/
 
+## Newsletter subscriber webhook
+
+`POST /newsletterWebhook` (Basic Auth with `BASIC_AUTH_USERNAME`/`BASIC_AUTH_PASSWORD`) announces a new
+Listmonk subscriber in Kick chat: "¡Tenemos un nuevo suscriptor a la newsletter! ¡Ya somos {totalSubs} suscriptores!".
+The email and name are never posted to chat.
+
+In n8n use an HTTP Request node: method `POST`, URL `{EXTERNAL_URL}/newsletterWebhook`,
+Authentication `Basic Auth`, JSON body:
+
+```json
+{ "email": "user@example.com", "name": "User", "totalSubs": 22 }
+```
+
+Responses: `200` sent, `400` invalid `totalSubs`, `401/403` bad credentials, `503` Kick disabled.
+
 ## environment variables
 
 ```javascript

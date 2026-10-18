@@ -119,6 +119,17 @@ class Kick {
         await KickService.chat(message)
     }
 
+    async newsletterSubscriber({ name, totalSubs }) {
+        if (!config.kick.enabled) {
+            logger.debug('Newsletter subscriber received but Kick is disabled in config.')
+            return false
+        }
+
+        logger.info(`Newsletter - new subscriber ${name ?? ''} (total: ${totalSubs})`)
+        await KickService.chat(`Nuevo sub en la newsletter. Ya somos ${totalSubs}`)
+        return true
+    }
+
     async _liveStreamStatusUpdated(stream, telegramBot) {
         if (!config.twitch.enabled && !stream || typeof stream.is_live !== 'boolean') {
             logger.warn('Invalid kick stream payload received:', stream)
