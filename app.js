@@ -455,7 +455,7 @@ async function main () {
             }
         })
 
-        app.post('/newsletterWebhook', express.json(), basicAuth, async (req, res, next) => {
+        app.post('/webhooks/newsletter', express.json(), basicAuth, async (req, res, next) => {
             try {
                 const { name, totalSubs } = req.body ?? {}
                 const total = Number(totalSubs)
@@ -480,7 +480,7 @@ async function main () {
             res.status(500).json({message: "Server error."});
         })
 
-        app.post('/kickWebhook', express.json({
+        app.post('/webhooks/kick', express.json({
             verify: (req, res, buf) => { req.rawBody = buf.toString() }
         }), async (req, res, next) => {
             try {
