@@ -480,7 +480,13 @@ async function main () {
             res.status(500).json({message: "Server error."});
         })
 
-        app.post('/webhooks/kick', express.json({
+        app.post(['/webhooks/kick', '/kickWebhook'], (req, res, next) => {
+            logger.info('[Kick] Webhook received', {
+                path: req.path,
+                eventType: req.headers['kick-event-type'] ?? null
+            })
+            next()
+        }, express.json({
             verify: (req, res, buf) => { req.rawBody = buf.toString() }
         }), async (req, res, next) => {
             try {
