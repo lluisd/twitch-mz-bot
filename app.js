@@ -16,12 +16,17 @@ const ImmuneService = require('./services/immune')
 const { transcribeSemaphore, mergeTranscriptionsSemaphore} = require("./semaphore.js")
 const OpenAIResponsesApiService = require('./services/openAIResponsesApi')
 const { verifyKickSignature } = require('./helpers/kickWebhook')
+const broadcasterKickApiClient = require('./BroadcasterKickApiClient')
 
 async function main () {
     try {
         await mongoose.connect(config.database.uri, {
             dbName: config.database.dbName,
         })
+
+        if (config.kick.enabled) {
+            await broadcasterKickApiClient.refreshAccessToken()
+        }
 
         let twitchBot = null
         let telegramBot = null

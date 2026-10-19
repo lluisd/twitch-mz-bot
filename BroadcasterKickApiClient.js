@@ -17,9 +17,15 @@ class BroadcasterKickApiClient {
             })
 
             const tokenData = await TokenService.getToken(config.kick.user_id)
+            if (!tokenData || !tokenData.refreshToken) {
+                throw new Error('Kick broadcaster refresh token is missing; authorize the broadcaster before starting')
+            }
 
             authProvider.onRefresh(async (newTokenData) => {
-                await TokenService.updateToken(config.kick.user_id, newTokenData)
+                const result = await TokenService.updateToken(config.kick.user_id, newTokenData)
+                if (!result.acknowledged || result.matchedCount !== 1) {
+                    throw new Error('Kick broadcaster token could not be saved')
+                }
             })
 
             await authProvider.addUserForToken(tokenData)
@@ -30,6 +36,11 @@ class BroadcasterKickApiClient {
         }
 
         return this.apiClient
+    }
+
+    async refreshAccessToken() {
+        const apiClient = await this.getApiClient()
+        await apiClient.authProvider.getAccessToken({ forceRefresh: true })
     }
 
     async postChatMessage(message) {

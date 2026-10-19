@@ -30,7 +30,7 @@ module.exports = {
         url: process.env.LISTMONK_URL,
         apiUser: process.env.LISTMONK_API_USER,
         apiToken: process.env.LISTMONK_API_TOKEN,
-        publicUrl: process.env.LISTMONK_PUBLIC_URL || 'https://manza.news'
+        publicUrl: process.env.LISTMONK_PUBLIC_URL
     },
     telegram: {
         apiKey: process.env.TELEGRAM_TOKEN,

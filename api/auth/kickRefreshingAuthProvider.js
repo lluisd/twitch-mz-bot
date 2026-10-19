@@ -28,7 +28,7 @@ class KickRefreshingAuthProvider {
         this.expiresIn = tokenData.expiresIn
         this.obtainmentTimestamp = tokenData.obtainmentTimestamp
 
-        logger.info(`Loading token ${tokenData.accessToken} with refresh token ${tokenData.refreshToken}`)
+        logger.info('Loaded Kick broadcaster token')
     }
 
     isExpired() {
@@ -40,17 +40,18 @@ class KickRefreshingAuthProvider {
         return moment().isAfter(expiresAt)
     }
 
-    async getAccessToken() {
-        if (!this.isExpired()) {
+    async getAccessToken({ forceRefresh = false } = {}) {
+        if (!this.refreshingPromise && !forceRefresh && !this.isExpired()) {
             return this.accessToken
         }
 
         if (!this.refreshingPromise) {
-            this.refreshingPromise = this.refreshTokenInternal()
+            this.refreshingPromise = this.refreshTokenInternal().finally(() => {
+                this.refreshingPromise = null
+            })
         }
 
         await this.refreshingPromise
-        this.refreshingPromise = null
 
         return this.accessToken
     }
@@ -68,7 +69,7 @@ class KickRefreshingAuthProvider {
         })
 
         if (!res.ok) {
-            throw new Error("Kick token refresh failed")
+            throw new Error(`Kick token refresh failed (HTTP ${res.status})`)
         }
 
         const data = await res.json()
@@ -78,7 +79,7 @@ class KickRefreshingAuthProvider {
         this.expiresIn = data.expires_in
         this.obtainmentTimestamp = moment().valueOf()
 
-        logger.info(`Refreshing token ${data.access_token} with refresh token ${data.refresh_token}`)
+        logger.info('Refreshed Kick broadcaster token')
 
         if (this.refreshCallback) {
             await this.refreshCallback({
