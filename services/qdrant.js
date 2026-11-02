@@ -61,6 +61,7 @@ async function _processBatches(origin, data, batchSize, textsToEmbed, force = fa
                    text: batchData[j].text,
                    date: batchData[j].date.replace(/\.\d+Z$/, "Z"),
                    type: origin,
+                   ...(batchData[j].duration !== undefined ? { duration: batchData[j].duration } : {}),
                    ...(batchData[j].session ? { session: batchData[j].session } : {})
                }
            }));
