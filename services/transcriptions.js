@@ -130,7 +130,7 @@ async function getBlobs() {
             const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
             const datetimeStr = blobName.split('whisper-live')[1].split('.')[0];
-            const dateTime = moment(datetimeStr, 'YYYYMMDD-HHmmss').toISOString();
+            const dateTime = moment(datetimeStr, 'YYYYMMDD-HHmmss', 'Europe/Madrid').toISOString();
 
             const downloadBlockBlobResponse = await blockBlobClient.download(0);
             const downloaded = (
