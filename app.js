@@ -12,6 +12,7 @@ const EventSub = require('./lib/eventSub')
 const handlers = require('./handlers')
 const logger = require('./lib/logger')
 const basicAuth = require('./middleware/basicAuth')
+const AudioClipsService = require('./services/audioClips')
 const ImmuneService = require('./services/immune')
 const { transcribeSemaphore, mergeTranscriptionsSemaphore} = require("./semaphore.js")
 const OpenAIResponsesApiService = require('./services/openAIResponsesApi')
@@ -52,6 +53,19 @@ async function main () {
         } else {
             app.get('/', (req, res) => res.send('Running'));
         }
+
+        app.post('/audio', basicAuth, express.json(), async (req, res, next) => {
+            try {
+                const { session, start, duration } = req.body || {}
+                const clipPath = await AudioClipsService.createClip(session, start, duration)
+                res.json({ url: `${config.externalUrl.replace(/\/$/, '')}${clipPath}` })
+            } catch (error) {
+                if ([400, 404, 503].includes(error.status)) {
+                    return res.status(error.status).json({ error: error.message })
+                }
+                next(error)
+            }
+        })
 
         app.post('/chats', express.json(), basicAuth, async (req, res, next) => {
             const { startDate, endDate, force } = req.body

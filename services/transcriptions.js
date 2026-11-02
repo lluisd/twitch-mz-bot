@@ -92,6 +92,7 @@ async function getFiles() {
                         nick: config.twitch.channels,
                         text: segment.text.trimStart(),
                         date: segment.startTimeAbsolute,
+                        start: segment.start,
                         duration: segment.end - segment.start,
                         session: session
                     }))

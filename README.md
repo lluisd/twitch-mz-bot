@@ -4,6 +4,41 @@ A twitch chatbot to get specific information about weather predictions, take scr
 
 Bot status: https://mz-status.311312.xyz/
 
+## Stream audio clips
+
+Mount the original WAV directory read-only at `/usr/src/app/audio`. Filenames must
+match the transcription session, for example
+`whisper-live-kick-20260604-213400.wav`. The WAV and transcript must share the same
+starting point. Rebuild the Docker image to install FFmpeg.
+
+`POST /audio-clips` uses the existing Basic Auth credentials and accepts:
+
+```json
+{
+  "session": "whisper-live-kick-20260604-213400",
+  "start": 3.87,
+  "duration": 3.3
+}
+```
+
+`start` is the offset into the WAV in seconds, not an absolute date. Transcription
+records in Qdrant include `start` and `duration` for this purpose; re-upload
+existing sessions with force enabled to add these fields.
+
+The response contains `{ "url": "https://your-host/audio-clips/<id>.mp3" }`,
+using `EXTERNAL_URL`. Anyone with this URL can play or download the clip without
+authentication. Original WAV files are not publicly served.
+
+Clips are cached in `public/audio-clips`; identical requests reuse the same file.
+Only one new clip is generated at a time (other generation requests receive
+`503` and should retry). Invalid parameters return `400`, missing WAVs `404`,
+and generation failures `500`. FFmpeg has a two-minute execution timeout.
+
+Optionally mount a persistent volume at `/usr/src/app/public/audio-clips` and
+ensure it is writable by the container's `node` user (UID 1000). Otherwise clips
+are lost when the container is replaced. Delete old MP3s from this directory
+periodically to reclaim disk space; requests for deleted clips regenerate them.
+
 ## Newsletter subscriber webhook
 
 `POST /newsletterWebhook` (Basic Auth with `BASIC_AUTH_USERNAME`/`BASIC_AUTH_PASSWORD`) announces a new
