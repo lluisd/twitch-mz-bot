@@ -67,6 +67,23 @@ async function main () {
             }
         })
 
+        app.post('/search-audio', basicAuth, express.json(), async (req, res, next) => {
+            try {
+                const { query } = req.body || {}
+                const match = await OpenAIResponsesApiService.searchAudio(query)
+                const clipPath = await AudioClipsService.createClip(match.session, match.start, match.duration)
+                res.json({
+                    url: `${config.externalUrl.replace(/\/$/, '')}${clipPath}`,
+                    match
+                })
+            } catch (error) {
+                if ([400, 404, 503].includes(error.status)) {
+                    return res.status(error.status).json({ error: error.message })
+                }
+                next(error)
+            }
+        })
+
         app.post('/chats', express.json(), basicAuth, async (req, res, next) => {
             const { startDate, endDate, force } = req.body
 

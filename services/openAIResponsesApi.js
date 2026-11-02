@@ -193,6 +193,67 @@ Máximo 400 caracteres. No uses listas, explicaciones largas ni emojis salvo que
     return result
 }
 
+async function searchAudio(query) {
+    if (typeof query !== 'string' || !query.trim()) {
+        throw Object.assign(new Error('El campo query es obligatorio.'), { status: 400 })
+    }
+
+    const normalizedQuery = query.trim()
+    const embedding = await embeddingClient.embeddings.create({
+        input: [normalizedQuery],
+        model: config.openAI.embedding.model,
+    })
+
+    const streamFilter = {
+        must: [{ key: 'type', match: { value: 'stream' } }],
+        must_not: [
+            { is_empty: { key: 'session' } },
+            { is_empty: { key: 'start' } },
+            { is_empty: { key: 'duration' } }
+        ]
+    }
+    const prefetchLimit = config.qdrant.limit * 3
+    const { points } = await qdrantClient.query(config.qdrant.collection, {
+        prefetch: [
+            {
+                query: embedding.data[0].embedding,
+                using: 'text-dense',
+                limit: prefetchLimit,
+                filter: streamFilter
+            },
+            {
+                query: buildSparseVector(normalizedQuery),
+                using: 'text-sparse',
+                limit: prefetchLimit,
+                filter: streamFilter
+            }
+        ],
+        query: { fusion: 'rrf' },
+        limit: config.qdrant.limit,
+        filter: streamFilter,
+        with_payload: true
+    })
+
+    const match = points.find(({ payload }) =>
+        typeof payload?.session === 'string' &&
+        Number.isFinite(payload.start) && payload.start >= 0 &&
+        Number.isFinite(payload.duration) && payload.duration > 0
+    )
+
+    if (!match) {
+        throw Object.assign(new Error('No se encontró ningún fragmento de audio relevante.'), { status: 404 })
+    }
+
+    return {
+        text: match.payload.text,
+        date: match.payload.date,
+        session: match.payload.session,
+        start: match.payload.start,
+        duration: match.payload.duration,
+        score: match.score
+    }
+}
+
 function cleanAssistantText(text) {
     return text.replaceAll(/【.*?】/g, "")
 }
@@ -217,5 +278,6 @@ function buildQdrantFilter(intent) {
 }
 
 module.exports = {
-    ask
+    ask,
+    searchAudio
 }
